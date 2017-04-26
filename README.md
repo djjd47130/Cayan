@@ -31,9 +31,9 @@ There are two packages included: A Run-Time package, and a Design-Time package. 
 3. While still in the Design-Time Package, `Install` the project.
 4. You shall be notified that the components were successfully installed.
 5. Open `Tools` > `Options`, then navigate to `Environment Options` > `Delphi Options` > `Library`, choose the appropriate `Selected Platform`, then click on the `[...]` button to the right of `Library Path`. 
-  a. Enter the directory of the `.\Source` dir and press `Add`. 
-  b. Enter the directory of the `.\Libraries\X-SuperObject` dir and press `Add`.
-  c. Press `OK`, and `OK`.
+⋅⋅1. Enter the directory of the `.\Source` dir and press `Add`. 
+--2. Enter the directory of the `.\Libraries\X-SuperObject` dir and press `Add`.
+--3. Press `OK`, and `OK`.
 
 
 
