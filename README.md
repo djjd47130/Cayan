@@ -59,6 +59,7 @@ Included is an emulator application which mimics a Genius device. This emulator 
 Complete instructions are included in this repo under the `Readme` folder.
 
 1. [Getting Started](./Readme/Chapter%201%20-%20Getting%20Started.md)
+2. [MerchantWare Transactions](./Readme/Chapter%202%20-%20MerchantWare%20Transactions.md)
 
 
 
