@@ -1,0 +1,84 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{19CC36DB-FE93-4C4D-8C36-D8C122B69252}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Packages\CayanComponentsDX10.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Packages\dclCayanComponentsDX10.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="CayanPOS\CayanPOS.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="CEDEmulator\CayanCEDEmulator.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="TestMain\CayanTestMain.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="CayanComponentsDX10">
+        <MSBuild Projects="Packages\CayanComponentsDX10.dproj"/>
+    </Target>
+    <Target Name="CayanComponentsDX10:Clean">
+        <MSBuild Projects="Packages\CayanComponentsDX10.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="CayanComponentsDX10:Make">
+        <MSBuild Projects="Packages\CayanComponentsDX10.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="dclCayanComponentsDX10">
+        <MSBuild Projects="Packages\dclCayanComponentsDX10.dproj"/>
+    </Target>
+    <Target Name="dclCayanComponentsDX10:Clean">
+        <MSBuild Projects="Packages\dclCayanComponentsDX10.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dclCayanComponentsDX10:Make">
+        <MSBuild Projects="Packages\dclCayanComponentsDX10.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="CayanPOS">
+        <MSBuild Projects="CayanPOS\CayanPOS.dproj"/>
+    </Target>
+    <Target Name="CayanPOS:Clean">
+        <MSBuild Projects="CayanPOS\CayanPOS.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="CayanPOS:Make">
+        <MSBuild Projects="CayanPOS\CayanPOS.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="CayanCEDEmulator">
+        <MSBuild Projects="CEDEmulator\CayanCEDEmulator.dproj"/>
+    </Target>
+    <Target Name="CayanCEDEmulator:Clean">
+        <MSBuild Projects="CEDEmulator\CayanCEDEmulator.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="CayanCEDEmulator:Make">
+        <MSBuild Projects="CEDEmulator\CayanCEDEmulator.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="CayanTestMain">
+        <MSBuild Projects="TestMain\CayanTestMain.dproj"/>
+    </Target>
+    <Target Name="CayanTestMain:Clean">
+        <MSBuild Projects="TestMain\CayanTestMain.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="CayanTestMain:Make">
+        <MSBuild Projects="TestMain\CayanTestMain.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="CayanComponentsDX10;dclCayanComponentsDX10;CayanPOS;CayanCEDEmulator;CayanTestMain"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="CayanComponentsDX10:Clean;dclCayanComponentsDX10:Clean;CayanPOS:Clean;CayanCEDEmulator:Clean;CayanTestMain:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="CayanComponentsDX10:Make;dclCayanComponentsDX10:Make;CayanPOS:Make;CayanCEDEmulator:Make;CayanTestMain:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

@@ -1,0 +1,5 @@
+--- NOTICE ---
+
+This software is not a product of Cayan. It is a product of JD Software inc, and written by Jerry Dodge. This software is in no way associated with Cayan or any of Cayan's solutions.
+
+This software is meant to demonstrate the usage of Cayan's Genius solution, and other Cayan solutions. It is not intended to be used as an actual software of any kind, other than to demonstrate, test, review, and develop the Cayan library for Delphi.
