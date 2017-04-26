@@ -54,5 +54,11 @@ Included is an emulator application which mimics a Genius device. This emulator 
 
 ![Emulator](https://github.com/djjd47130/Cayan/blob/master/Readme/EmulatorMX915.png?raw=true)
 
+## Instructions
+
+Complete instructions are included in this repo under the `Readme` folder.
+
+1. [Getting Started][https://raw.githubusercontent.com/djjd47130/Cayan/master/Readme/Chapter%201%20-%20Getting%20Started.md]
+
 
 
