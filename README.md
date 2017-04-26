@@ -44,3 +44,10 @@ The following components are installed into the Delphi IDE Tool Pallette under t
 3. `TCayanGeniusAgreement`: Allows you to send a command to the Genius device requesting the consumer to either Accept or Decline an agreement, while displaying a scrollable text area where an agreement is displayed.
 4. `TCayanGeniusEmulator`: Allows you to serve a virtual emulator, mimicing a real Genius CED device. This component is primarily used in the Genius CED Emulator application. 
 
+## Test Application
+
+There is a test application provided with this repo, which demonstrates actual usage of the Genius solution by a Point-of-Sale application. It is as close as possible to a real Point-of-Sale, without any actual database or use-case abilities. It's primarily used for testing and demonstrating the Genius devices.
+
+## Genius CED Emulator
+
+Included is an emulator application which mimics a Genius device. This emulator can be used in place of a real device, and allows you to test your own integration with Genius without actually needing a device of your own. While the device is as close as possible to the real thing, it is not capable of actually processing real payments. 
