@@ -49,3 +49,8 @@ There is a test application provided with this repo, which demonstrates actual u
 ## Genius CED Emulator
 
 Included is an emulator application which mimics a Genius device. This emulator can be used in place of a real device, and allows you to test your own integration with Genius without actually needing a device of your own. While the device is as close as possible to the real thing, it is not capable of actually processing real payments. 
+
+![Emulator](https://github.com/djjd47130/Cayan/tree/master/Readme/EmulatorMX915.png)
+
+
+
