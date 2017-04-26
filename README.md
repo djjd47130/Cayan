@@ -35,5 +35,12 @@ There are two packages included: A Run-Time package, and a Design-Time package. 
   2. Enter the directory of the `.\Libraries\X-SuperObject` dir and press `Add`.
   3. Press `OK`, and `OK`.
 
+## Component Pallette
 
+The following components are installed into the Delphi IDE Tool Pallette under the `Cayan` tab:
+
+1. `TCayan`: Represents a single connection to Cayan's systems, and is not related to any particular service or solution. It only carries the API credentials, company, user, and station information. It is further used by other components to be able to share the same connection using this `TCayan` component.
+2. `TCayanGenius`: Represents a single connection to one of Cayan's Genius CED payment terminals. Provides the ability to perform transactions, utilize line item display, and other various features of the device.
+3. `TCayanGeniusAgreement`: Allows you to send a command to the Genius device requesting the consumer to either Accept or Decline an agreement, while displaying a scrollable text area where an agreement is displayed.
+4. `TCayanGeniusEmulator`: Allows you to serve a virtual emulator, mimicing a real Genius CED device. This component is primarily used in the Genius CED Emulator application. 
 
