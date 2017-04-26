@@ -18,7 +18,9 @@ This library uses its own copy of X-SuperObject. Since there were modifications 
 
 ## Delphi Support
 
-This library was written for Delphi 10 Seattle. While it should work in most modern Delphi versions, it has not been tested, and there is no guarantee that it will be compatible.
+This library was written for Delphi 10 Seattle. While it should work in most modern Delphi versions, it has not been tested, and there is no guarantee that it will be compatible. It is cross-platform compatible, but not thoroughly tested on any platform other than Windows (32bit and 64bit). It does not depend on VCL or Firemonkey. Past versions of this library have been successfully deployed to MacOS, iOS, and Android, but have gone through extensive modifications since then. All current testing is only on Windows.
+
+The test applications use a combination of VCL and Firemonkey. The Emulator and the POS applications are both based on the Firemonkey framework, while the stand-alone test application is on the VCL framework. 
 
 ## Delphi Packages
 
@@ -42,7 +44,7 @@ The following components are installed into the Delphi IDE Tool Pallette under t
 3. `TCayanGeniusAgreement`: Allows you to send a command to the Genius device requesting the consumer to either Accept or Decline an agreement, while displaying a scrollable text area where an agreement is displayed.
 4. `TCayanGeniusEmulator`: Allows you to serve a virtual emulator, mimicing a real Genius CED device. This component is primarily used in the Genius CED Emulator application. 
 
-## Test Application
+## POS Application
 
 There is a test application provided with this repo, which demonstrates actual usage of the Genius solution by a Point-of-Sale application. It is as close as possible to a real Point-of-Sale, without any actual database or use-case abilities. It's primarily used for testing and demonstrating the Genius devices.
 
