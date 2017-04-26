@@ -58,7 +58,7 @@ Included is an emulator application which mimics a Genius device. This emulator 
 
 Complete instructions are included in this repo under the `Readme` folder.
 
-1. [Getting Started][https://raw.githubusercontent.com/djjd47130/Cayan/master/Readme/Chapter%201%20-%20Getting%20Started.md]
+1. [Getting Started](./Readme/Chapter%201%20-%20Getting%20Started.md)
 
 
 
