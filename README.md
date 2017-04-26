@@ -10,7 +10,7 @@ NOTE: This library uses its own copy of X-SuperObject. Since there were modifica
 
 Please visit www.cayan.com for more information.
 
-##Delphi Support
+## Delphi Support
 
 This library was written for Delphi 10 Seattle. While it should work in most modern Delphi versions, it has not been tested, and there is no guarantee that it will be compatible.
 
