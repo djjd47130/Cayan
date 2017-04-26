@@ -6,8 +6,6 @@ Delphi Library for Payment Integration using Cayan Solutions
 
 This library was written by Jerry Dodge, and not by any direct member of Cayan. No guarantees are made towards this code, and is available on an as-is basis. Neither I or Cayan are responsible for any problems which arise as a result of using this code.
 
-Please visit www.cayan.com for more information.
-
 ## Disclaimer
 
 While this library is free and open-source, you are still responsible to acquire certification with Cayan to be allowed to work with their solutions. This library only wraps Cayan's APIs, and you must treat the integration the same as if you wrote this library. Certification works on a per-application basis, so even one certification is not enough to use this library indefinitely.
