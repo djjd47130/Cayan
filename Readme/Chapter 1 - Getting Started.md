@@ -65,3 +65,5 @@ Additionally, there are some events on this component:
 
 1. `OnAgreement` (Required) - Triggered when the customer presses `Accept`, `Decline`, or when the device times out.
 
+
+[Chapter 2 - MerchantWare Transactions](https://raw.githubusercontent.com/djjd47130/Cayan/master/Readme/Chapter%202%20-%20MerchantWare%20Transactions.md)
