@@ -255,7 +255,7 @@ type
     procedure SetFormat(const Value: TDataFormat);
     procedure HandleCommand(ARequestInfo: TIdHTTPRequestInfo;
       AResponseInfo: TIdHTTPResponseInfo);
-    procedure DoPosTransaction(
+    procedure DoPosAction(
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
     procedure HandleStartOrder(ARequestInfo: TIdHTTPRequestInfo;
       AResponseInfo: TIdHTTPResponseInfo);
@@ -1099,7 +1099,7 @@ begin
       case ARequestInfo.CommandType of
         hcGET: begin
           if FDoc[1] = 'pos' then begin
-            DoPosTransaction(ARequestInfo, AResponseInfo);
+            DoPosAction(ARequestInfo, AResponseInfo);
           end else begin
             AResponseInfo.ResponseNo:= 400;
           end;
@@ -1112,8 +1112,7 @@ begin
   end;
 end;
 
-
-procedure TCayanGeniusEmulatorContext.DoPosTransaction(
+procedure TCayanGeniusEmulatorContext.DoPosAction(
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
 var
   F: String;
@@ -1174,69 +1173,105 @@ begin
   if FDetails.ErrorMessage <> '' then begin
     FOwner.ChangeScreen(TGeniusCedScreen.csMainPayment);
     FOwner.FFinished:= False;
+
+    //Wait for response from user...
     while not FOwner.FFinished do begin
       //TODO: Implement timeout...
+
       Sleep(50);
     end;
 
+    //TODO: At this point, transaction may or may not have actually taken place,
+    //  but is ready to return back a response from the HTTP call...
+
+    AResponseInfo.ContentText:= TranStr;
+
   end else begin
 
+    AResponseInfo.ContentText:= '<error>' + FDetails.ErrorMessage + '</error>';
+
   end;
-  AResponseInfo.ContentText:= TranStr;
 end;
 
 function TCayanGeniusEmulatorContext.TranStr: String;
 var
   D: TCombinedData;
+  P: IGeniusPaymentDetail;
 begin
   Result:= '';
   D:= TCombinedData.Create;
   try
     D.RootElement:= 'TransactionResult';
     D.Start(FFormat);
-    D.AddStr('Status', 'APPROVED');
-    D.AddStr('AuthorizationCode', 'OK1234');
-    D.AddStr('AmountApproved', CurrToStr(FOwner.FOwner.FOrderTotal));
-    D.AddStr('Cardholder', 'TEST CARD/Genius');
-    D.AddStr('AccountNumber', '************4321');
-    D.AddStr('PaymentType', 'VISA');
-    case FOwner.FOwner.FSelected of
-      psSwipe: D.AddStr('EntryMode', 'SWIPE');
-      psChip: D.AddStr('EntryMode', 'SWIPE');
-      psContact: D.AddStr('EntryMode', 'PROXIMITY');
-      psScan: D.AddStr('EntryMode', 'BARCODE');
-      psCredit: D.AddStr('EntryMode', 'SWIPE');
-      psDebit: D.AddStr('EntryMode', 'SWIPE');
-      psGiftCard: D.AddStr('EntryMode', 'SWIPE');
-      psAndroid: D.AddStr('EntryMode', 'PROXIMITY');
-      psLevelUp: D.AddStr('EntryMode', 'BARCODE');
-      else D.AddStr('EntryMode', 'UNKNOWN');
+    if FDetails.PaymentCount > 0 then begin
+      P:= FDetails.PaymentDetails[0];
+      D.AddStr('Status', GeniusTransStatusToStr(P.Status));
+      D.AddStr('AuthorizationCode', P.AuthorizationCode);
+      D.AddStr('AmountApproved', CurrToStr(P.AmountApproved));
+      D.AddStr('Cardholder', 'TEST CARD/Genius'); //TODO
+      D.AddStr('AccountNumber', P.AccountNumber);
+      D.AddStr('PaymentType', GeniusPaymentTypeToStr(P.PaymentType));
+      D.AddStr('EntryMode', GeniusEntryModeToStr(P.EntryMode));
+      D.AddStr('ErrorMessage', P.ErrorMessage);
+      D.AddStr('Token', P.Token);
+      D.AddStr('TransactionDate', FormatDateTime('m/d/yyyy h:nn:ss AMPM', P.TransactionDate));
+      D.AddStr('TransactionType', GeniusTransactionTypeToStr(P.TransactionType));
+      D.AddStr('ResponseType', 'SINGLE'); //TODO
+      D.AddStr('ValidationKey', ''); //TODO
+      D.AddObject('AdditionalParameters');
+        D.AddStr('SignatureData', P.Signature);
+        D.AddObject('AmountDetails');
+          D.AddStr('UserTip', CurrToStr(P.UserTipAmount));
+          D.AddStr('Cashback', '0.00');
+          D.AddStr('Donation', '0.00');
+          D.AddStr('Surcharge', '0.00');
+          D.AddObject('Discount');
+            D.AddStr('Total', '0.00');
+          D.DoneObject;
+        D.DoneObject;
+        if FOwner.FOwner.FSelected = psChip then begin
+          D.AddObject('EMV');
+            D.AddObject('ApplicationInformation');
+              D.AddStr('Aid', 'A0000000032010');
+              D.AddStr('ApplicationLabel', 'Visa Electron');
+              D.AddStr('ApplicationExpiryDate', '1/1/2018');
+              D.AddStr('ApplicationEffectiveDate', '1/1/2014');
+              D.AddStr('ApplicationInterchangeProfile', '1359');
+              D.AddStr('ApplicationVersionNumber', '1');
+              D.AddStr('ApplicationTransactionCounter', '826');
+              D.AddStr('ApplicationUsageControl', '1234');
+              D.AddStr('ApplicationPreferredName', 'Visa Electron');
+              D.AddStr('ApplicationDisplayName', 'Visa Electron');
+            D.DoneObject;
+            D.AddObject('CardInformation');
+              D.AddStr('MaskedPan', '');
+              D.AddStr('PanSequenceNumber', '1');
+              D.AddStr('CardExpiryDate', '');
+            D.DoneObject;
+            D.AddObject('ApplicationCryptogram');
+              D.AddStr('CryptogramType', 'TC');
+              D.AddStr('Cryptogram', '9F424AA68EB17A2');
+            D.DoneObject;
+            D.AddStr('CvmResults', '010001');
+            //TODO...
+          D.DoneObject;
+        end;
+        //TODO: Support loyalty...
+        if 1 <> 1 then begin
+          D.AddObject('Loyalty');
+            D.AddStr('AccountNumber', '');
+            D.AddObject('Balances');
+              D.AddStr('PointsBalance', '0');
+              D.AddStr('AmountBalance', '0.00');
+            D.DoneObject;
+          D.DoneObject;
+        end;
+      D.DoneObject;
+    end else begin
+      //No payment!!!
+
     end;
-    D.AddStr('ErrorMessage', '');
-    D.AddStr('Token', '601601601');
-    D.AddStr('TransactionDate', FormatDateTime('m/d/yyyy h:nn:ss AMPM', Now));
-    D.AddStr('TransactionType', 'SALE');
-    D.AddStr('ResponseType', 'SINGLE');
-    D.AddStr('ValidationKey', '');
-    D.AddObject('AdditionalParameters');
-      D.AddStr('SignatureData', '');
-      D.AddObject('AmountDetails');
-        D.AddStr('UserTip', '0.00');
-        D.AddStr('Cashback', '0.00');
-        D.AddStr('Donation', '0.00');
-        D.AddStr('Surcharge', '0.00');
-        D.AddObject('Discount');
-          D.AddStr('Total', '0.00');
-        D.DoneObject;
-      D.DoneObject;
-      D.AddObject('Loyalty');
-        D.AddStr('AccountNumber', '');
-        D.AddObject('Balances');
-          D.AddStr('PointsBalance', '0');
-          D.AddStr('AmountBalance', '0.00');
-        D.DoneObject;
-      D.DoneObject;
-    D.DoneObject;
+
     Result:= D.AsString;
   finally
     FreeAndNil(D);

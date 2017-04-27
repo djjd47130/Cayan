@@ -17,7 +17,7 @@ uses
   FMX.StdCtrls, FMX.Controls.Presentation, FMX.Gestures, FMX.ActnList,
   FMX.ListBox, FMX.Layouts, FMX.Edit,
   FMX.ListView, FMX.ListView.Types, FMX.ListView.Appearances,
-  FMX.ListView.Adapters.Base, Cayan;
+  FMX.ListView.Adapters.Base, Cayan, FMX.EditBox, FMX.NumberBox;
 
 type
   TfrmCayanPOSMain = class(TForm)
@@ -187,6 +187,33 @@ type
     MainStyle: TStyleBook;
     Cayan: TCayan;
     actCustomerLookupTab: TChangeTabAction;
+    tabSetup: TTabItem;
+    actSetupTab: TChangeTabAction;
+    ToolBar2: TToolBar;
+    Label7: TLabel;
+    SpeedButton1: TSpeedButton;
+    lstSetup: TListBox;
+    ListBoxGroupHeader12: TListBoxGroupHeader;
+    ListBoxItem47: TListBoxItem;
+    ListBoxItem51: TListBoxItem;
+    ListBoxGroupHeader13: TListBoxGroupHeader;
+    ListBoxItem53: TListBoxItem;
+    ListBoxItem58: TListBoxItem;
+    ListBoxItem23: TListBoxItem;
+    ListBoxItem24: TListBoxItem;
+    ListBoxItem25: TListBoxItem;
+    ListBoxItem26: TListBoxItem;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    NumberBox1: TNumberBox;
+    NumberBox2: TNumberBox;
+    ListBoxGroupHeader14: TListBoxGroupHeader;
+    ListBoxItem27: TListBoxItem;
+    Edit5: TEdit;
+    ListBoxItem44: TListBoxItem;
+    Edit6: TEdit;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
@@ -217,6 +244,8 @@ type
     procedure btnCartDeleteClick(Sender: TObject);
     procedure lstItemsDeleteItem(Sender: TObject; AIndex: Integer);
     procedure FormDestroy(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
   private
     FUsername: String;
     FPassword: String;
@@ -555,6 +584,15 @@ begin
   ResizeListItems(lstPayDetail);
 end;
 
+procedure TfrmCayanPOSMain.SpeedButton1Click(Sender: TObject);
+begin
+
+  //TODO: Save Settings...
+
+  actCustomerTab.ExecuteTarget(Self);
+
+end;
+
 procedure TfrmCayanPOSMain.cboPayMethodClick(Sender: TObject);
 var
   B: TButton;
@@ -861,6 +899,15 @@ begin
   ClearCart;
 
   Self.actCustomerTab.ExecuteTarget(Self);
+
+end;
+
+procedure TfrmCayanPOSMain.Button5Click(Sender: TObject);
+begin
+
+  //TODO: Load settings...
+
+  actSetupTab.ExecuteTarget(Self);
 
 end;
 
