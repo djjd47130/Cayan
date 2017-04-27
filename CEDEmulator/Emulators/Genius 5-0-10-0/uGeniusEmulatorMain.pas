@@ -237,7 +237,9 @@ begin
     end;
   end;
 
+
 end;
+
 
 procedure TfrmGeniusEmulatorMain.LoadFromConfig;
 begin

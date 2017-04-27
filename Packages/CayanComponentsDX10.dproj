@@ -5,7 +5,7 @@
         <ProjectVersion>18.1</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1119</TargetedPlatforms>
         <AppType>Package</AppType>
@@ -162,6 +162,7 @@
         <DCCReference Include="IndySystem.dcp"/>
         <DCCReference Include="IndyProtocols.dcp"/>
         <DCCReference Include="dbrtl.dcp"/>
+        <DCCReference Include="adortl.dcp"/>
         <DCCReference Include="..\Source\Cayan.Genius.Impl.pas"/>
         <DCCReference Include="..\Source\Cayan.MWv4.Impl.pas"/>
         <DCCReference Include="..\Source\Cayan.Genius.Intf.pas"/>
@@ -169,12 +170,14 @@
         <DCCReference Include="..\Source\Cayan.Common.pas"/>
         <DCCReference Include="..\Source\Cayan.Genius.pas"/>
         <DCCReference Include="..\Source\Cayan.Genius.Emulator.pas"/>
-        <DCCReference Include="..\Source\Cayan.POSServer.pas"/>
+        <DCCReference Include="..\Source\Cayan.POS.Server.pas"/>
         <DCCReference Include="..\Libraries\X-SuperObject\Cayan.XSuperJSON.pas"/>
         <DCCReference Include="..\Libraries\X-SuperObject\Cayan.XSuperObject.pas"/>
         <DCCReference Include="..\Source\Cayan.Genius.Agreement.pas"/>
         <DCCReference Include="..\Source\Cayan.pas"/>
         <DCCReference Include="..\Source\Cayan.Genius.Emulator.LibCommon.pas"/>
+        <DCCReference Include="..\Source\Cayan.Genius.LineItems.pas"/>
+        <DCCReference Include="..\Source\Cayan.POS.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

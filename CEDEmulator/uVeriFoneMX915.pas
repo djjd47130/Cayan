@@ -10,7 +10,10 @@ uses
 
 type
 
+
+
   TGeniusEmulatorFormClass = class of TForm;
+
 
   TfrmVeriFoneMX915 = class(TForm)
     imgDevice: TImageControl;

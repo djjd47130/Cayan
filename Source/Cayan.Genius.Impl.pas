@@ -684,16 +684,14 @@ type
       const Quantity: Integer = 1;
       const ItemType: TGeniusLineItemType = glSku;
       const Category: TGeniusLineItemCategory = glNone;
-      const DisplayOverride: String = '';
-      const DisplayCustomSubTotal: String = ''): IGeniusLineItem;
+      const DisplayOverride: String = ''): IGeniusLineItem;
     function UpdateItem(
       const TargetItemId, ItemTypeValue, Upc, Description: String;
       const Amount, TaxAmount: Currency;
       const Quantity: Integer = 1;
       const ItemType: TGeniusLineItemType = glSku;
       const Category: TGeniusLineItemCategory = glNone;
-      const DisplayOverride: String = '';
-      const DisplayCustomSubTotal: String = ''): IGeniusLineItem;
+      const DisplayOverride: String = ''): IGeniusLineItem;
     function DiscountItem(
       const TargetItem: IGeniusLineItem;
       const ItemTypeValue, Upc, Description: String;
@@ -701,12 +699,12 @@ type
       const Quantity: Integer = 1;
       const ItemType: TGeniusLineItemType = glSku;
       const Category: TGeniusLineItemCategory = glNone;
-      const DisplayOverride: String = '';
-      const DisplayCustomSubTotal: String = ''): IGeniusLineItemDiscount;
+      const DisplayOverride: String = ''): IGeniusLineItemDiscount;
     procedure DeleteItem(const Index: Integer); overload;
     procedure DeleteItem(const ItemID: String); overload;
     procedure DeleteDiscount(const ADiscount: IGeniusLineItemDiscount);
     procedure ClearItems;
+    function UpdateTotal(const OrderTotal, OrderTax: Currency): Boolean;
     function OrderTotal: Currency;
     function OrderTax: Currency;
 
@@ -3635,8 +3633,7 @@ function TGeniusLineItems.AddItem(const ItemId, ItemTypeValue, Upc, Description:
   const Quantity: Integer = 1;
   const ItemType: TGeniusLineItemType = glSku;
   const Category: TGeniusLineItemCategory = glNone;
-  const DisplayOverride: String = '';
-  const DisplayCustomSubTotal: String = ''): IGeniusLineItem;
+  const DisplayOverride: String = ''): IGeniusLineItem;
 var
   Url: String;
   Pars: TParamList;
@@ -3657,7 +3654,6 @@ begin
   Result.ItemType:= ItemType;
   Result.Category:= Category;
   Result.DisplayOverride:= DisplayOverride;
-  Result.DisplayCustomSubTotal:= DisplayCustomSubTotal;
 
   Pars:= TParamList.Create;
   try
@@ -3682,8 +3678,8 @@ begin
     Pars['Category']:= GeniusLineItemCategoryToStr(Category);
     if DisplayOverride <> '' then
       Pars['DisplayOverride']:= DisplayOverride;
-    if DisplayCustomSubTotal <> '' then
-      Pars['DisplayCustomSubTotal']:= DisplayCustomSubTotal;
+    if FDisplayCustomSubTotal <> '' then
+      Pars['DisplayCustomSubTotal']:= FDisplayCustomSubTotal;
     Pars['Format']:= 'XML';
 
     Url:= FOwner.DeviceUrl(Pars.ParamStr);
@@ -3726,8 +3722,7 @@ end;
 function TGeniusLineItems.UpdateItem(const TargetItemId, ItemTypeValue, Upc,
   Description: String; const Amount, TaxAmount: Currency;
   const Quantity: Integer; const ItemType: TGeniusLineItemType;
-  const Category: TGeniusLineItemCategory; const DisplayOverride,
-  DisplayCustomSubTotal: String): IGeniusLineItem;
+  const Category: TGeniusLineItemCategory; const DisplayOverride: String): IGeniusLineItem;
 var
   Url: String;
   Pars: TParamList;
@@ -3758,7 +3753,6 @@ begin
     Result.ItemType:= ItemType;
     Result.Category:= Category;
     Result.DisplayOverride:= DisplayOverride;
-    Result.DisplayCustomSubTotal:= DisplayCustomSubTotal;
     Pars:= TParamList.Create;
     try
       Pars['Action']:= 'UpdateItem';
@@ -3782,8 +3776,8 @@ begin
       Pars['Category']:= GeniusLineItemCategoryToStr(Category);
       if DisplayOverride <> '' then
         Pars['DisplayOverride']:= DisplayOverride;
-      if DisplayCustomSubTotal <> '' then
-        Pars['DisplayCustomSubTotal']:= DisplayCustomSubTotal;
+      if FDisplayCustomSubTotal <> '' then
+        Pars['DisplayCustomSubTotal']:= FDisplayCustomSubTotal;
       Pars['Format']:= 'XML';
 
       Url:= FOwner.DeviceUrl(Pars.ParamStr);
@@ -3815,18 +3809,57 @@ begin
   end;
 end;
 
-function TGeniusLineItems.DiscountItem(const TargetItem: IGeniusLineItem;
-  const ItemTypeValue, Upc, Description: String; const Amount,
-  TaxAmount: Currency; const Quantity: Integer;
-  const ItemType: TGeniusLineItemType; const Category: TGeniusLineItemCategory;
-  const DisplayOverride,
-  DisplayCustomSubTotal: String): IGeniusLineItemDiscount;
+function TGeniusLineItems.UpdateTotal(const OrderTotal, OrderTax: Currency): Boolean;
 var
   Url: String;
   Pars: TParamList;
   XML: IXMLDocument;
   Node: IXmlNode;
-  //X: Integer;
+begin
+  //http://[CED-IP-Address]:8080/v1/pos?Action=UpdateTotal&Order=xxx&
+  //  OrderTotal=xxx&OrderTax=xxx&DisplayCustomSubTotal=xxx&Format=xxx
+
+  Result:= False;
+  FInProgress:= False;
+  Pars:= TParamList.Create;
+  try
+    Pars['Action']:= 'UpdateTotal';
+    Pars['Order']:= FOrder;
+    Pars['OrderTotal']:= CurrToStr(OrderTotal);
+    Pars['OrderTax']:= CurrToStr(OrderTax);
+    Pars['Format']:= 'XML';
+    Url:= FOwner.DeviceUrl(Pars.ParamStr);
+    try
+      XML:= FOwner.SendDeviceRequestXML(Url);
+      Node:= GetNodePath(XML, '/OrderResult');
+      if Assigned(Node) then begin
+        Result:= GeniusStrToLineItemStatus(GetNodeValue(Node, 'Status')) = TGeniusLineItemStatus.soSuccess;
+        if not Result then begin
+          raise Exception.Create(GetNodeValue(Node, 'ResponseMessage'));
+        end;
+      end else begin
+        Result:= False;
+      end;
+    except
+      on E: Exception do begin
+        Result:= False;
+      end;
+    end;
+  finally
+    FreeAndNil(Pars);
+  end;
+end;
+
+function TGeniusLineItems.DiscountItem(const TargetItem: IGeniusLineItem;
+  const ItemTypeValue, Upc, Description: String; const Amount,
+  TaxAmount: Currency; const Quantity: Integer;
+  const ItemType: TGeniusLineItemType; const Category: TGeniusLineItemCategory;
+  const DisplayOverride: String): IGeniusLineItemDiscount;
+var
+  Url: String;
+  Pars: TParamList;
+  XML: IXMLDocument;
+  Node: IXmlNode;
 begin
   //http://[CED-IP-Address]:8080/v1/pos?Action=DiscountItem&Order=xxx&Type=Sku&
   //TypeValue=xxx&UPC=xxx&Quantity=xxx&Description=xxx&Amount=xxx&TaxAmount=xxx&OrderTotal=xxx&OrderTax=xxx&Category=xxx&Format=xxx
@@ -3841,7 +3874,6 @@ begin
     Result.ItemType:= ItemType;
     Result.Category:= Category;
     Result.DisplayOverride:= DisplayOverride;
-    Result.DisplayCustomSubTotal:= DisplayCustomSubTotal;
     Pars:= TParamList.Create;
     try
       Pars['Action']:= 'DiscountItem';
@@ -3865,8 +3897,8 @@ begin
       Pars['Category']:= GeniusLineItemCategoryToStr(Category);
       if DisplayOverride <> '' then
         Pars['DisplayOverride']:= DisplayOverride;
-      if DisplayCustomSubTotal <> '' then
-        Pars['DisplayCustomSubTotal']:= DisplayCustomSubTotal;
+      if FDisplayCustomSubTotal <> '' then
+        Pars['DisplayCustomSubTotal']:= FDisplayCustomSubTotal;
       Pars['Format']:= 'XML';
 
       Url:= FOwner.DeviceUrl(Pars.ParamStr);
@@ -3930,8 +3962,8 @@ begin
     Pars['TargetItemID']:= I.ItemID;
     Pars['OrderTotal']:= CurrToStr(FOrderTotal);
     Pars['OrderTax']:= CurrToStr(FOrderTax);
-    //if DisplayCustomSubTotal <> '' then
-      //Pars['DisplayCustomSubTotal']:= DisplayCustomSubTotal;
+    if FDisplayCustomSubTotal <> '' then
+      Pars['DisplayCustomSubTotal']:= FDisplayCustomSubTotal;
     Pars['Format']:= 'XML';
 
     Url:= FOwner.DeviceUrl(Pars.ParamStr);
@@ -3968,8 +4000,8 @@ begin
     Pars['TargetItemID']:= ADiscount.ItemID;
     Pars['OrderTotal']:= CurrToStr(FOrderTotal);
     Pars['OrderTax']:= CurrToStr(FOrderTax);
-    //if DisplayCustomSubTotal <> '' then
-      //Pars['DisplayCustomSubTotal']:= DisplayCustomSubTotal;
+    if FDisplayCustomSubTotal <> '' then
+      Pars['DisplayCustomSubTotal']:= FDisplayCustomSubTotal;
     Pars['Format']:= 'XML';
 
     Url:= FOwner.DeviceUrl(Pars.ParamStr);

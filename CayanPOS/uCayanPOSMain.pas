@@ -17,7 +17,8 @@ uses
   FMX.StdCtrls, FMX.Controls.Presentation, FMX.Gestures, FMX.ActnList,
   FMX.ListBox, FMX.Layouts, FMX.Edit,
   FMX.ListView, FMX.ListView.Types, FMX.ListView.Appearances,
-  FMX.ListView.Adapters.Base, Cayan, FMX.EditBox, FMX.NumberBox;
+  FMX.ListView.Adapters.Base, Cayan, FMX.EditBox, FMX.NumberBox,
+  Cayan.Genius.LineItems;
 
 type
   TfrmCayanPOSMain = class(TForm)
@@ -33,7 +34,7 @@ type
     lblCartTitle: TLabel;
     tabPayment: TTabItem;
     ToolBar4: TToolBar;
-    lblTitle4: TLabel;
+    lblPaymentTitle: TLabel;
     tabResult: TTabItem;
     ToolBar5: TToolBar;
     lblTitle5: TLabel;
@@ -224,6 +225,17 @@ type
     ListBoxItem49: TListBoxItem;
     swEmailRequired: TSwitch;
     Button6: TButton;
+    LID: TCayanGeniusLineItems;
+    ListBoxGroupHeader16: TListBoxGroupHeader;
+    lManageServer: TListBoxItem;
+    lServerHost: TListBoxItem;
+    Edit1: TEdit;
+    lServerPort: TListBoxItem;
+    lServerToken: TListBoxItem;
+    Edit3: TEdit;
+    lServerStation: TListBoxItem;
+    NumberBox1: TNumberBox;
+    NumberBox2: TNumberBox;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
@@ -256,6 +268,9 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
+    procedure LIDChange(Sender: TCayanGeniusLineItems);
+    procedure lManageServerClick(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
   private
     FUsername: String;
     FPassword: String;
@@ -469,11 +484,15 @@ begin
 
   lblCartTitle.Text:= 'Cart - ' + txtCustFirstName.Text + ' ' + txtCustLastName.Text;
   ClearCart;
+  LID.DisplayCustomSubTotal:= txtCustFirstName.Text + ' ' + txtCustLastName.Text;
+  LID.StartOrder;
+  actCartTab.ExecuteTarget(Self);
+  {
   if Genius.StartNewOrder then begin
-    actCartTab.ExecuteTarget(Self);
   end else begin
     raise Exception.Create('Failed to start new order.');
   end;
+  }
 end;
 
 procedure TfrmCayanPOSMain.SetCedBusy(const Value: Boolean);
@@ -497,28 +516,21 @@ begin
   Genius.Cardholder:= txtCustFirstName.Text + ' ' + txtCustLastName.Text;
   Genius.TransactionID:= Genius.InvoiceNum;
 
-
   Genius.StageTransaction;
 
 end;
 
 procedure TfrmCayanPOSMain.btnCartAddClick(Sender: TObject);
 var
-  LineItems: IGeniusLineItems;
-  I: IGeniusLineItem;
-  ItemNum: String;
+  I: TCayanGeniusLineItem;
   LI: TListViewItem;
   Price: Currency;
 begin
-  LineItems:= Genius.Genius.LineItems;
-  ItemNum:= IntToStr(LineItems.Count + 1);
   Price:= (Random(200) + 5);
-  LineItems.Order:= Genius.InvoiceNum;
   try
-    I:= LineItems.AddItem(ItemNum, 'Inventory', '', RandomProduct,
-      Price, (Price * 0.06));
+    I:= LID.Add(glSku, 'Inventory', Price, (Price * 0.06), 1, RandomProduct);
 
-    LI:= Self.lstItems.Items.Add;
+    LI:= lstItems.Items.Add;
     LI.Text:= IntToStr(I.Quantity) + ' ' + I.Description;
     LI.Detail:= FormatFloat('$#,###,##0.00', (I.Amount * I.Quantity));
     LI.Tag:= NativeInt(I);
@@ -534,27 +546,24 @@ end;
 procedure TfrmCayanPOSMain.ClearCart;
 begin
   lstItems.Items.Clear;
-  Genius.Genius.LineItems.ClearItems;
+  LID.Clear;
   Genius.Cancel;
-  Self.UpdateCartTotals;
+  UpdateCartTotals;
 end;
 
 procedure TfrmCayanPOSMain.btnCartDeleteClick(Sender: TObject);
 var
-  Items: IGeniusLineItems;
-  I: IGeniusLineItem;
+  I: TCayanGeniusLineItem;
   X: Integer;
 begin
   if lstItems.ItemIndex >= 0 then begin
-    I:= IGeniusLineItem(lstItems.Items[lstItems.ItemIndex].Tag);
-    Items:= I.Owner;
-    for X := 0 to Items.Count - 1 do begin
-      if Items[X] = I then begin
-        Items.DeleteItem(X);
+    I:= TCayanGeniusLineItem(lstItems.Items[lstItems.ItemIndex].Tag);
+    for X := 0 to LID.Count - 1 do begin
+      if LID.Items[X] = I then begin
+        LID.Delete(X);
         Break;
       end;
     end;
-    I.Owner.DeleteItem(X);
     lstItems.Items.Delete(lstItems.ItemIndex);
   end;
 end;
@@ -656,6 +665,21 @@ begin
     end;
   end;
   ResizeListItems(Self.lstPayDetail);
+end;
+
+procedure TfrmCayanPOSMain.LIDChange(Sender: TCayanGeniusLineItems);
+begin
+  Self.UpdateCartTotals;
+end;
+
+procedure TfrmCayanPOSMain.lManageServerClick(Sender: TObject);
+begin
+  lManageServer.Visible:= False;
+  lServerHost.Visible:= True;
+  lServerPort.Visible:= True;
+  lServerToken.Visible:= True;
+  lServerStation.Visible:= True;
+
 end;
 
 procedure TfrmCayanPOSMain.LoadFromConfig;
@@ -855,33 +879,20 @@ begin
 end;
 
 procedure TfrmCayanPOSMain.UpdateCartTotals;
-var
-  X: Integer;
-  I: IGeniusLineItem;
-  Q: Integer;
-  S, T: Currency;
 begin
-  Q:= 0;
-  S:= 0;
-  T:= 0;
-  for X := 0 to Genius.Genius.LineItems.Count-1 do begin
-    I:= Genius.Genius.LineItems[X];
-    Q:= Q + I.Quantity;
-    S:= S + (I.Amount * I.Quantity);
-    T:= T + (I.TaxAmount * I.Quantity);
-  end;
-  lblCartQty.Text:= IntToStr(Q);
-  lblCartSubtotal.Text:= FormatFloat('$#,###,##0.00', S);
-  lblCartTax.Text:= FormatFloat('$#,###,##0.00', T);
-  lblCartTotal.Text:= FormatFloat('$#,###,##0.00', S + T);
+  lblCartQty.Text:= IntToStr(LID.TotalQty);
+  lblCartSubtotal.Text:= FormatFloat('$#,###,##0.00', LID.Subtotal);
+  lblCartTax.Text:= FormatFloat('$#,###,##0.00', LID.OrderTax);
+  lblCartTotal.Text:= FormatFloat('$#,###,##0.00', LID.OrderTotal);
 end;
 
 procedure TfrmCayanPOSMain.btnCartNextClick(Sender: TObject);
 begin
-  if Genius.Genius.LineItems.Count = 0 then begin
+  if LID.Count = 0 then begin
     raise Exception.Create('There are no items in the cart.');
   end;
-  txtPayAmount.Text:= FormatFloat('#,###,##0.00', Genius.Amount);
+  txtPayAmount.Text:= FormatFloat('0.00', Genius.Amount);
+  lblPaymentTitle.Text:= FormatFloat('$#,###,##0.00', Genius.Amount);
   actPaymentTab.ExecuteTarget(Self);
 end;
 
@@ -938,6 +949,18 @@ begin
 
 
   actSetupTab.ExecuteTarget(Self);
+
+end;
+
+procedure TfrmCayanPOSMain.Button6Click(Sender: TObject);
+begin
+  //TODO: Copy Billing Address to Shipping Address...
+
+  txtCustShipAddr1.Text:= txtCustBillAddr1.Text;
+  txtCustShipAddr2.Text:= txtCustBillAddr2.Text;
+  txtCustShipCity.Text:= txtCustBillCity.Text;
+  txtCustShipState.Text:= txtCustBillState.Text;
+  txtCustShipZip.Text:= txtCustBillZip.Text;
 
 end;
 

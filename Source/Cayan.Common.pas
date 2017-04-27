@@ -113,13 +113,17 @@ type
     destructor Destroy; override;
     procedure Start(AFormat: TDataFormat);
     procedure AddObject(const Name: String);
+    procedure AddArray(const Name: String);
     procedure DoneObject;
+    procedure DoneArray;
     procedure AddStr(const Name: String; const Val: String);
     procedure AddInt(const Name: String; const Val: Integer);
     procedure AddCur(const Name: String; const Val: Currency);
     function AsXML: String;
     function AsJSON: String;
     function AsString: String;
+    procedure LoadXML(const S: String);
+    procedure LoadJSON(const S: String);
   public
     property RootElement: String read FRootElement write SetRootElement;
   end;
@@ -753,6 +757,26 @@ begin
   end;
 end;
 
+procedure TCombinedData.AddArray(const Name: String);
+begin
+  case FFormat of
+    efXML: begin
+      FItems.Add(FCurXml);
+      FCurXml:= FCurXml.AddChild(Name);
+    end;
+    efJSON: begin
+      FItems.Add(FCurObj);
+      FCurObj.O[Name]:= SO;
+      FCurObj:= FCurObj.O[Name];
+    end;
+  end;
+end;
+
+procedure TCombinedData.DoneArray;
+begin
+
+end;
+
 procedure TCombinedData.DoneObject;
 begin
   case FFormat of
@@ -765,6 +789,22 @@ begin
       FItems.Delete(FItems.Count-1);
     end;
   end;
+end;
+
+procedure TCombinedData.LoadJSON(const S: String);
+begin
+  Self.FFormat:= TDataFormat.efJSON;
+  Self.FObj:= SO(S);
+  Self.FXmlDoc:= nil;
+  Self.FXml:= nil;
+end;
+
+procedure TCombinedData.LoadXML(const S: String);
+begin
+  Self.FObj:= nil;
+  Self.FXmlDoc:= NewXmlDocument;
+  Self.FXmlDoc.LoadFromXML(S);
+  Self.FXml:= FXmlDoc.ChildNodes[0];
 end;
 
 end.

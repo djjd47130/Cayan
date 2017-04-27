@@ -2699,7 +2699,7 @@ begin
   XML:= XML + XmlVal('registerNumber', RegisterNumber, True);
   XML:= XML + XmlVal('merchantTransactionId', MerchantTransactionId);
 
-  Result:= FOwner.DoRequestCreditResponse4(XML,GetService, GetEndpoint, 'PostAuthorization');
+  Result:= FOwner.DoRequestCreditResponse4(XML, GetService, GetEndpoint, 'PostAuthorization');
 end;
 
 function TMWCreditTransactions.PreAuthorization(const InvoiceNumber: String;

@@ -589,19 +589,27 @@ type
       const Quantity: Integer = 1;
       const ItemType: TGeniusLineItemType = glSku;
       const Category: TGeniusLineItemCategory = glNone;
-      const DisplayOverride: String = '';
-      const DisplayCustomSubTotal: String = ''): IGeniusLineItem; overload;
+      const DisplayOverride: String = ''): IGeniusLineItem; overload;
     //Update an existing item
     function UpdateItem(const TargetItemId, ItemTypeValue, Upc, Description: String;
       const Amount, TaxAmount: Currency;
       const Quantity: Integer = 1;
       const ItemType: TGeniusLineItemType = glSku;
       const Category: TGeniusLineItemCategory = glNone;
-      const DisplayOverride: String = '';
-      const DisplayCustomSubTotal: String = ''): IGeniusLineItem;
+      const DisplayOverride: String = ''): IGeniusLineItem;
+    function DiscountItem(
+      const TargetItem: IGeniusLineItem;
+      const ItemTypeValue, Upc, Description: String;
+      const Amount, TaxAmount: Currency;
+      const Quantity: Integer = 1;
+      const ItemType: TGeniusLineItemType = glSku;
+      const Category: TGeniusLineItemCategory = glNone;
+      const DisplayOverride: String = ''): IGeniusLineItemDiscount;
     //Remove an item by its internal index
     procedure DeleteItem(const Index: Integer); overload;
     procedure DeleteItem(const ItemID: String); overload;
+    procedure DeleteDiscount(const ADiscount: IGeniusLineItemDiscount); deprecated;
+    function UpdateTotal(const OrderTotal, OrderTax: Currency): Boolean;
     //Clear all items from line item display
     procedure ClearItems;
     function OrderTotal: Currency;
@@ -675,7 +683,6 @@ type
     property OrderTax: Currency read GetOrderTax write SetOrderTax; //1-9
     property Category: TGeniusLineItemCategory read GetCategory write SetCategory;  //1-8
     property DisplayOverride: String read GetDisplayOverride write SetDisplayOverride;  //0-35
-    property DisplayCustomSubTotal: String read GetDisplayCustomSubTotal write SetDisplayCustomSubTotal;  //0-35
   end;
 
   IGeniusLineItemDiscount = interface
@@ -734,7 +741,6 @@ type
     property OrderTax: Currency read GetOrderTax write SetOrderTax; //1-9
     property Category: TGeniusLineItemCategory read GetCategory write SetCategory;  //1-8
     property DisplayOverride: String read GetDisplayOverride write SetDisplayOverride;  //0-35
-    property DisplayCustomSubTotal: String read GetDisplayCustomSubTotal write SetDisplayCustomSubTotal;  //0-35
   end;
 
   IGeniusStartOrderResponse = interface
