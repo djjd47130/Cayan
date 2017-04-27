@@ -1257,7 +1257,7 @@ begin
           D.DoneObject;
         end;
         //TODO: Support loyalty...
-        if 1 <> 1 then begin
+        //if 1 <> 1 then begin
           D.AddObject('Loyalty');
             D.AddStr('AccountNumber', '');
             D.AddObject('Balances');
@@ -1265,7 +1265,7 @@ begin
               D.AddStr('AmountBalance', '0.00');
             D.DoneObject;
           D.DoneObject;
-        end;
+        //end;
       D.DoneObject;
     end else begin
       //No payment!!!

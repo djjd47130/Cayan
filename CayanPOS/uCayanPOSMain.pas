@@ -203,17 +203,27 @@ type
     ListBoxItem24: TListBoxItem;
     ListBoxItem25: TListBoxItem;
     ListBoxItem26: TListBoxItem;
-    Edit1: TEdit;
-    Edit2: TEdit;
-    Edit3: TEdit;
-    Edit4: TEdit;
-    NumberBox1: TNumberBox;
-    NumberBox2: TNumberBox;
+    txtMerchantName: TEdit;
+    txtMerchantSiteId: TEdit;
+    txtMerchantKey: TEdit;
+    txtCedAddress: TEdit;
+    txtCedTimeout: TNumberBox;
+    txtCedPort: TNumberBox;
     ListBoxGroupHeader14: TListBoxGroupHeader;
     ListBoxItem27: TListBoxItem;
-    Edit5: TEdit;
+    txtSetupUsername: TEdit;
     ListBoxItem44: TListBoxItem;
-    Edit6: TEdit;
+    txtSetupPassword: TEdit;
+    ListBoxGroupHeader15: TListBoxGroupHeader;
+    ListBoxItem45: TListBoxItem;
+    swCustRequired: TSwitch;
+    ListBoxItem46: TListBoxItem;
+    swPhoneRequired: TSwitch;
+    ListBoxItem48: TListBoxItem;
+    swAddressRequired: TSwitch;
+    ListBoxItem49: TListBoxItem;
+    swEmailRequired: TSwitch;
+    Button6: TButton;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
@@ -272,7 +282,6 @@ var
 implementation
 
 {$R *.fmx}
-{$R *.iPhone55in.fmx IOS}
 
 uses
   System.IOUtils;
@@ -588,6 +597,19 @@ procedure TfrmCayanPOSMain.SpeedButton1Click(Sender: TObject);
 begin
 
   //TODO: Save Settings...
+
+  Genius.Device.Monitoring:= False;
+
+  Cayan.MerchantName:= txtMerchantName.Text;
+  Cayan.MerchantSiteId:= txtMerchantSiteId.Text;
+  Cayan.MerchantKey:= txtMerchantKey.Text;
+  Genius.Device.DeviceAddress:= txtCedAddress.Text;
+  Genius.Device.DevicePort:= Trunc(txtCedPort.Value);
+  Genius.Device.DeviceTimeout:= Trunc(txtCedTimeout.Value);
+
+  Self.SaveToConfig;
+
+  Genius.Device.Monitoring:= True;
 
   actCustomerTab.ExecuteTarget(Self);
 
@@ -906,6 +928,14 @@ procedure TfrmCayanPOSMain.Button5Click(Sender: TObject);
 begin
 
   //TODO: Load settings...
+
+  txtMerchantName.Text:= Self.Cayan.MerchantName;
+  txtMerchantSiteID.Text:= Self.Cayan.MerchantSiteId;
+  txtMerchantKey.Text:= Self.Cayan.MerchantKey;
+  txtCedAddress.Text:= Self.Genius.Device.DeviceAddress;
+  txtCedPort.Value:= Self.Genius.Device.DevicePort;
+  txtCedTimeout.Value:= Self.Genius.Device.DeviceTimeout;
+
 
   actSetupTab.ExecuteTarget(Self);
 
