@@ -1,4 +1,4 @@
-# Genius Integration
+# Chapter 3 - Genius Integration
 
 The Cayan Component Library for Delphi allows you to integrate with the Genius solutions. This includes communication with the different types of devices which Cayan provides for payment collection.
 
