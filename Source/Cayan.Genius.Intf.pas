@@ -160,7 +160,7 @@ type
     function CaptureSignature(const RequestId, Title: String): IGeniusSignatureResponse;
     function CancelTransaction: IGeniusCancelTransactionResponse;
     function StatusCheck(const Timeout: Integer = 0): IGeniusStatusResponse;
-    function InitiateKeyedSale: TGeniusKeyedSaleStatus;
+    function InitiateKeyedEntry: TGeniusKeyedSaleStatus;
     function DetailsByTransportKey(const TransportKey: String): IGeniusPaymentDetails;
     function IsInTransaction: Boolean;
     function IsInSignature: Boolean;
@@ -188,46 +188,6 @@ type
     property TransactionResponse: TGeniusTransactionEvent read GetTransactionResponse write SetTransactionResponse;
     property OnStatus: TGeniusStatusResponseEvent read GetOnStatus write SetOnStatus;
   end;
-
-
-
-
-  IGeniusDevice = interface
-    ['{CF134421-E6AC-464F-AED9-843E105100A7}']
-    function GetHost: String;
-    procedure SetHost(const Value: String);
-    function GetPort: Integer;
-    procedure SetPort(const Value: Integer);
-    function GetVersionSupport: TGeniusDeviceVersion;
-    procedure SetVersionSupport(const Value: TGeniusDeviceVersion);
-    function GetMonitoring: Boolean;
-    procedure SetMonitoring(const Value: Boolean);
-
-    function SendRequest(const Url: String): String;
-
-    property Host: String read GetHost write SetHost;
-    property Port: Integer read GetPort write SetPort;
-    property VersionSupport: TGeniusDeviceVersion read GetVersionSupport write SetVersionSupport;
-    property Monitoring: Boolean read GetMonitoring write SetMonitoring;
-  end;
-
-  IGeniusDevices = interface
-    ['{4E7D43E8-8080-4399-8A4E-3237C7CE31C6}']
-    function Count: Integer;
-    function Add: IGeniusDevice;
-    procedure Delete(const Index: Integer);
-    procedure Clear;
-    function GetItem(const Index: Integer): IGeniusDevice;
-
-    property Items[const Index: Integer]: IGeniusDevice read GetItem; default;
-  end;
-
-
-
-
-
-
-
 
   IGeniusSignaturePoint = interface
     ['{FE06A17F-0925-4773-9479-6B82118AC2A3}']

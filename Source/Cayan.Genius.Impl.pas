@@ -82,58 +82,6 @@ type
   TGeniusPaymentDetails = class;
   TGeniusPaymentDetail = class;
 
-
-  TGeniusDevice = class;
-  TGeniusDevices = class;
-
-
-  TGeniusDevice = class(TInterfacedObject, IGeniusDevice)
-  private
-    FOwner: TGeniusDevices;
-    FHost: String;
-    FPort: Integer;
-    FVersionSupport: TGeniusDeviceVersion;
-    FMonitoring: Boolean;
-  public
-    constructor Create(AOwner: TGeniusDevices);
-    destructor Destroy; override;
-  public
-    function GetHost: String;
-    procedure SetHost(const Value: String);
-    function GetPort: Integer;
-    procedure SetPort(const Value: Integer);
-    function GetVersionSupport: TGeniusDeviceVersion;
-    procedure SetVersionSupport(const Value: TGeniusDeviceVersion);
-    function GetMonitoring: Boolean;
-    procedure SetMonitoring(const Value: Boolean);
-
-    function SendRequest(const Url: String): String;
-
-    property Host: String read GetHost write SetHost;
-    property Port: Integer read GetPort write SetPort;
-    property VersionSupport: TGeniusDeviceVersion read GetVersionSupport write SetVersionSupport;
-    property Monitoring: Boolean read GetMonitoring write SetMonitoring;
-  end;
-
-  TGeniusDevices = class(TInterfacedObject, IGeniusDevices)
-  private
-    FItems: TInterfaceList;
-  public
-    constructor Create;
-    destructor Destroy; override;
-  public
-    function Count: Integer;
-    function Add: IGeniusDevice;
-    procedure Delete(const Index: Integer);
-    procedure Clear;
-    function GetItem(const Index: Integer): IGeniusDevice;
-
-    property Items[const Index: Integer]: IGeniusDevice read GetItem; default;
-  end;
-
-
-
-
   TGeniusRequestThreadEvent = procedure(Sender: TObject; const AURL: String;
     const Response: String) of object;
 
@@ -282,7 +230,7 @@ type
     function CaptureSignature(const RequestId, Title: String): IGeniusSignatureResponse;
     function CancelTransaction: IGeniusCancelTransactionResponse;
     function StatusCheck(const Timeout: Integer = 0): IGeniusStatusResponse;
-    function InitiateKeyedSale: TGeniusKeyedSaleStatus;
+    function InitiateKeyedEntry: TGeniusKeyedSaleStatus;
     function DetailsByTransportKey(const TransportKey: String): IGeniusPaymentDetails;
     function IsInTransaction: Boolean;
     function IsInSignature: Boolean;
@@ -1234,117 +1182,6 @@ begin
     Result:= '';
   end;
 end;
-
-{ TGeniusDevice }
-
-constructor TGeniusDevice.Create(AOwner: TGeniusDevices);
-begin
-  FOwner:= AOwner;
-
-end;
-
-destructor TGeniusDevice.Destroy;
-begin
-
-  inherited;
-end;
-
-function TGeniusDevice.GetHost: String;
-begin
-  Result:= FHost;
-end;
-
-function TGeniusDevice.GetMonitoring: Boolean;
-begin
-  Result:= FMonitoring;
-end;
-
-function TGeniusDevice.GetPort: Integer;
-begin
-  Result:= FPort;
-end;
-
-function TGeniusDevice.GetVersionSupport: TGeniusDeviceVersion;
-begin
-  Result:= FVersionSupport;
-end;
-
-procedure TGeniusDevice.SetHost(const Value: String);
-begin
-  FHost:= Value;
-end;
-
-procedure TGeniusDevice.SetMonitoring(const Value: Boolean);
-begin
-  FMonitoring:= Value;
-end;
-
-procedure TGeniusDevice.SetPort(const Value: Integer);
-begin
-  FPort:= Value;
-end;
-
-procedure TGeniusDevice.SetVersionSupport(const Value: TGeniusDeviceVersion);
-begin
-  FVersionSupport:= Value;
-end;
-
-function TGeniusDevice.SendRequest(const Url: String): String;
-begin
-  Result:= '';
-  //TODO...
-
-end;
-
-{ TGeniusDevices }
-
-constructor TGeniusDevices.Create;
-begin
-  FItems:= TInterfaceList.Create;
-end;
-
-destructor TGeniusDevices.Destroy;
-begin
-  Clear;
-  FreeAndNil(FItems);
-  inherited;
-end;
-
-function TGeniusDevices.Add: IGeniusDevice;
-var
-  R: TGeniusDevice;
-begin
-  R:= TGeniusDevice.Create(Self);
-  try
-    IGeniusDevice(R)._AddRef;
-    FItems.Add(R);
-  finally
-    Result:= R;
-  end;
-end;
-
-procedure TGeniusDevices.Clear;
-begin
-  while Count > 0 do
-    Delete(0);
-end;
-
-procedure TGeniusDevices.Delete(const Index: Integer);
-begin
-  IGeniusDevice(FItems[Index])._Release;
-  FItems.Delete(Index);
-end;
-
-function TGeniusDevices.Count: Integer;
-begin
-  Result:= FItems.Count;
-end;
-
-function TGeniusDevices.GetItem(const Index: Integer): IGeniusDevice;
-begin
-  Result:= IGeniusDevice(FItems[Index]);
-end;
-
 
 {$REGION 'TGeniusTransactionThread Object'}
 
@@ -2419,35 +2256,37 @@ begin
   end;
 end;
 
-function TGenius.InitiateKeyedSale: TGeniusKeyedSaleStatus;
+function TGenius.InitiateKeyedEntry(): TGeniusKeyedSaleStatus;
 var
   Pars: TParamList;
   XML: IXMLDocument;
   Node: IXmlNode;
 begin
 (*
-  Action=InitiateKeyedSale Sends a request to the CED to process manual entry of
-  PAN, Expiration Date, CVV and Zip. This function can only be used while the
-  payment selection is active for an existing transaction. Using this function
-  without an existing sale on the device will result in a failed response.
-  If you intend to use this feature you must contact the Certification team.
+  Action=InitiateKeyedEntry Sends a request to the CED to process manual
+    entry of PAN, Expiration Date, CVV and Zip. This function can only
+    be used while the payment selection is active for an existing transaction.
+    Using this function without an existing sale on the device will result
+    in a failed response. If you intend to use this feature you must
+    contact the Certification team.
 
   //NOTE: CAN ONLY BE USED DURING CED TRANSACTION
 
-  http://[CED-IP-Address]:8080/v1/pos?Action=InitiateKeyedSale&Format=XML
-  https://[CED-IP-Address]:8080/v1/pos?Action=InitiateKeyedSale&Format=XML
+  //NOTE: PaymentType only supports GIFT
+
+  http://[CED-IP-Address]:8080/v1/pos?Action=InitiateKeyedEntry&PaymentType=GIFT&Format=XML
 *)
   if not FInTransaction then
     raise Exception.Create('Cannot initiate keyed sale without current transaction');
   FInTransaction:= False;
   Pars:= TParamList.Create;
   try
-    Pars['Action']:= 'InitiateKeyedSale';
+    Pars['Action']:= 'InitiateKeyedEntry';
     Pars['Format']:= 'XML';
 
     try
       XML:= SendDeviceRequestXML(DeviceUrl(Pars.ParamStr));
-      Node:= GetNodePath(XML, '/InitiateKeyedSaleResult');
+      Node:= GetNodePath(XML, '/InitiateKeyedEntryResult');
       Result:= GeniusStrToKeyedSaleStatus(GetNodeValue(Node, 'Status'));
     except
       on E: Exception do begin
