@@ -9,10 +9,15 @@ This component provides direct access to Cayan's Genius systems, and a single CE
 You can perform many different things using this component. This includes the following:
 
 1. Request payment from customer, and wait indefinitely inside of a worker thread. An event `OnTransactionResult` will be triggered when a response is returned from the device.
-2. Utilize Line Item Display, showing the customer each item they are purchasing, along with a total. 
-3. Cancel various requests which may be in progress.
-4. Capture customer signature in vector format and convert to bitmap.
-5. Initiate keyed sale, overriding the device in favor for manual payment entry. 
-6. Perform transactions using vault tokens in absense of customer.
+2. Cancel various requests which may be in progress.
+3. Initiate keyed sale, overriding the device in favor for manual payment entry. 
+4. Perform transactions using vault tokens in absense of customer.
 
+Additionally, there are numerous other components which you can attach a `TCayanGenius` component to:
+
+1. `TCayanGeniusLineItems` - Utilize line item display on the CED payment terminal.
+2. `TCayanGeniusAgreement` - Prompt customer to accept or decline an agreement text on the CED payment terminal.
+3. `TCayanGeniusSignature` - Prompt customer to sign the CED payment terminal and acquire vector format signature data.
+4. `TCayanGeniusInput` - Prompt customer to enter either text, numeric, or date values on the CED payment terminal.
+5. 
 
