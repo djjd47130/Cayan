@@ -2,6 +2,10 @@
 
 Before you begin, you will need to become a developer partner with Cayan. They will create an account for you and provide you your own credentials and certification packet to get started. Once you have acquired this, you can continue using this library.
 
+There are numerous different components available, but everything starts with a `TCayan` comopnent. This comopnent carries the credentials to access Cayan's systems, along with other various information, such as the username, company name, and software name. When creating another specific component, such as a `TCayanGenius`, you will attach this `TCayan` component to it through its `Cayan` property to validate using those given credentials.
+
+You will use different components depending on your different support. For example, if you wish to utilize Line Item Display, you will use a `TCayanGeniusLineItems` component. Otherwise, you won't even need to add the component. Such integration requires a separate certification from Cayan, so if you have never been certified for Line Item Display, then you won't even need to worry about it being in your way. 
+
 ## `TCayan` Component
 
 The first step of using this library in your application is to drop a `TCayan` component from the installed components on the `Cayan` tab in Delphi. This component is the starting point for the rest of the integration.
