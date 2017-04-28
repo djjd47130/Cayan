@@ -21,3 +21,6 @@ Additionally, there are numerous other components which you can attach a `TCayan
 4. `TCayanGeniusInput` - Prompt customer to enter either text, numeric, or date values on the CED payment terminal.
 5. 
 
+
+
+[Chapter 4 - Genius Transactions](./Readme/Chapter%204%20-%20Genius%20Transactions.md)
