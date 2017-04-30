@@ -677,11 +677,24 @@ end;
 
 procedure TfrmCayanPOSMain.lManageServerClick(Sender: TObject);
 begin
-  lManageServer.Visible:= False;
-  lServerHost.Visible:= True;
-  lServerPort.Visible:= True;
-  lServerKey.Visible:= True;
-  lServerStation.Visible:= True;
+  case lManageServer.Tag of
+    0: begin
+      lManageServer.Tag:= 1;
+      lManageServer.Text:= 'Click to Collapse...';
+      lServerHost.Visible:= True;
+      lServerPort.Visible:= True;
+      lServerKey.Visible:= True;
+      lServerStation.Visible:= True;
+    end;
+    1: begin
+      lManageServer.Tag:= 0;
+      lManageServer.Text:= 'Click to Manage...';
+      lServerHost.Visible:= False;
+      lServerPort.Visible:= False;
+      lServerKey.Visible:= False;
+      lServerStation.Visible:= False;
+    end;
+  end;
 
 end;
 
@@ -923,7 +936,7 @@ begin
   Tran.Amount:= LID.OrderTotal;
   Tran.TaxAmount:= LID.OrderTax;
   txtPayAmount.Text:= FormatFloat('0.00', Tran.Amount);
-  lblPaymentTitle.Text:= FormatFloat('$#,###,##0.00', Tran.Amount);
+  lblPaymentTitle.Text:= 'Collect ' + FormatFloat('$#,###,##0.00', Tran.Amount);
   actPaymentTab.ExecuteTarget(Self);
 end;
 

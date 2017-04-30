@@ -261,13 +261,17 @@ var
 begin
   Result:= SO;
   Str:= TMemoryStream.Create;
-  if Assigned(Obj) then begin
-    Obj.SaveTo(Str);
-    Str.Position:= 0;
+  try
+    if Assigned(Obj) then begin
+      Obj.SaveTo(Str);
+      Str.Position:= 0;
+    end;
+    U:= GetUrl(Action, Params);
+    S:= FWeb.Post(U, Str);
+    Result:= SO(S);
+  finally
+    FreeAndNil(Str);
   end;
-  U:= GetUrl(Action, Params);
-  S:= FWeb.Post(U, Str);
-  Result:= SO(S);
 end;
 
 procedure TCayanPOS.SetHost(const Value: String);
