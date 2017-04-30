@@ -55,7 +55,6 @@ type
     FOnDeviceStatus: TGeniusStatusResponseEvent;
     FOnCancel: TNotifyEvent;
     procedure SetForceDuplicate(const Value: Boolean);
-    procedure PrepareGenius;
     procedure SetDevice(const Value: TCayanGeniusDevice);
     procedure GeniusDeviceStatus(Sender: IGenius;
       const Status: IGeniusStatusResponse);
@@ -65,6 +64,7 @@ type
     function Genius: TGenius;
     function MerchantWare: TMerchantWare;
     function Cancel: IGeniusCancelTransactionResponse;
+    procedure PrepareGenius;
   published
     property Device: TCayanGeniusDevice read FDevice write SetDevice;
     property ForceDuplicate: Boolean read FForceDuplicate write SetForceDuplicate;

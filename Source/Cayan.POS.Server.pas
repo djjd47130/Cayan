@@ -251,6 +251,7 @@ begin
   FServer.ContextClass:= TCayanPOSServerContext;
   FServer.OnAfterBind:= ThreadAfterBind;
   FServer.OnConnect:= ThreadConnect;
+  FServer.OnDisconnect:= ThreadDisconnect;
   FServer.OnCommandGet:= ThreadCommand;
   FServer.OnCommandOther:= ThreadCommand;
   FServer.DefaultPort:= FPort;
@@ -398,7 +399,7 @@ procedure TCayanPOSServerContext.HandleRequest(const AReq: TIdHTTPRequestInfo;
 var
   U: String;
   P: Integer;
-  Str: TMemoryStream;
+  //Str: TMemoryStream;
   F: String;
   function IsAct(const S: String): Boolean;
   begin

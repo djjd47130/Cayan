@@ -3826,7 +3826,6 @@ begin
   //http://[CED-IP-Address]:8080/v1/pos?Action=UpdateTotal&Order=xxx&
   //  OrderTotal=xxx&OrderTax=xxx&DisplayCustomSubTotal=xxx&Format=xxx
 
-  Result:= False;
   FInProgress:= False;
   Pars:= TParamList.Create;
   try

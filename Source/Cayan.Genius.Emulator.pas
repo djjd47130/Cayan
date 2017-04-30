@@ -1584,8 +1584,10 @@ procedure TCayanGeniusEmulatorContext.HandleOrderSummary(
 var
   D: TCombinedData;
   O: String;
+  {
   X: Integer;
   I: IGeniusLineItem;
+  }
   TD: Integer;
   TA: Currency;
   TT: Currency;

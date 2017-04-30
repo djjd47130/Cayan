@@ -270,10 +270,14 @@ type
     function VoidPreAuthorization(const Token: String;
       const RegisterNumber, MerchantTransactionId: String): IMWCreditResponse4;
     function VaultBoardCredit(const TrackData: String;
-      const BillStreet: String; const BillZip: String): IMWVaultBoardingResponse;
+      const BillStreet: String; const BillZip: String;
+      const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;
+    function VaultBoardCreditByReference(const ReferenceNumber: String;
+      const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;
     function VaultBoardCreditKeyed(const CardNumber: TCardNumber;
       const Expiration: TExpirationDate; const CardHolder: String;
-      const BillStreet: String; const BillZip: String): IMWVaultBoardingResponse;
+      const BillStreet: String; const BillZip: String;
+      const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;
     function VaultDeleteToken(const VaultToken: String): IMWVaultBoardingResponse;
     function VaultFindPaymentInfo(const VaultToken: String): IMWVaultPaymentInfoResponse;
   end;
@@ -2883,7 +2887,7 @@ begin
   XML:= XML + XmlVal('registerNumber', RegisterNumber, True);
   XML:= XML + XmlVal('merchantTransactionId', MerchantTransactionId);
 
-  Result:= FOwner.DoRequestCreditResponse4(XML,GetService, GetEndpoint, 'Void');
+  Result:= FOwner.DoRequestCreditResponse4(XML, GetService, GetEndpoint, 'Void');
 end;
 
 function TMWCreditTransactions.VoidPreAuthorization(const Token,
@@ -2897,11 +2901,11 @@ begin
   XML:= XML + XmlVal('registerNumber', RegisterNumber, True);
   XML:= XML + XmlVal('merchantTransactionId', MerchantTransactionId);
 
-  Result:= FOwner.DoRequestCreditResponse4(XML,GetService, GetEndpoint, 'VoidPreAuthorization');
+  Result:= FOwner.DoRequestCreditResponse4(XML, GetService, GetEndpoint, 'VoidPreAuthorization');
 end;
 
 function TMWCreditTransactions.VaultBoardCredit(const TrackData, BillStreet,
-  BillZip: String): IMWVaultBoardingResponse;
+  BillZip: String; const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;
 var
   XML: String;
 begin
@@ -2910,25 +2914,44 @@ begin
   XML:=       XmlVal('trackData', TrackData, True);
   XML:= XML + XmlVal('avsStreetAddress', BillStreet, True);
   XML:= XML + XmlVal('avsStreetZipCode', BillZip);
+  if MerchantDefinedToken <> '' then
+    XML:= XML + XmlVal('merchantDefinedToken', MerchantDefinedToken, True);
 
-  Result:= FOwner.DoRequestVaultBoardingResponse(XML,GetService, GetEndpoint, 'VaultBoardCredit');
+  Result:= FOwner.DoRequestVaultBoardingResponse(XML, GetService, GetEndpoint, 'VaultBoardCredit');
+end;
+
+function TMWCreditTransactions.VaultBoardCreditByReference(const ReferenceNumber: String;
+  const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;
+var
+  XML: String;
+begin
+  //https://ps1.merchantware.net/Merchantware/documentation40/standard/credit_VaultBoardCreditByReference.aspx
+
+  XML:=       XmlVal('referenceNumber', ReferenceNumber, True);
+  if MerchantDefinedToken <> '' then
+    XML:= XML + XmlVal('merchantDefinedToken', MerchantDefinedToken, True);
+
+  Result:= FOwner.DoRequestVaultBoardingResponse(XML, GetService, GetEndpoint, 'VaultBoardCrediByReference');
 end;
 
 function TMWCreditTransactions.VaultBoardCreditKeyed(
   const CardNumber: TCardNumber; const Expiration: TExpirationDate;
-  const CardHolder, BillStreet, BillZip: String): IMWVaultBoardingResponse;
+  const CardHolder, BillStreet, BillZip: String;
+  const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;
 var
   XML: String;
 begin
   //https://ps1.merchantware.net/Merchantware/documentation40/standard/credit_VaultBoardCreditKeyed.aspx
 
-  XML:= XML + XmlVal('cardNumber', CardNumber, True);
+  XML:=       XmlVal('cardNumber', CardNumber, True);
   XML:= XML + XmlVal('expirationDate', Expiration.GetStr(False, False), True);
   XML:= XML + XmlVal('cardholder', CardHolder, True);
   XML:= XML + XmlVal('avsStreetAddress', BillStreet, True);
   XML:= XML + XmlVal('avsStreetZipCode', BillZip);
+  if MerchantDefinedToken <> '' then
+    XML:= XML + XmlVal('merchantDefinedToken', MerchantDefinedToken, True);
 
-  Result:= FOwner.DoRequestVaultBoardingResponse(XML,GetService, GetEndpoint, 'VaultBoardCreditKeyed');
+  Result:= FOwner.DoRequestVaultBoardingResponse(XML, GetService, GetEndpoint, 'VaultBoardCreditKeyed');
 end;
 
 function TMWCreditTransactions.VaultDeleteToken(

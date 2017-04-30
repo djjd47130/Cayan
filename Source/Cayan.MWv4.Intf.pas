@@ -205,10 +205,14 @@ type
     function VoidPreAuthorization(const Token: String;
       const RegisterNumber, MerchantTransactionId: String): IMWCreditResponse4; deprecated;
     function VaultBoardCredit(const TrackData: String;
-      const BillStreet: String; const BillZip: String): IMWVaultBoardingResponse;
+      const BillStreet: String; const BillZip: String;
+      const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;
+    function VaultBoardCreditByReference(const ReferenceNumber: String;
+      const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;
     function VaultBoardCreditKeyed(const CardNumber: TCardNumber;
       const Expiration: TExpirationDate; const CardHolder: String;
-      const BillStreet: String; const BillZip: String): IMWVaultBoardingResponse;
+      const BillStreet: String; const BillZip: String;
+      const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;
     function VaultDeleteToken(const VaultToken: String): IMWVaultBoardingResponse;
     function VaultFindPaymentInfo(const VaultToken: String): IMWVaultPaymentInfoResponse;
   end;

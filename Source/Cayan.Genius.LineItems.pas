@@ -113,6 +113,7 @@ implementation
 
 constructor TCayanGeniusLineItem.Create(AOwner: TCayanGeniusLineItems);
 begin
+  FOwner:= AOwner;
   FLineItem:= nil;
 end;
 
@@ -257,8 +258,6 @@ begin
 end;
 
 function TCayanGeniusLineItems.GetOrderTax: Currency;
-var
-  X: Integer;
 begin
   if FAutoTotal then begin
     if Assigned(FLineItems) then
@@ -271,8 +270,6 @@ begin
 end;
 
 function TCayanGeniusLineItems.GetOrderTotal: Currency;
-var
-  X: Integer;
 begin
   if FAutoTotal then begin
     if Assigned(FLineItems) then
@@ -317,6 +314,7 @@ function TCayanGeniusLineItems.Add(const ItemType: TGeniusLineItemType;
   const Category: TGeniusLineItemCategory = glNone; const DisplayOverride: String = '';
   const UPC: String = ''): TCayanGeniusLineItem;
 begin
+  Result:= nil;
   if not (csDesigning in ComponentState) then begin
     EnsureLID;
     Result:= TCayanGeniusLineItem.Create(Self);
