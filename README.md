@@ -63,11 +63,13 @@ Allows you to serve a virtual emulator, mimicing a real Genius CED device. This 
 
 There is a test application provided with this repo, which demonstrates actual usage of the Genius solution by a Point-of-Sale application. It is as close as possible to a real Point-of-Sale, without any actual database or use-case abilities. It's primarily used for testing and demonstrating the Genius devices.
 
+![POS](./Readme/POS_SS.png?raw=true)
+
 ## Genius CED Emulator
 
 Included is an emulator application which mimics a Genius device. This emulator can be used in place of a real device, and allows you to test your own integration with Genius without actually needing a device of your own. While the device is as close as possible to the real thing, it is not capable of actually processing real payments. 
 
-![Emulator](https://github.com/djjd47130/Cayan/blob/master/Readme/EmulatorMX915.png?raw=true)
+![Emulator](./Readme/EmulatorMX915.png?raw=true)
 
 ## Instructions
 
