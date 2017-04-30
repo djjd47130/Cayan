@@ -42,11 +42,6 @@ type
     property Monitoring: Boolean read GetMonitoring write SetMonitoring;
   end;
 
-  TCayanGeniusTransactionEvent = procedure(const ATrans: TCayanGenius) of object;
-
-  TCayanGeniusTransactionResultEvent = procedure(const ATrans: TCayanGenius;
-      const AResult: IGeniusTransactionResponse) of object;
-
   ///  <summary>
   ///    Encapsulates the full transaction process using a Genius CED
   ///    payment terminal provided by Cayan.
@@ -56,38 +51,11 @@ type
     FDevice: TCayanGeniusDevice;
     FMerchantWare: TMerchantWare;
     FGenius: TGenius;
-    FOrder: IGeniusStartOrderResponse;
-    FStaging: IGeniusStageResponse;
-    FResult: IGeniusTransactionResponse;
-    FTransactionID: String;
-    FInvoiceNum: String;
     FForceDuplicate: Boolean;
-    FTransactionType: TGeniusTransactionType;
-    FPONumber: String;
-    FAmount: Currency;
-    FTaxAmount: Currency;
-    FCustomerCode: String;
-    FCardholder: String;
-    FOnTransactionStart: TCayanGeniusTransactionEvent;
-    FOnTransactionResult: TCayanGeniusTransactionResultEvent;
-    FOnTransactionStaged: TCayanGeniusTransactionEvent;
     FOnDeviceStatus: TGeniusStatusResponseEvent;
     FOnCancel: TNotifyEvent;
-    procedure SetAmount(const Value: Currency);
     procedure SetForceDuplicate(const Value: Boolean);
-    procedure SetInvoiceNum(const Value: String);
-    procedure SetPONumber(const Value: String);
-    procedure SetTransactionID(const Value: String);
-    procedure SetTransactionType(const Value: TGeniusTransactionType);
-    function GetAmount: Currency;
-    function GetTaxAmount: Currency;
-    procedure SetTaxAmount(const Value: Currency);
-    procedure DoStage;
-    procedure SetCardholder(const Value: String);
-    procedure SetCustomerCode(const Value: String);
-    procedure ThreadTransactionResponse(Response: IGeniusTransactionResponse);
     procedure PrepareGenius;
-    procedure FreeOrder;
     procedure SetDevice(const Value: TCayanGeniusDevice);
     procedure GeniusDeviceStatus(Sender: IGenius;
       const Status: IGeniusStatusResponse);
@@ -96,26 +64,13 @@ type
     destructor Destroy; override;
     function Genius: IGenius;
     function MerchantWare: IMerchantWare;
-    function StartNewOrder: Boolean;
-    procedure StageTransaction;
     function Cancel: IGeniusCancelTransactionResponse;
   published
     property Device: TCayanGeniusDevice read FDevice write SetDevice;
-    property TransactionType: TGeniusTransactionType read FTransactionType write SetTransactionType;
-    property Amount: Currency read GetAmount write SetAmount;
-    property TaxAmount: Currency read GetTaxAmount write SetTaxAmount;
-    property InvoiceNum: String read FInvoiceNum write SetInvoiceNum;
-    property TransactionID: String read FTransactionID write SetTransactionID;
     property ForceDuplicate: Boolean read FForceDuplicate write SetForceDuplicate;
-    property PONumber: String read FPONumber write SetPONumber;
-    property Cardholder: String read FCardholder write SetCardholder;
-    property CustomerCode: String read FCustomerCode write SetCustomerCode;
 
     property OnDeviceStatus: TGeniusStatusResponseEvent
       read FOnDeviceStatus write FOnDeviceStatus;
-    property OnTransactionStart: TCayanGeniusTransactionEvent read FOnTransactionStart write FOnTransactionStart;
-    property OnTransactionStaged: TCayanGeniusTransactionEvent read FOnTransactionStaged write FOnTransactionStaged;
-    property OnTransactionResult: TCayanGeniusTransactionResultEvent read FOnTransactionResult write FOnTransactionResult;
     property OnCancel: TNotifyEvent read FOnCancel write FOnCancel;
   end;
 
@@ -209,14 +164,7 @@ end;
 
 destructor TCayanGenius.Destroy;
 begin
-  if Assigned(FOrder) then begin
-    FOrder._Release;
-    FOrder:= nil;
-  end;
-  if Assigned(FStaging) then begin
-    FStaging._Release;
-    FStaging:= nil;
-  end;
+  FDevice.Monitoring:= False;
   IGenius(FGenius)._Release;
   FGenius:= nil;
   IMerchantWare(FMerchantWare)._Release;
@@ -232,6 +180,11 @@ begin
   Result:= FGenius.CancelTransaction;
 end;
 
+function TCayanGenius.MerchantWare: IMerchantWare;
+begin
+  Result:= FMerchantWare;
+end;
+
 function TCayanGenius.Genius: IGenius;
 begin
   Result:= FGenius;
@@ -244,36 +197,6 @@ begin
     Self.FOnDeviceStatus(Sender, Status);
 end;
 
-function TCayanGenius.GetAmount: Currency;
-begin
-  Result:= FGenius.LineItems.OrderTotal;
-end;
-
-function TCayanGenius.GetTaxAmount: Currency;
-begin
-  Result:= FGenius.LineItems.OrderTax;
-end;
-
-function TCayanGenius.MerchantWare: IMerchantWare;
-begin
-  Result:= FMerchantWare;
-end;
-
-procedure TCayanGenius.SetAmount(const Value: Currency);
-begin
-  FAmount := Value;
-end;
-
-procedure TCayanGenius.SetCardholder(const Value: String);
-begin
-  FCardholder := Value;
-end;
-
-procedure TCayanGenius.SetCustomerCode(const Value: String);
-begin
-  FCustomerCode := Value;
-end;
-
 procedure TCayanGenius.SetDevice(const Value: TCayanGeniusDevice);
 begin
   Self.FDevice.Assign(Value);
@@ -284,163 +207,12 @@ begin
   FForceDuplicate := Value;
 end;
 
-procedure TCayanGenius.SetInvoiceNum(const Value: String);
-begin
-  FInvoiceNum := Value;
-end;
-
-procedure TCayanGenius.SetPONumber(const Value: String);
-begin
-  FPONumber := Value;
-end;
-
-procedure TCayanGenius.SetTaxAmount(const Value: Currency);
-begin
-  FTaxAmount:= Value;
-end;
-
-procedure TCayanGenius.SetTransactionID(const Value: String);
-begin
-  FTransactionID := Value;
-end;
-
-procedure TCayanGenius.SetTransactionType(
-  const Value: TGeniusTransactionType);
-begin
-  FTransactionType := Value;
-end;
-
 procedure TCayanGenius.PrepareGenius;
 begin
   Self.FMerchantWare.Name:= Self.Cayan.MerchantName;
   Self.FMerchantWare.SiteId:= Self.Cayan.MerchantSiteId;
   Self.FMerchantWare.Key:= Self.Cayan.MerchantKey;
   Self.FMerchantWare.TestMode:= Self.Cayan.TestMode;
-  FGenius.TransactionResponse:= Self.ThreadTransactionResponse;
-end;
-
-procedure TCayanGenius.DoStage;
-var
-  Req: IGeniusStageRequest;
-  EM: String;
-  X: Integer;
-begin
-  if Assigned(FStaging) then begin
-    FStaging._Release;
-    FStaging:= nil;
-  end;
-
-  if not Assigned(Cayan) then begin
-    raise Exception.Create('Cayan component not assigned.');
-  end;
-
-  //If device is already in a transaction, cancel it first...
-  if FGenius.IsInTransaction then begin
-    Cancel;
-  end;
-
-  Req:= FGenius.CreateStageRequest;
-  try
-    Req.TransactionType:= Self.FTransactionType;
-    Req.Amount:= Self.FAmount;
-    Req.TaxAmount:= Self.FTaxAmount;
-    Req.ClerkId:= Self.Cayan.ClerkID;
-    Req.OrderNumber:= Self.InvoiceNum;
-    Req.Dba:= Self.Cayan.Dba;
-    Req.SoftwareName:= Self.Cayan.SoftwareName;
-    Req.SoftwareVersion:= Self.Cayan.SoftwareVersion;
-    Req.CardHolder:= Self.Cardholder;
-    Req.TransactionId:= Self.TransactionID;
-    Req.ForceDuplicate:= Self.ForceDuplicate;
-    Req.CustomerCode:= Self.CustomerCode;
-    Req.PoNumber:= Self.PONumber;
-    //Req.TerminalId:= Self.Cayan.StationID; //TODO
-
-    PrepareGenius;
-
-    FStaging:= FGenius.StageTransaction(Req);
-    FStaging._AddRef;
-    if FStaging.MessageCount > 0 then begin
-      EM:= '';
-      for X := 0 to FStaging.MessageCount-1 do begin
-        EM:= EM + FStaging.Messages[X].Field + ': ' + FStaging.Messages[X].Information + sLineBreak;
-      end;
-      raise Exception.Create('Cayan responded with the following messages: ' + sLineBreak + EM);
-    end else begin
-      if Assigned(FOnTransactionStaged) then
-        FOnTransactionStaged(Self);
-      //TODO: Implement initiating keyed entry instead of Genius CED...
-      if FGenius.InitiateTransaction(FStaging.TransportKey) then begin
-        if Assigned(FOnTransactionStart) then
-          FOnTransactionStart(Self);
-      end else begin
-        raise Exception.Create('Failed to initiate transaction!');
-      end;
-    end;
-  except
-    on E: Exception do begin
-      raise Exception.Create('Failed to stage transaction: ' + E.Message);
-    end;
-  end;
-end;
-
-procedure TCayanGenius.ThreadTransactionResponse(Response: IGeniusTransactionResponse);
-begin
-  Self.FResult:= Response;
-  if Assigned(Self.FOnTransactionResult) then
-    Self.FOnTransactionResult(Self, Response);
-end;
-
-procedure TCayanGenius.FreeOrder;
-begin
-  if Assigned(FOrder) then begin
-    FOrder._Release;
-    FOrder:= nil;
-  end;
-end;
-
-function TCayanGenius.StartNewOrder: Boolean;
-begin
-  Result:= False;
-  try
-    FreeOrder;
-    if FGenius.LineItems.InProgress then begin
-      Cancel;
-    end;
-    FOrder:= FGenius.LineItems.StartOrder(InvoiceNum);
-    FOrder._AddRef;
-    case FOrder.Status of
-      soSuccess: begin
-        Result:= True;
-      end;
-      soDenied: begin
-        raise Exception.Create('CED denied starting new order: ' + FOrder.ResponseMessage);
-      end;
-      soError: begin
-        raise Exception.Create('Error occurred while starting new order: ' + FOrder.ResponseMessage);
-      end;
-    end;
-  except
-    on E: Exception do begin
-      raise Exception.Create('Failed to start new order: ' + E.Message);
-    end;
-  end;
-end;
-
-procedure TCayanGenius.StageTransaction;
-begin
-  //TODO: Only proceed with staging if already started transaction...
-
-  if Assigned(FOrder) then begin
-    //TODO: Copy over details from Line Item Display...
-
-  end else begin
-    //TODO: Just prepare new transaction without items...
-
-  end;
-
-  DoStage;
-
 end;
 
 end.

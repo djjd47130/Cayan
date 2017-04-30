@@ -679,7 +679,7 @@ type
     function StartOrder(const Order: String): IGeniusStartOrderResponse;
     function EndOrder(const ExternalPaymentType: TGeniusExternalPaymentType): IGeniusStartOrderResponse;
     function AddItem(
-      const ItemId, ItemTypeValue, Upc, Description: String;
+      const ItemTypeValue, Upc, Description: String;
       const Amount, TaxAmount: Currency;
       const Quantity: Integer = 1;
       const ItemType: TGeniusLineItemType = glSku;
@@ -730,11 +730,8 @@ type
     FDescription: String;
     FAmount: Currency;
     FTaxAmount: Currency;
-    FOrderTotal: Currency;
-    FOrderTax: Currency;
     FCategory: TGeniusLineItemCategory;
     FDisplayOverride: String;
-    FDisplayCustomSubTotal: String;
   public
     constructor Create(AOwner: TGeniusLineItems);
     destructor Destroy; override;
@@ -742,28 +739,22 @@ type
     function GetAmount: Currency;
     function GetCategory: TGeniusLineItemCategory;
     function GetDescription: String;
-    function GetDisplayCustomSubTotal: String;
     function GetDisplayOverride: String;
     function GetItemID: String;
     function GetItemType: TGeniusLineItemType;
     function GetItemTypeValue: String;
     function GetOrder: String;
-    function GetOrderTax: Currency;
-    function GetOrderTotal: Currency;
     function GetQuantity: Integer;
     function GetTaxAmount: Currency;
     function GetUPC: String;
     procedure SetAmount(const Value: Currency);
     procedure SetCategory(const Value: TGeniusLineItemCategory);
     procedure SetDescription(const Value: String);
-    procedure SetDisplayCustomSubTotal(const Value: String);
     procedure SetDisplayOverride(const Value: String);
     procedure SetItemID(const Value: String);
     procedure SetItemType(const Value: TGeniusLineItemType);
     procedure SetItemTypeValue(const Value: String);
     procedure SetOrder(const Value: String);
-    procedure SetOrderTax(const Value: Currency);
-    procedure SetOrderTotal(const Value: Currency);
     procedure SetQuantity(const Value: Integer);
     procedure SetTaxAmount(const Value: Currency);
     procedure SetUPC(const Value: String);
@@ -793,11 +784,8 @@ type
     property Description: String read GetDescription write SetDescription;
     property Amount: Currency read GetAmount write SetAmount;
     property TaxAmount: Currency read GetTaxAmount write SetTaxAmount;
-    property OrderTotal: Currency read GetOrderTotal write SetOrderTotal;
-    property OrderTax: Currency read GetOrderTax write SetOrderTax;
     property Category: TGeniusLineItemCategory read GetCategory write SetCategory;
     property DisplayOverride: String read GetDisplayOverride write SetDisplayOverride;
-    property DisplayCustomSubTotal: String read GetDisplayCustomSubTotal write SetDisplayCustomSubTotal;
   end;
 
   TGeniusLineItemDiscount = class(TInterfacedObject, IGeniusLineItemDiscount)
@@ -1582,7 +1570,8 @@ begin
           FreeResponse;
 
           try
-            FResponse:= FStatusCheckProc(500);
+            if Terminated or (not FActive) then Break;
+            FResponse:= FStatusCheckProc(700);
             FResponse._AddRef;
           except
             on E: Exception do begin
@@ -1595,7 +1584,6 @@ begin
           end;
           Synchronize(DoOnResponse);
           //Sleep for 3 second3, 200 ms intervals
-
 
           if Terminated or (not FActive) then Break;
           Sleep(200);
@@ -1687,6 +1675,7 @@ destructor TGenius.Destroy;
 begin
   FStatusThread.Active:= False;
   FStatusThread.Terminate;
+  FStatusThread.WaitFor; //TODO...?
   FreeAndNil(FStatusThread);
   IGeniusLineItems(FLineItems)._Release;
   FLineItems:= nil;
@@ -1912,6 +1901,10 @@ end;
 
 function TGenius.SendDeviceRequest(const Url: String; const Timeout: Integer = 0): String;
 begin
+  Result:= '';
+
+  if not Assigned(FWebDevice) then Exit;
+
   if Timeout = 0 then
     FWebDevice.ConnectTimeout:= FDeviceTimeout
   else
@@ -3628,7 +3621,7 @@ begin
   end;
 end;
 
-function TGeniusLineItems.AddItem(const ItemId, ItemTypeValue, Upc, Description: String;
+function TGeniusLineItems.AddItem(const ItemTypeValue, Upc, Description: String;
   const Amount, TaxAmount: Currency;
   const Quantity: Integer = 1;
   const ItemType: TGeniusLineItemType = glSku;
@@ -3644,7 +3637,7 @@ begin
   //Quantity=1&Description=Something&Amount=1.00&TaxAmount=0.06&OrderTotal=1.00&OrderTax=0.06&Category=None&Format=XML
 
   Result:= TGeniusLineItem.Create(Self);
-  Result.ItemID:= ItemID;
+  Result.ItemID:= '';
   Result.ItemTypeValue:= ItemTypeValue;
   Result.UPC:= Upc;
   Result.Description:= Description;
@@ -3657,61 +3650,56 @@ begin
 
   Pars:= TParamList.Create;
   try
-    Pars['Action']:= 'AddItem';
-    Pars['Order']:= Order;
-    if ItemId <> '' then
-      Pars['ItemID']:= ItemId;
-    Pars['Type']:= GeniusLineItemTypeToStr(ItemType);
-    Pars['TypeValue']:= ItemTypeValue;
-    if UPC <> '' then
-      Pars['UPC']:= UPC;
-    Pars['Quantity']:= IntToStr(Quantity);
-    Pars['Description']:= TrimStr(Description, LID_MAX_DESCR);
-    Pars['Amount']:= CurrToStr(Amount + TaxAmount);
-    Pars['TaxAmount']:= CurrToStr(TaxAmount);
-
-    FOrderTotal:= FOrderTotal + Amount + TaxAmount;
-    FOrderTax:= FOrderTax + TaxAmount;
-
-    Pars['OrderTotal']:= CurrToStr(OrderTotal);
-    Pars['OrderTax']:= CurrToStr(OrderTax);
-    Pars['Category']:= GeniusLineItemCategoryToStr(Category);
-    if DisplayOverride <> '' then
-      Pars['DisplayOverride']:= DisplayOverride;
-    if FDisplayCustomSubTotal <> '' then
-      Pars['DisplayCustomSubTotal']:= FDisplayCustomSubTotal;
-    Pars['Format']:= 'XML';
-
-    Url:= FOwner.DeviceUrl(Pars.ParamStr);
     try
+      Pars['Action']:= 'AddItem';
+      Pars['Format']:= 'XML';
+      Pars['Order']:= Order;
+      Pars['Type']:= GeniusLineItemTypeToStr(ItemType);
+      Pars['TypeValue']:= ItemTypeValue;
+      if UPC <> '' then
+        Pars['UPC']:= UPC;
+      Pars['Quantity']:= IntToStr(Quantity);
+      Pars['Description']:= TrimStr(Description, LID_MAX_DESCR);
+      Pars['Amount']:= CurrToStr(Amount);
+      Pars['TaxAmount']:= CurrToStr(TaxAmount);
+      Pars['Category']:= GeniusLineItemCategoryToStr(Category);
+      if DisplayOverride <> '' then
+        Pars['DisplayOverride']:= DisplayOverride;
+
+      if FDisplayCustomSubTotal <> '' then
+        Pars['DisplayCustomSubTotal']:= FDisplayCustomSubTotal;
+      Pars['OrderTotal']:= CurrToStr(OrderTotal + ((Amount + TaxAmount) * Quantity));
+      Pars['OrderTax']:= CurrToStr(OrderTax + (TaxAmount * Quantity));
+
+      Url:= FOwner.DeviceUrl(Pars.ParamStr);
       XML:= FOwner.SendDeviceRequestXML(Url);
       Node:= GetNodePath(XML, '/OrderResult');
       if Assigned(Node) then begin
         Result.Status:= GeniusStrToLineItemStatus(GetNodeValue(Node, 'Status'));
         Result.ResponseMessage:= GetNodeValue(Node, 'ResponseMessage');
-        Result.ItemID:= GetNodeValue(Node, 'ItemID');
-        //AdditionalParameters (Future Use)
         case Result.Status of
           soSuccess: begin
+            FOrderTotal:= OrderTotal + ((Amount + TaxAmount) * Quantity);
+            FOrderTax:= OrderTax + (TaxAmount * Quantity);
+            Result.ItemID:= GetNodeValue(Node, 'ItemID');
             FItems.Add(Result);
             Result._AddRef;
           end;
           soDenied: begin
-            raise Exception.Create('Adding line item denied: ' + Result.ResponseMessage);
+            //raise Exception.Create('Adding line item denied: ' + Result.ResponseMessage);
           end;
           soError: begin
-            raise Exception.Create('Adding line item failed: ' + Result.ResponseMessage);
+            //raise Exception.Create('Adding line item failed: ' + Result.ResponseMessage);
           end;
         end;
       end else begin
         Result.Status:= TGeniusLineItemStatus.soError;
-        Result.ResponseMessage:= 'Error: Node empty';
-        Result.ItemID:= '';
+        Result.ResponseMessage:= 'Error in AddItem: OrderResult Node empty';
       end;
     except
       on E: Exception do begin
         Result.Status:= soError;
-        Result.ResponseMessage:= 'Error: ' + E.Message;
+        Result.ResponseMessage:= 'Exception in AddItem: ' + E.Message;
       end;
     end;
   finally
@@ -4092,11 +4080,6 @@ begin
   Result:= IGeniusLineItemDiscount(FDiscounts[Index]);
 end;
 
-function TGeniusLineItem.GetDisplayCustomSubTotal: String;
-begin
-  Result:= FDisplayCustomSubTotal;
-end;
-
 function TGeniusLineItem.GetDisplayOverride: String;
 begin
   Result:= FDisplayOverride;
@@ -4120,16 +4103,6 @@ end;
 function TGeniusLineItem.GetOrder: String;
 begin
   Result:= FOrder;
-end;
-
-function TGeniusLineItem.GetOrderTax: Currency;
-begin
-  Result:= FOrderTax;
-end;
-
-function TGeniusLineItem.GetOrderTotal: Currency;
-begin
-  Result:= FOrderTotal;
 end;
 
 function TGeniusLineItem.GetQuantity: Integer;
@@ -4172,11 +4145,6 @@ begin
   FDescription:= Value;
 end;
 
-procedure TGeniusLineItem.SetDisplayCustomSubTotal(const Value: String);
-begin
-  FDisplayCustomSubTotal:= Value;
-end;
-
 procedure TGeniusLineItem.SetDisplayOverride(const Value: String);
 begin
   FDisplayOverride:= Value;
@@ -4200,16 +4168,6 @@ end;
 procedure TGeniusLineItem.SetOrder(const Value: String);
 begin
   FOrder:= Value;
-end;
-
-procedure TGeniusLineItem.SetOrderTax(const Value: Currency);
-begin
-  FOrderTax:= Value;
-end;
-
-procedure TGeniusLineItem.SetOrderTotal(const Value: Currency);
-begin
-  FOrderTotal:= Value;
 end;
 
 procedure TGeniusLineItem.SetQuantity(const Value: Integer);

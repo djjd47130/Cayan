@@ -18,7 +18,7 @@ uses
   FMX.ListBox, FMX.Layouts, FMX.Edit,
   FMX.ListView, FMX.ListView.Types, FMX.ListView.Appearances,
   FMX.ListView.Adapters.Base, Cayan, FMX.EditBox, FMX.NumberBox,
-  Cayan.Genius.LineItems;
+  Cayan.Genius.LineItems, Cayan.POS, Cayan.Genius.Transactions;
 
 type
   TfrmCayanPOSMain = class(TForm)
@@ -201,20 +201,13 @@ type
     ListBoxItem53: TListBoxItem;
     ListBoxItem58: TListBoxItem;
     ListBoxItem23: TListBoxItem;
-    ListBoxItem24: TListBoxItem;
     ListBoxItem25: TListBoxItem;
-    ListBoxItem26: TListBoxItem;
     txtMerchantName: TEdit;
     txtMerchantSiteId: TEdit;
     txtMerchantKey: TEdit;
     txtCedAddress: TEdit;
     txtCedTimeout: TNumberBox;
     txtCedPort: TNumberBox;
-    ListBoxGroupHeader14: TListBoxGroupHeader;
-    ListBoxItem27: TListBoxItem;
-    txtSetupUsername: TEdit;
-    ListBoxItem44: TListBoxItem;
-    txtSetupPassword: TEdit;
     ListBoxGroupHeader15: TListBoxGroupHeader;
     ListBoxItem45: TListBoxItem;
     swCustRequired: TSwitch;
@@ -229,13 +222,15 @@ type
     ListBoxGroupHeader16: TListBoxGroupHeader;
     lManageServer: TListBoxItem;
     lServerHost: TListBoxItem;
-    Edit1: TEdit;
+    txtServerHost: TEdit;
     lServerPort: TListBoxItem;
-    lServerToken: TListBoxItem;
-    Edit3: TEdit;
+    lServerKey: TListBoxItem;
+    txtServerKey: TEdit;
     lServerStation: TListBoxItem;
-    NumberBox1: TNumberBox;
-    NumberBox2: TNumberBox;
+    txtServerPort: TNumberBox;
+    txtServerStation: TNumberBox;
+    POS: TCayanPOS;
+    Tran: TCayanGeniusTransaction;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
@@ -257,9 +252,9 @@ type
     procedure btnCedStartClick(Sender: TObject);
     procedure btnCedCancelClick(Sender: TObject);
     procedure btnCartAddClick(Sender: TObject);
-    procedure TranTransactionStart(const ATrans: TCayanGenius);
-    procedure TranTransactionStaged(const ATrans: TCayanGenius);
-    procedure TranTransactionResult(const ATrans: TCayanGenius;
+    procedure TranTransactionStart(const ATrans: TCayanGeniusTransaction);
+    procedure TranTransactionStaged(const ATrans: TCayanGeniusTransaction);
+    procedure TranTransactionResult(const ATrans: TCayanGeniusTransaction;
       const AResult: IGeniusTransactionResponse);
     procedure TranCancel(Sender: TObject);
     procedure btnResultBackClick(Sender: TObject);
@@ -271,11 +266,13 @@ type
     procedure LIDChange(Sender: TCayanGeniusLineItems);
     procedure lManageServerClick(Sender: TObject);
     procedure Button6Click(Sender: TObject);
+    procedure Button8Click(Sender: TObject);
+    procedure lstLookupCustomerItemClick(const Sender: TObject;
+      const AItem: TListViewItem);
   private
-    FUsername: String;
-    FPassword: String;
     FTranStarted: Boolean;
     FProducts: TStringList;
+    FCustomers: ICayanPOSCustomers;
     procedure HidePayInfo;
     procedure ShowCardInfo;
     procedure ShowCheckInfo;
@@ -285,6 +282,10 @@ type
     procedure ClearCart;
     procedure PopulateProducts;
     function RandomProduct: String;
+    procedure LoadCustomers;
+    procedure ClearCustomers;
+    function CustomerByID(const ID: Integer): ICayanPOSCustomer;
+    procedure ClearCustomer;
   public
     procedure UpdateCartTotals;
     procedure LoadFromConfig;
@@ -337,6 +338,7 @@ begin
   lstPayDetail.Align:= TAlignLayout.Client;
   lstLogin.Align:= TAlignLayout.Client;
   lstResult.Align:= TAlignLayout.Client;
+  Self.lstLookupCustomer.Align:= TAlignLayout.Client;
   Self.MainTabs.TabPosition:= TTabPosition.None;
   Self.CustomerTabs.TabPosition:= TTabPosition.None;
   MainTabs.ActiveTab := tabLogin;
@@ -350,8 +352,6 @@ begin
   txtLoginPassword.Text:= '';
   txtLoginUser.SetFocus;
 
-  Genius.Device.Monitoring:= True;
-
   Randomize;
   PopulateProducts;
 end;
@@ -363,6 +363,9 @@ end;
 
 procedure TfrmCayanPOSMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  Genius.Cancel;
+  Genius.Cancel;
+  Genius.Device.Monitoring:= False;
   Self.SaveToConfig;
 end;
 
@@ -512,11 +515,11 @@ begin
   SetCedBusy(True);
 
   Self.FTranStarted:= True;
-  Genius.Amount:= StrToFloat(txtPayAmount.Text);
-  Genius.Cardholder:= txtCustFirstName.Text + ' ' + txtCustLastName.Text;
-  Genius.TransactionID:= Genius.InvoiceNum;
+  Tran.Amount:= StrToFloat(txtPayAmount.Text);
+  Tran.Cardholder:= txtCustFirstName.Text + ' ' + txtCustLastName.Text;
+  Tran.TransactionID:= Tran.InvoiceNum;
 
-  Genius.StageTransaction;
+  Tran.StartTransaction;
 
 end;
 
@@ -677,7 +680,7 @@ begin
   lManageServer.Visible:= False;
   lServerHost.Visible:= True;
   lServerPort.Visible:= True;
-  lServerToken.Visible:= True;
+  lServerKey.Visible:= True;
   lServerStation.Visible:= True;
 
 end;
@@ -699,8 +702,10 @@ begin
     Genius.Device.DeviceProtocol:= prHTTP;
     Genius.Device.DeviceTimeout:= 900;
     Genius.Device.DeviceVersion:= TGeniusDeviceVersion.gdVer1;
-    FUsername:= 'admin';
-    FPassword:= 'admin';
+    Self.txtServerHost.Text:= 'LocalHost';
+    Self.txtServerPort.Value:= 8787;
+    Self.txtServerKey.Text:= '';
+    //Self.txtServerStation:= Self.Cayan.StationID;
     SaveToConfig;
   end;
   O:= TSuperObject.ParseFile(ConfigFilename);
@@ -717,8 +722,10 @@ begin
     Genius.Device.DeviceProtocol:= TGeniusProtocol.prHTTP; // (O.I['deviceProtocol']);
     Genius.Device.DeviceTimeout:= O.I['deviceTimeout'];
     Genius.Device.DeviceVersion:= TGeniusDeviceVersion(O.I['deviceVersion']);
-    FUsername:= O.S['username'];
-    FPassword:= O.S['password'];
+    Self.txtServerHost.Text:= O.S['serverAddr'];
+    Self.txtServerPort.Value:= O.I['serverPort'];;
+    Self.txtServerKey.Text:= O.S['serverKey'];
+    //Self.txtServerStation:= Self.Cayan.StationID;
   end;
 end;
 
@@ -740,8 +747,9 @@ begin
   O.S['dba']:= Cayan.Dba;
   O.S['clerkId']:= Cayan.ClerkID;
   O.S['stationId']:= Cayan.StationID;
-  O.S['username']:= FUsername;
-  O.S['password']:= FPassword;
+  O.S['serverAddr']:= Self.txtServerHost.Text;
+  O.I['serverPort']:= Trunc(Self.txtServerPort.Value);
+  O.S['serverKey']:= Self.txtServerKey.Text;
   L:= TStringList.Create;
   try
     L.Text:= O.AsJSON(True);
@@ -813,26 +821,44 @@ begin
 
 end;
 
+procedure TfrmCayanPOSMain.lstLookupCustomerItemClick(const Sender: TObject;
+  const AItem: TListViewItem);
+var
+  C: ICayanPOSCustomer;
+begin
+  C:= Self.CustomerByID(AItem.Tag);
+  Self.ClearCustomer;
+  Self.actCustomerInfoTab.ExecuteTarget(Self);
+
+  Self.txtCustFirstName.Text:= C.FirstName;
+  Self.txtCustLastName.Text:= C.LastName;
+  Self.txtCustCompanyName.Text:= C.CompanyName;
+
+
+end;
+
+procedure TfrmCayanPOSMain.ClearCustomer;
+begin
+  Self.txtCustFirstName.Text:= '';
+  Self.txtCustLastName.Text:= '';
+  Self.txtCustCompanyName.Text:= '';
+
+end;
+
 procedure TfrmCayanPOSMain.lstNewInvoiceItemClick(Sender: TObject);
 begin
   Cursor:= crHandPoint;
   try
     ClearCart;
     lblCartTitle.Text:= 'New Sale';
-    Genius.TransactionType:= TGeniusTransactionType.gtSale;
-    Genius.InvoiceNum:= '1234'; //TODO
-    Genius.TransactionID:= '1234'; //TODO
+    Tran.TransactionType:= TGeniusTransactionType.gtSale;
+    Tran.InvoiceNum:= '1234'; //TODO
+    Tran.TransactionID:= '1234'; //TODO
 
     actCartTab.ExecuteTarget(Self);
 
     try
-      if Genius.StartNewOrder then begin
-        //Successfully started new order...
-
-      end else begin
-        //Failed to start new order...
-        raise Exception.Create('Failed to start new order.');
-      end;
+      LID.StartOrder;
     except
       on E: Exception do begin
         //Exception starting new order...
@@ -865,21 +891,24 @@ procedure TfrmCayanPOSMain.GeniusDeviceStatus(Sender: IGenius;
   const Status: IGeniusStatusResponse);
 begin
   //CED status changed
-  case Status.Status of
-    csOffline: begin
-      Caption:= 'Cayan POS - Device Offline';
-    end;
-    csOnline: begin
-      Caption:= 'Cayan POS - Device Online';
-    end;
-    csDownloadNeeded: begin
-      Caption:= 'Cayan POS - Device Download Needed';
+  if Genius.Device.Monitoring then begin
+    case Status.Status of
+      csOffline: begin
+        Caption:= 'Cayan POS - Device Offline';
+      end;
+      csOnline: begin
+        Caption:= 'Cayan POS - Device Online';
+      end;
+      csDownloadNeeded: begin
+        Caption:= 'Cayan POS - Device Download Needed';
+      end;
     end;
   end;
 end;
 
 procedure TfrmCayanPOSMain.UpdateCartTotals;
 begin
+  if Application.Terminated then Exit;  
   lblCartQty.Text:= IntToStr(LID.TotalQty);
   lblCartSubtotal.Text:= FormatFloat('$#,###,##0.00', LID.Subtotal);
   lblCartTax.Text:= FormatFloat('$#,###,##0.00', LID.OrderTax);
@@ -891,8 +920,10 @@ begin
   if LID.Count = 0 then begin
     raise Exception.Create('There are no items in the cart.');
   end;
-  txtPayAmount.Text:= FormatFloat('0.00', Genius.Amount);
-  lblPaymentTitle.Text:= FormatFloat('$#,###,##0.00', Genius.Amount);
+  Tran.Amount:= LID.OrderTotal;
+  Tran.TaxAmount:= LID.OrderTax;
+  txtPayAmount.Text:= FormatFloat('0.00', Tran.Amount);
+  lblPaymentTitle.Text:= FormatFloat('$#,###,##0.00', Tran.Amount);
   actPaymentTab.ExecuteTarget(Self);
 end;
 
@@ -964,6 +995,52 @@ begin
 
 end;
 
+procedure TfrmCayanPOSMain.Button8Click(Sender: TObject);
+begin
+  ClearCustomers;
+  actCustomerLookupTab.ExecuteTarget(Self);
+  FCustomers:= POS.GetCustomers('');
+  LoadCustomers;
+end;
+
+procedure TfrmCayanPOSMain.ClearCustomers;
+begin
+  Self.lstLookupCustomer.Items.Clear;
+  FCustomers:= nil;
+  LoadCustomers;
+end;
+
+function TfrmCayanPOSMain.CustomerByID(const ID: Integer): ICayanPOSCustomer;
+var
+  X: Integer;
+begin
+  Result:= nil;
+  for X := 0 to FCustomers.Count-1 do begin
+    if FCustomers[X].ID = ID then begin
+      Result:= FCustomers[X];
+      Break;
+    end;
+  end;
+end;
+
+procedure TfrmCayanPOSMain.LoadCustomers;
+var
+  C: ICayanPOSCustomer;
+  X: Integer;
+  I: TListViewItem;
+begin
+  if Assigned(FCustomers) then begin
+    for X := 0 to FCustomers.Count-1 do begin
+      C:= FCustomers[X];
+      I:= Self.lstLookupCustomer.Items.Add;
+      I.Text:= C.FirstName + ' ' + C.LastName;
+      I.Detail:= C.CompanyName;
+      I.Tag:= C.ID;
+      //TODO
+    end;
+  end;
+end;
+
 procedure TfrmCayanPOSMain.btnPaymentBackClick(Sender: TObject);
 begin
   //TODO: Check if any payments have already been collected.
@@ -988,18 +1065,14 @@ end;
 procedure TfrmCayanPOSMain.btnLoginClick(Sender: TObject);
 begin
   //TODO: Login...
-
-  if SameText(FUsername, txtLoginUser.Text) then begin
-    if FPassword = txtLoginPassword.Text then begin
-      Self.Cayan.ClerkID:= txtLoginUser.Text;
-      Self.actCustomerTab.ExecuteTarget(Self);
-    end else begin
-      MessageDlg('Login failed!', TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0);
-    end;
+  Self.SaveToConfig;
+  if POS.UserLogin(txtLoginUser.Text, txtLoginPassword.Text) then begin
+    Self.Cayan.ClerkID:= txtLoginUser.Text;
+    Genius.Device.Monitoring:= True;
+    Self.actCustomerTab.ExecuteTarget(Self);
   end else begin
     MessageDlg('Login failed!', TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0);
   end;
-
 end;
 
 procedure TfrmCayanPOSMain.btnCustBackClick(Sender: TObject);
@@ -1007,12 +1080,12 @@ begin
   if MessageDlg('Are you sure you wish to log out?', TMsgDlgType.mtConfirmation,
     [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo], 0) = mrYes then
   begin
+    Genius.Device.Monitoring:= False;
+    Self.Caption:= 'Cayan POS';
     txtLoginUser.Text:= '';
     txtLoginPassword.Text:= '';
     actLoginTab.ExecuteTarget(Self);
     txtLoginUser.SetFocus;
-  end else begin
-
   end;
 end;
 
@@ -1029,7 +1102,7 @@ begin
 end;
 
 procedure TfrmCayanPOSMain.TranTransactionResult(
-  const ATrans: TCayanGenius;
+  const ATrans: TCayanGeniusTransaction;
   const AResult: IGeniusTransactionResponse);
 begin
   Self.SetCedBusy(False);
@@ -1066,13 +1139,13 @@ begin
 end;
 
 procedure TfrmCayanPOSMain.TranTransactionStaged(
-  const ATrans: TCayanGenius);
+  const ATrans: TCayanGeniusTransaction);
 begin
   Self.SetCedBusy(True);
 end;
 
 procedure TfrmCayanPOSMain.TranTransactionStart(
-  const ATrans: TCayanGenius);
+  const ATrans: TCayanGeniusTransaction);
 begin
   Self.SetCedBusy(True);
 end;

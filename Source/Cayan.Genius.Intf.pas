@@ -584,7 +584,7 @@ type
     //End line item display with another payment method
     function EndOrder(const ExternalPaymentType: TGeniusExternalPaymentType): IGeniusStartOrderResponse;
     //Add a new item
-    function AddItem(const ItemId, ItemTypeValue, Upc, Description: String;
+    function AddItem(const ItemTypeValue, Upc, Description: String;
       const Amount, TaxAmount: Currency;
       const Quantity: Integer = 1;
       const ItemType: TGeniusLineItemType = glSku;
@@ -628,28 +628,22 @@ type
     function GetAmount: Currency;
     function GetCategory: TGeniusLineItemCategory;
     function GetDescription: String;
-    function GetDisplayCustomSubTotal: String;
     function GetDisplayOverride: String;
     function GetItemID: String;
     function GetItemType: TGeniusLineItemType;
     function GetItemTypeValue: String;
     function GetOrder: String;
-    function GetOrderTax: Currency;
-    function GetOrderTotal: Currency;
     function GetQuantity: Integer;
     function GetTaxAmount: Currency;
     function GetUPC: String;
     procedure SetAmount(const Value: Currency);
     procedure SetCategory(const Value: TGeniusLineItemCategory);
     procedure SetDescription(const Value: String);
-    procedure SetDisplayCustomSubTotal(const Value: String);
     procedure SetDisplayOverride(const Value: String);
     procedure SetItemID(const Value: String);
     procedure SetItemType(const Value: TGeniusLineItemType);
     procedure SetItemTypeValue(const Value: String);
     procedure SetOrder(const Value: String);
-    procedure SetOrderTax(const Value: Currency);
-    procedure SetOrderTotal(const Value: Currency);
     procedure SetQuantity(const Value: Integer);
     procedure SetTaxAmount(const Value: Currency);
     procedure SetUPC(const Value: String);
@@ -679,8 +673,6 @@ type
     property Description: String read GetDescription write SetDescription;  //1-35
     property Amount: Currency read GetAmount write SetAmount; //1-9
     property TaxAmount: Currency read GetTaxAmount write SetTaxAmount;  //1-9
-    property OrderTotal: Currency read GetOrderTotal write SetOrderTotal; //1-9
-    property OrderTax: Currency read GetOrderTax write SetOrderTax; //1-9
     property Category: TGeniusLineItemCategory read GetCategory write SetCategory;  //1-8
     property DisplayOverride: String read GetDisplayOverride write SetDisplayOverride;  //0-35
   end;

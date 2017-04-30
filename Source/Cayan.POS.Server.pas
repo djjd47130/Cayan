@@ -108,10 +108,11 @@ type
     procedure Uninit;
     function NewQuery: TADOQuery;
     procedure HandleRequest(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
+    procedure HandlePostUserLogin(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
     procedure HandleGetStatus(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
     procedure HandleGetLog(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
     procedure HandleGetCustomers(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
-    procedure HandlePostUserLogin(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
+    procedure HandleGetInventory(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
   end;
 
 implementation
@@ -454,6 +455,8 @@ begin
               HandleGetLog(AReq, ARes);
             end else if IsAct('Customers') then begin
               HandleGetCustomers(AReq, ARes);
+            end else if IsAct('Inventory') then begin
+              HandleGetInventory(AReq, ARes);
             end else begin
               //TODO
             end;
@@ -566,6 +569,7 @@ begin
     FQry.Parameters.ParamValues['ln']:= Q;
     FQry.Parameters.ParamValues['cn']:= Q;
   end;
+  FQry.SQL.Append('order by LastName, FirstName, CompanyName');
 
   FQry.Open;
   try
@@ -607,6 +611,105 @@ begin
   finally
     FQry.Close;
   end;
+end;
+
+procedure TCayanPOSServerContext.HandleGetInventory(
+  const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
+var
+  Q: String;
+  A: ISuperArray;
+  CO: ISuperObject;
+  D: IXmlDocument;
+  N, CN: IXmlNode;
+  procedure AddStr(const N: String; const V: String);
+  var
+    T: IXmlNode;
+  begin
+    case FFormat of
+      efXML: begin
+        T:= CN.AddChild(N); T.Text:= V;
+      end;
+      efJSON: CO.S[N]:= V;
+    end;
+  end;
+  procedure AddInt(const N: String; const V: Integer);
+  begin
+    case FFormat of
+      efXML:  AddStr(N, IntToStr(V));
+      efJSON: CO.I[N]:= V;
+    end;
+  end;
+  procedure AddCur(const N: String; const V: Currency);
+  begin
+    case FFormat of
+      efXML:  AddStr(N, CurrToStr(V));
+      efJSON: CO.D[N]:= V;
+    end;
+  end;
+  procedure AddContent;
+  begin
+    AddInt('ID', FQry.FieldByName('ID').AsInteger);
+    AddStr('SKU', FQry.FieldByName('SKU').AsString);
+    AddStr('UPC', FQry.FieldByName('UPC').AsString);
+    AddStr('VendorNum', FQry.FieldByName('VendorNum').AsString);
+    AddInt('ItemTypeID', FQry.FieldByName('ItemTypeID').AsInteger);
+    AddInt('StatusID', FQry.FieldByName('StatusID').AsInteger);
+    AddInt('QtyHand', FQry.FieldByName('QtyHand').AsInteger);
+    AddInt('QtyOrder', FQry.FieldByName('QtyOrder').AsInteger);
+    AddCur('MSRP', FQry.FieldByName('MSRP').AsCurrency);
+    AddCur('Price', FQry.FieldByName('Price').AsCurrency);
+    AddStr('ShortDescr', FQry.FieldByName('ShortDescr').AsString);
+    AddStr('LongDescr', FQry.FieldByName('LongDescr').AsString);
+  end;
+begin
+  Q:= '%'+FPar.Values['q']+'%';
+
+  FQry.Close;
+  FQry.SQL.Clear;
+  FQry.Parameters.Clear;
+  FQry.SQL.Text:= 'select * from Inventory';
+  if Q <> '' then begin
+    FQry.SQL.Append('where SKU like :sku or UPC like :upc or VendorNum like :vn');
+    FQry.SQL.Append('or ShortDescr like :sd or LongDescr like :ld');
+    FQry.Parameters.ParamValues['sku']:= Q;
+    FQry.Parameters.ParamValues['upc']:= Q;
+    FQry.Parameters.ParamValues['vn']:= Q;
+    FQry.Parameters.ParamValues['sd']:= Q;
+    FQry.Parameters.ParamValues['ld']:= Q;
+  end;
+  FQry.SQL.Append('order by SKU, VendorNum, ShortDescr');
+
+  FQry.Open;
+  try
+    case FFormat of
+      efXML: begin
+        D:= NewXmlDocument;
+        N:= D.AddChild('Inventory');
+        while not FQry.Eof do begin
+          CN:= N.AddChild('Item');
+          AddContent;
+          FQry.Next;
+        end;
+        FResponse.LoadXML(D.XML.Text);
+      end;
+      efJSON: begin
+        A:= SA;
+        while not FQry.Eof do begin
+          try
+            CO:= SO;
+            AddContent;
+            FQry.Next;
+          finally
+            A.Add(CO);
+          end;
+        end;
+        FResponse.LoadJSON(A.AsJson(True));
+      end;
+    end;
+  finally
+    FQry.Close;
+  end;
+
 end;
 
 procedure TCayanPOSServerContext.HandleGetLog(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);

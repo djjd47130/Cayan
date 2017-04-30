@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 0
   Caption = 'Genius Test'
   ClientHeight = 382
-  ClientWidth = 308
+  ClientWidth = 321
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,7 +13,7 @@ object Form1: TForm1
   OldCreateOrder = False
   OnCreate = FormCreate
   DesignSize = (
-    308
+    321
     382)
   PixelsPerInch = 96
   TextHeight = 13
@@ -94,7 +94,7 @@ object Form1: TForm1
   object txtAgreementText: TMemo
     Left = 16
     Top = 81
-    Width = 273
+    Width = 286
     Height = 160
     Anchors = [akLeft, akTop, akRight, akBottom]
     Lines.Strings = (
@@ -121,16 +121,18 @@ object Form1: TForm1
     ScrollBars = ssBoth
     TabOrder = 3
     WordWrap = False
+    ExplicitWidth = 273
   end
   object txtTitle: TEdit
     Left = 16
     Top = 32
-    Width = 273
+    Width = 286
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     MaxLength = 36
     TabOrder = 4
     Text = 'Terms and Conditions'
+    ExplicitWidth = 273
   end
   object BitBtn2: TBitBtn
     Left = 168
@@ -144,13 +146,12 @@ object Form1: TForm1
   end
   object Genius: TCayanGenius
     Cayan = Cayan
-    Device.DeviceAddress = '192.168.0.2'
-    Device.DevicePort = 8989
+    Device.DeviceAddress = '192.168.0.3'
+    Device.DevicePort = 8080
     Device.DeviceProtocol = prHTTP
     Device.DeviceVersion = gdVer1
     Device.DeviceTimeout = 900
     Device.Monitoring = False
-    TransactionType = gtSale
     ForceDuplicate = False
     Left = 208
   end
