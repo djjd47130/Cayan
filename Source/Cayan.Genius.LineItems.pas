@@ -7,6 +7,7 @@ uses
   Cayan,
   Cayan.Genius,
   Cayan.Genius.Intf,
+  Cayan.Genius.Impl,
   Cayan.Genius.Transactions;
 
 type
@@ -60,7 +61,9 @@ type
     FOrderTax: Currency;
     FOrderTotal: Currency;
     FDisplayCustomSubTotal: String;
+    FLineItems: {$IFDEF SEPERATE_LID}TGeniusLineItems{$ELSE}IGeniusLineItems{$ENDIF};
     FTransaction: TCayanGeniusTransaction;
+    FUpdateTransaction: Boolean;
     procedure SetAutoTotal(const Value: Boolean);
     procedure SetOrderTax(const Value: Currency);
     procedure SetOrderTotal(const Value: Currency);
@@ -68,8 +71,12 @@ type
     function GetOrderTotal: Currency;
     procedure SetDisplayCustomSubTotal(const Value: String);
     function GetItems(const Index: Integer): TCayanGeniusLineItem;
-    procedure SetItems(const Index: Integer; const Value: TCayanGeniusLineItem);
     procedure SetTransaction(const Value: TCayanGeniusTransaction);
+    procedure EnsureLID;
+    procedure CreateLID;
+    procedure DestroyLID;
+    procedure SetUpdateTransaction(const Value: Boolean);
+    procedure DoUpdateTransaction;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -88,13 +95,14 @@ type
     procedure StartOrder;
     procedure UpdateTotal;
 
-    property Items[const Index: Integer]: TCayanGeniusLineItem read GetItems write SetItems;
+    property Items[const Index: Integer]: TCayanGeniusLineItem read GetItems; default;
   published
     property Transaction: TCayanGeniusTransaction read FTransaction write SetTransaction;
     property AutoTotal: Boolean read FAutoTotal write SetAutoTotal;
     property DisplayCustomSubTotal: String read FDisplayCustomSubTotal write SetDisplayCustomSubTotal;
     property OrderTotal: Currency read GetOrderTotal write SetOrderTotal;
     property OrderTax: Currency read GetOrderTax write SetOrderTax;
+    property UpdateTransaction: Boolean read FUpdateTransaction write SetUpdateTransaction;
 
     property OnChange: TCayanGeniusLineItemsEvent read FOnChange write FOnChange;
   end;
@@ -210,6 +218,8 @@ end;
 constructor TCayanGeniusLineItems.Create(AOwner: TComponent);
 begin
   inherited;
+  FUpdateTransaction:= True;
+  FAutoTotal:= True;
   FItems:= TList<TCayanGeniusLineItem>.Create;
 end;
 
@@ -217,31 +227,31 @@ destructor TCayanGeniusLineItems.Destroy;
 begin
   Clear(True);
   FreeAndNil(FItems);
+  DestroyLID;
   inherited;
 end;
 
 function TCayanGeniusLineItems.InOrder: Boolean;
 begin
-  if not Assigned(FTransaction) then begin
-    raise Exception.Create('Transaction property is not assigned.');
+  if not (csDesigning in ComponentState) then begin
+    if Assigned(FLineItems) then  
+      Result:= FLineItems.InProgress
+    else
+      Result:= False;
+  end else begin
+    Result:= False;
   end;
-
-  if not Assigned(FTransaction.Genius) then begin
-    raise Exception.Create('Transaction''s Genius property is not assigned.');
-  end;
-
-  Result:= FTransaction.Genius.Genius.LineItems.InProgress;
 end;
 
 procedure TCayanGeniusLineItems.Invalidate;
 begin
   UpdateTotal;
+  DoUpdateTransaction;
   if Assigned(FOnChange) then
     FOnChange(Self);
 end;
 
-function TCayanGeniusLineItems.GetItems(
-  const Index: Integer): TCayanGeniusLineItem;
+function TCayanGeniusLineItems.GetItems(const Index: Integer): TCayanGeniusLineItem;
 begin
   Result:= FItems[Index];
 end;
@@ -251,10 +261,10 @@ var
   X: Integer;
 begin
   if FAutoTotal then begin
-    Result:= 0;
-    for X := 0 to FItems.Count-1 do begin
-      Result:= Result + (FItems[X].TaxAmount * FItems[X].Quantity);
-    end;
+    if Assigned(FLineItems) then
+      Result:= FLineItems.OrderTax
+    else
+      Result:= 0;
   end else begin
     Result:= FOrderTax;
   end;
@@ -265,11 +275,10 @@ var
   X: Integer;
 begin
   if FAutoTotal then begin
-    Result:= 0;
-    for X := 0 to FItems.Count-1 do begin
-      Result:= Result + (FItems[X].TaxAmount * FItems[X].Quantity);
-      Result:= Result + (FItems[X].Amount * FItems[X].Quantity);
-    end;
+    if Assigned(FLineItems) then
+      Result:= FLineItems.OrderTotal
+    else
+      Result:= 0;
   end else begin
     Result:= FOrderTotal;
   end;
@@ -280,22 +289,19 @@ var
   X: Integer;
 begin
   Result:= 0;
-  for X := 0 to FItems.Count-1 do begin
-    Result:= Result + FItems[X].Quantity;
+  if Assigned(FLineItems) then begin
+    for X := 0 to FLineItems.Count-1 do begin
+      Result:= Result + FLineItems[X].Quantity;    
+    end;
   end;
 end;
 
 procedure TCayanGeniusLineItems.UpdateTotal;
 begin
   if not (csDesigning in ComponentState) then begin
-    if Assigned(FTransaction) then begin
-      if Assigned(FTransaction.Genius) then begin
-        FTransaction.Genius.Genius.LineItems.AutoTotal:= Self.FAutoTotal;
-        FTransaction.Genius.Genius.LineItems.DisplayCustomSubtotal:= FDisplayCustomSubTotal;
-        if Self.InOrder then begin
-          //FGenius.Genius.LineItems.UpdateTotal(OrderTotal, OrderTax);
-        end;
-      end;
+    if Assigned(FLineItems) then begin
+      FLineItems.AutoTotal:= FAutoTotal;
+      FLineItems.DisplayCustomSubtotal:= FDisplayCustomSubTotal;
     end;
   end;
 end;
@@ -312,17 +318,12 @@ function TCayanGeniusLineItems.Add(const ItemType: TGeniusLineItemType;
   const UPC: String = ''): TCayanGeniusLineItem;
 begin
   if not (csDesigning in ComponentState) then begin
-    if not Assigned(FTransaction) then begin
-      raise Exception.Create('Transaction property is not assigned.');
-    end;
-    if not Assigned(FTransaction.Genius) then begin
-      raise Exception.Create('Transaction''s Genius property is not assigned.');
-    end;
+    EnsureLID;
     Result:= TCayanGeniusLineItem.Create(Self);
+    FLineItems.DisplayCustomSubtotal:= Self.FDisplayCustomSubTotal;
+    Result.FLineItem:= FLineItems.AddItem(TypeValue, Upc,
+      Description, Amount, Tax, Qty, ItemType, Category, DisplayOverride); 
     FItems.Add(Result);
-    FTransaction.Genius.Genius.LineItems.DisplayCustomSubtotal:= Self.FDisplayCustomSubTotal;
-    Result.FLineItem:= FTransaction.Genius.Genius.LineItems.AddItem(TypeValue, Upc,
-      Description, Amount, Tax, Qty, ItemType, Category, DisplayOverride);
     Invalidate;
   end;
 end;
@@ -331,20 +332,16 @@ procedure TCayanGeniusLineItems.Delete(const Index: Integer; const IgnoreDevice:
 var
   I: TCayanGeniusLineItem;
 begin
-  if not Assigned(FTransaction) then begin
-    raise Exception.Create('Transaction property is not assigned.');
-  end;
-  if not Assigned(FTransaction.Genius) then begin
-    raise Exception.Create('Transaction''s Genius property is not assigned.');
-  end;
+  EnsureLID;
   try
     if not IgnoreDevice then begin
       I:= FItems[Index];
       if Assigned(I.FLineItem) then begin
-        FTransaction.Genius.Genius.LineItems.DeleteItem(I.ItemID);
+        FLineItems.DeleteItem(I.ItemID);
       end;
     end;
   finally
+    TCayanGeniusLineItem(FItems[Index]).Free;
     FItems.Delete(Index);
   end;
   Invalidate;
@@ -354,11 +351,8 @@ procedure TCayanGeniusLineItems.Clear(const IgnoreDevice: Boolean = False);
 begin
   try
     if not IgnoreDevice then begin
-      if Assigned(FTransaction) then begin
-        if Assigned(FTransaction.Genius) then begin
-          FTransaction.Genius.Genius.LineItems.ClearItems;
-        end;
-      end;
+      if Assigned(FLineItems) then
+        FLineItems.ClearItems;
     end;
   finally
     while Count > 0 do
@@ -384,13 +378,6 @@ begin
   Invalidate;
 end;
 
-procedure TCayanGeniusLineItems.SetItems(const Index: Integer;
-  const Value: TCayanGeniusLineItem);
-begin
-  FItems[Index]:= Value;
-  Invalidate;
-end;
-
 procedure TCayanGeniusLineItems.SetOrderTax(const Value: Currency);
 begin
   FOrderTax := Value;
@@ -406,33 +393,79 @@ end;
 procedure TCayanGeniusLineItems.SetTransaction(
   const Value: TCayanGeniusTransaction);
 begin
-  FTransaction := Value;
+  if FTransaction <> Value then begin
+    DestroyLID;
+    FTransaction := Value;
+  end;
   Invalidate;
+end;
+
+procedure TCayanGeniusLineItems.DoUpdateTransaction;
+begin
+  if FUpdateTransaction then begin
+    if Assigned(FTransaction) then begin
+      FTransaction.Amount:= OrderTotal;
+      FTransaction.TaxAmount:= OrderTax;
+    end;
+  end;
+end;
+
+procedure TCayanGeniusLineItems.SetUpdateTransaction(const Value: Boolean);
+begin
+  FUpdateTransaction := Value;
+  Invalidate;
+end;
+
+procedure TCayanGeniusLineItems.EnsureLID;
+begin
+  if not Assigned(Self.Transaction) then begin
+    raise Exception.Create('Transaction component is not assigned.');
+  end;
+  if not Assigned(Transaction.Genius) then begin
+    raise Exception.Create('Transaction.Genius component is not assigned.');
+  end;
+  if not Assigned(Transaction.Genius.Cayan) then begin
+    raise Exception.Create('Transaction.Genius.Cayan component is not assigned.');
+  end;
+  if not Assigned(FLineItems) then begin
+    CreateLID;
+  end;
+end;
+
+procedure TCayanGeniusLineItems.CreateLID;
+begin
+  {$IFDEF SEPERATE_LID}
+  FLineItems:= TGeniusLineItems.Create(Self.FTransaction.Genius.Genius);
+  IGeniusLineItems(FLineItems)._AddRef;
+  {$ELSE}
+  FLineItems:= FTransaction.Genius.Genius.LineItems;
+  {$ENDIF}
+end;
+
+procedure TCayanGeniusLineItems.DestroyLID;
+begin
+  {$IFDEF SEPERATE_LID}
+  if Assigned(FLineItems) then begin
+    FLineItems.ClearItems;
+    IGeniusLineItems(FLineItems)._Release;
+  end;
+  {$ENDIF}         
+  FLineItems:= nil;
 end;
 
 procedure TCayanGeniusLineItems.StartOrder;
 var
   R: IGeniusStartOrderResponse;
 begin
-  if not Assigned(FTransaction) then begin
-    raise Exception.Create('Transaction property is not assigned.');
-  end;
-
-  if not Assigned(FTransaction.Genius) then begin
-    raise Exception.Create('Transaction''s Genius property is not assigned.');
-  end;
-
+  EnsureLID;
   if FTransaction.InvoiceNum = '' then begin
     raise Exception.Create('Transaction.InvoiceNum property is empty.');
   end;
-
-  if FTransaction.Genius.Genius.LineItems.InProgress then begin
+  if FLineItems.InProgress then begin
     raise Exception.Create('Line Item Order already in progress.');
-  end;
-
-  Self.Clear(True);
-
-  R:= FTransaction.Genius.Genius.LineItems.StartOrder(FTransaction.InvoiceNum);
+  end;               
+  Clear(True);     
+  R:= FLineItems.StartOrder(FTransaction.InvoiceNum);
   case R.Status of
     soSuccess: begin
       //Order was successfully started.

@@ -133,7 +133,9 @@ type
     procedure SetDeviceAddress(const Value: String);
     function GetDevicePort: Integer;
     procedure SetDevicePort(const Value: Integer);
+    {$IFNDEF SEPERATE_LID}
     function GetLineItems: IGeniusLineItems;
+    {$ENDIF}
     function GetDeviceProtocol: TGeniusProtocol;
     procedure SetDeviceProtocol(const Value: TGeniusProtocol);
     function GetDeviceVersion: TGeniusDeviceVersion;
@@ -178,7 +180,9 @@ type
     property DevicePort: Integer read GetDevicePort write SetDevicePort;
     property DeviceProtocol: TGeniusProtocol read GetDeviceProtocol write SetDeviceProtocol;
     property DeviceVersion: TGeniusDeviceVersion read GetDeviceVersion write SetDeviceVersion;
+    {$IFNDEF SEPERATE_LID}
     property LineItems: IGeniusLineItems read GetLineItems;
+    {$ENDIF}
     property Dba: String read GetDba write SetDba;
     property SoftwareName: String read GetSoftwareName write SetSoftwareName;
     property SoftwareVersion: String read GetSoftwareVersion write SetSoftwareVersion;
@@ -652,6 +656,7 @@ type
     procedure SetResponseMessage(const Value: String);
     procedure SetStatus(const Value: TGeniusLineItemStatus);
     function GetDiscount(const Index: Integer): IGeniusLineItemDiscount;
+    function GetTotalAmount: Currency;
 
     function Owner: IGeniusLineItems;
 

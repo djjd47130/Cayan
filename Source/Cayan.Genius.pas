@@ -62,8 +62,8 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    function Genius: IGenius;
-    function MerchantWare: IMerchantWare;
+    function Genius: TGenius;
+    function MerchantWare: TMerchantWare;
     function Cancel: IGeniusCancelTransactionResponse;
   published
     property Device: TCayanGeniusDevice read FDevice write SetDevice;
@@ -180,12 +180,12 @@ begin
   Result:= FGenius.CancelTransaction;
 end;
 
-function TCayanGenius.MerchantWare: IMerchantWare;
+function TCayanGenius.MerchantWare: TMerchantWare;
 begin
   Result:= FMerchantWare;
 end;
 
-function TCayanGenius.Genius: IGenius;
+function TCayanGenius.Genius: TGenius;
 begin
   Result:= FGenius;
 end;

@@ -170,7 +170,9 @@ type
     FDevicePort: Integer;
     FDeviceProtocol: TGeniusProtocol;
     FDeviceVersion: TGeniusDeviceVersion;
+    {$IFNDEF SEPERATE_LID}
     FLineItems: TGeniusLineItems;
+    {$ENDIF}
     FTransactionResponse: TGeniusTransactionEvent;
     FDba: String;
     FSoftwareName: String;
@@ -203,7 +205,9 @@ type
     procedure SetDeviceAddress(const Value: String);
     function GetDevicePort: Integer;
     procedure SetDevicePort(const Value: Integer);
+    {$IFNDEF SEPERATE_LID}
     function GetLineItems: IGeniusLineItems;
+    {$ENDIF}
     function GetDeviceProtocol: TGeniusProtocol;
     procedure SetDeviceProtocol(const Value: TGeniusProtocol);
     function GetDeviceVersion: TGeniusDeviceVersion;
@@ -248,7 +252,9 @@ type
     property DevicePort: Integer read GetDevicePort write SetDevicePort;
     property DeviceProtocol: TGeniusProtocol read GetDeviceProtocol write SetDeviceProtocol;
     property DeviceVersion: TGeniusDeviceVersion read GetDeviceVersion write SetDeviceVersion;
+    {$IFNDEF SEPERATE_LID}
     property LineItems: IGeniusLineItems read GetLineItems;
+    {$ENDIF}
     property TransactionResponse: TGeniusTransactionEvent read GetTransactionResponse write SetTransactionResponse;
     property Dba: String read GetDba write SetDba;
     property SoftwareName: String read GetSoftwareName write SetSoftwareName;
@@ -763,6 +769,7 @@ type
     procedure SetResponseMessage(const Value: String);
     procedure SetStatus(const Value: TGeniusLineItemStatus);
     function GetDiscount(const Index: Integer): IGeniusLineItemDiscount;
+    function GetTotalAmount: Currency;
 
     function Owner: IGeniusLineItems;
 
@@ -1663,8 +1670,10 @@ begin
   FWebDevice.HandleRedirects:= True;
 
   FDeviceTimeout:= 900; //msec
+  {$IFNDEF SEPERATE_LID}
   FLineItems:= TGeniusLineItems.Create(Self);
   IGeniusLineItems(FLineItems)._AddRef;
+  {$ENDIF}
   FDeviceVersion:= TGeniusDeviceVersion.gdVer1;
   FStatusThread:= TGeniusStatusThread.Create(Self);
   FStatusThread.OnResponse:= StatusResponse;
@@ -1677,8 +1686,11 @@ begin
   FStatusThread.Terminate;
   FStatusThread.WaitFor; //TODO...?
   FreeAndNil(FStatusThread);
+  {$IFNDEF SEPERATE_LID}
+  FLineItems.ClearItems;
   IGeniusLineItems(FLineItems)._Release;
   FLineItems:= nil;
+  {$ENDIF}
   FreeAndNil(FWebDevice);
   FreeAndNil(FSSLDevice);
   FreeAndNil(FWebCayan);
@@ -1724,10 +1736,12 @@ begin
   Result:= FDeviceVersion;
 end;
 
+{$IFNDEF SEPERATE_LID}
 function TGenius.GetLineItems: IGeniusLineItems;
 begin
   Result:= FLineItems;
 end;
+{$ENDIF}
 
 function TGenius.GetMerchantKey: String;
 begin
@@ -2220,7 +2234,10 @@ begin
   FInSignature:= False;
   FInAgreement:= False;
   FInCustomerInput:= False;
+
+  {$IFNDEF SEPERATE_LID}
   FLineItems.FInProgress:= False;
+  {$ENDIF}
   FCancelled:= True;
 
   Pars:= TParamList.Create;
@@ -3522,7 +3539,7 @@ begin
     Result:= 0;
     for X := 0 to Count-1 do begin
       I:= Items[X];
-      Result:= Result + (I.Amount * I.Quantity);
+      Result:= Result + I.GetTotalAmount;
     end;
   end else begin
     Result:= FOrderTotal;
@@ -3634,7 +3651,8 @@ var
   Node: IXmlNode;
 begin
   //http://[CED-IP-Address]:8080/v1/pos?Action=AddItem&Order=1000&Type=Sku&TypeValue=xxx&UPC=xxx&
-  //Quantity=1&Description=Something&Amount=1.00&TaxAmount=0.06&OrderTotal=1.00&OrderTax=0.06&Category=None&Format=XML
+  //Quantity=1&Description=Something&Amount=1.00&TaxAmount=0.06&OrderTotal=1.00&OrderTax=0.06&
+  //Category=None&Format=XML
 
   Result:= TGeniusLineItem.Create(Self);
   Result.ItemID:= '';
@@ -3686,10 +3704,10 @@ begin
             Result._AddRef;
           end;
           soDenied: begin
-            //raise Exception.Create('Adding line item denied: ' + Result.ResponseMessage);
+            raise Exception.Create('Adding line item denied: ' + Result.ResponseMessage);
           end;
           soError: begin
-            //raise Exception.Create('Adding line item failed: ' + Result.ResponseMessage);
+            raise Exception.Create('Adding line item failed: ' + Result.ResponseMessage);
           end;
         end;
       end else begin
@@ -3721,12 +3739,13 @@ begin
   //http://[CED-IP-Address]:8080/v1/pos?Action=UpdateItem&Order=xxx&
   //TargetItemID=xxx&OrderTotal=xxx&OrderTax=xxx&Format=xxx
 
-  for X := 0 to FOwner.FLineItems.Count-1 do begin
+  for X := 0 to Count-1 do begin
     if IGeniusLineItem(FItems[X]).ItemID = TargetItemID then begin
       Result:= IGeniusLineItem(FItems[X]);
       Break;
     end;
   end;
+
   if Assigned(Result) then begin
     //Remove old item amounts from totals
     FOrderTotal:= FOrderTotal - ((Result.Amount + Result.TaxAmount) * Result.Quantity);
@@ -4123,6 +4142,11 @@ end;
 function TGeniusLineItem.GetTaxAmount: Currency;
 begin
   Result:= FTaxAmount;
+end;
+
+function TGeniusLineItem.GetTotalAmount: Currency;
+begin
+  Result:= (FAmount + FTaxAmount) * FQuantity;
 end;
 
 function TGeniusLineItem.GetUPC: String;

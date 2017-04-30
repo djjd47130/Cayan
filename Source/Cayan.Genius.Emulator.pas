@@ -1596,6 +1596,7 @@ begin
   TA:= 0;
   TT:= 0;
 
+
   D:= TCombinedData.Create;
   try
     D.RootElement:= 'OrderResult';
@@ -1604,12 +1605,14 @@ begin
       if O = FOwner.FOwner.FOrderNum then begin
         D.AddStr('Status', 'Open');
         D.AddStr('ResponseMessage', '');
+        {
         for X := 0 to FGenius.LineItems.Count-1 do begin
           I:= FGenius.LineItems[X];
           TD:= TD + I.DiscountCount;
           TA:= TA + ((I.Amount + I.TaxAmount) * I.Quantity);
           TT:= TT + (I.TaxAmount * I.Quantity);
         end;
+        }
       end else begin
         D.AddStr('Status', 'Failed'); //TODO
         D.AddStr('ResponseMessage', 'Mis-matching order number.');
@@ -1618,7 +1621,7 @@ begin
       D.AddStr('Status', 'Failed'); //TODO
       D.AddStr('ResponseMessage', 'There is no order currently started.');
     end;
-    D.AddStr('Items', IntToStr(FGenius.LineItems.Count));
+    D.AddStr('Items', '0'); // IntToStr(FGenius.LineItems.Count)); //TODO
     D.AddStr('Discounts', IntToStr(TD));
     D.AddStr('TotalAmount', FormatFloat('$#,###,##0.00', TA));
     D.AddStr('TaxAmount', FormatFloat('$#,###,##0.00', TT));

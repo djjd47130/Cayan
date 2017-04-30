@@ -931,28 +931,32 @@ procedure TfrmCayanPOSMain.btnCartBackClick(Sender: TObject);
 var
   R: IGeniusCancelTransactionResponse;
 begin
-  Cursor:= crHandPoint;
-  try
-    actCustomerTab.ExecuteTarget(Self);
-    ClearCart;
-    R:= Genius.Cancel;
-    case R.Status of
-      ctCancelled: begin
-        //Successfully cancelled transaction...
+  if MessageDlg('Are you sure you wish to cancel invoice?', TMsgDlgType.mtConfirmation,
+    [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo], 0) = mrYes then
+  begin
+    Cursor:= crHandPoint;
+    try
+      actCustomerTab.ExecuteTarget(Self);
+      ClearCart;
+      R:= Genius.Cancel;
+      case R.Status of
+        ctCancelled: begin
+          //Successfully cancelled transaction...
 
-      end;
-      ctApprovedNoSignature: begin
-        //
-      end;
-      ctDenied: begin
+        end;
+        ctApprovedNoSignature: begin
+          //
+        end;
+        ctDenied: begin
 
-      end;
-      ctError: begin
+        end;
+        ctError: begin
 
+        end;
       end;
+    finally
+      Cursor:= crDefault;
     end;
-  finally
-    Cursor:= crDefault;
   end;
 end;
 
