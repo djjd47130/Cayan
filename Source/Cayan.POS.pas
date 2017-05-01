@@ -20,11 +20,50 @@ type
     function GetFirstName: String;
     function GetID: Integer;
     function GetLastName: String;
+    procedure SetBillAddr1(const Value: String);
+    procedure SetBillAddr2(const Value: String);
+    procedure SetBillCity(const Value: String);
+    procedure SetBillState(const Value: String);
+    procedure SetBillZip(const Value: String);
+    procedure SetCellPhone(const Value: String);
+    procedure SetEmail(const Value: String);
+    procedure SetMainPhone(const Value: String);
+    procedure SetShipAddr1(const Value: String);
+    procedure SetShipAddr2(const Value: String);
+    procedure SetShipCity(const Value: String);
+    procedure SetShipState(const Value: String);
+    procedure SetShipZip(const Value: String);
+    function GetBillAddr1: String;
+    function GetBillAddr2: String;
+    function GetBillCity: String;
+    function GetBillState: String;
+    function GetBillZip: String;
+    function GetCellPhone: String;
+    function GetEmail: String;
+    function GetMainPhone: String;
+    function GetShipAddr1: String;
+    function GetShipAddr2: String;
+    function GetShipCity: String;
+    function GetShipState: String;
+    function GetShipZip: String;
 
     property ID: Integer read GetID write SetID;
     property FirstName: String read GetFirstName write SetFirstName;
     property LastName: String read GetLastName write SetLastName;
     property CompanyName: String read GetCompanyName write SetCompanyName;
+    property MainPhone: String read GetMainPhone write SetMainPhone;
+    property CellPhone: String read GetCellPhone write SetCellPhone;
+    property Email: String read GetEmail write SetEmail;
+    property BillAddr1: String read GetBillAddr1 write SetBillAddr1;
+    property BillAddr2: String read GetBillAddr2 write SetBillAddr2;
+    property BillCity: String read GetBillCity write SetBillCity;
+    property BillState: String read GetBillState write SetBillState;
+    property BillZip: String read GetBillZip write SetBillZip;
+    property ShipAddr1: String read GetShipAddr1 write SetShipAddr1;
+    property ShipAddr2: String read GetShipAddr2 write SetShipAddr2;
+    property ShipCity: String read GetShipCity write SetShipCity;
+    property ShipState: String read GetShipState write SetShipState;
+    property ShipZip: String read GetShipZip write SetShipZip;
   end;
 
   ICayanPOSCustomers = interface
@@ -49,6 +88,19 @@ type
     FFirstName: String;
     FLastName: String;
     FCompanyName: String;
+    FMainPhone: String;
+    FBillAddr2: String;
+    FEmail: String;
+    FShipAddr2: String;
+    FBillAddr1: String;
+    FShipAddr1: String;
+    FBillCity: String;
+    FShipCity: String;
+    FCellPhone: String;
+    FBillZip: String;
+    FBillState: String;
+    FShipZip: String;
+    FShipState: String;
     procedure SetCompanyName(const Value: String);
     procedure SetFirstName(const Value: String);
     procedure SetID(const Value: Integer);
@@ -57,6 +109,32 @@ type
     function GetFirstName: String;
     function GetID: Integer;
     function GetLastName: String;
+    procedure SetBillAddr1(const Value: String);
+    procedure SetBillAddr2(const Value: String);
+    procedure SetBillCity(const Value: String);
+    procedure SetBillState(const Value: String);
+    procedure SetBillZip(const Value: String);
+    procedure SetCellPhone(const Value: String);
+    procedure SetEmail(const Value: String);
+    procedure SetMainPhone(const Value: String);
+    procedure SetShipAddr1(const Value: String);
+    procedure SetShipAddr2(const Value: String);
+    procedure SetShipCity(const Value: String);
+    procedure SetShipState(const Value: String);
+    procedure SetShipZip(const Value: String);
+    function GetBillAddr1: String;
+    function GetBillAddr2: String;
+    function GetBillCity: String;
+    function GetBillState: String;
+    function GetBillZip: String;
+    function GetCellPhone: String;
+    function GetEmail: String;
+    function GetMainPhone: String;
+    function GetShipAddr1: String;
+    function GetShipAddr2: String;
+    function GetShipCity: String;
+    function GetShipState: String;
+    function GetShipZip: String;
   public
     constructor Create;
     destructor Destroy; override;
@@ -64,6 +142,19 @@ type
     property FirstName: String read GetFirstName write SetFirstName;
     property LastName: String read GetLastName write SetLastName;
     property CompanyName: String read GetCompanyName write SetCompanyName;
+    property MainPhone: String read GetMainPhone write SetMainPhone;
+    property CellPhone: String read GetCellPhone write SetCellPhone;
+    property Email: String read GetEmail write SetEmail;
+    property BillAddr1: String read GetBillAddr1 write SetBillAddr1;
+    property BillAddr2: String read GetBillAddr2 write SetBillAddr2;
+    property BillCity: String read GetBillCity write SetBillCity;
+    property BillState: String read GetBillState write SetBillState;
+    property BillZip: String read GetBillZip write SetBillZip;
+    property ShipAddr1: String read GetShipAddr1 write SetShipAddr1;
+    property ShipAddr2: String read GetShipAddr2 write SetShipAddr2;
+    property ShipCity: String read GetShipCity write SetShipCity;
+    property ShipState: String read GetShipState write SetShipState;
+    property ShipZip: String read GetShipZip write SetShipZip;
   end;
 
   TCayanPOSCustomers = class(TInterfacedObject, ICayanPOSCustomers)
@@ -127,9 +218,44 @@ begin
   inherited;
 end;
 
+function TCayanPOSCustomer.GetBillAddr1: String;
+begin
+  Result:= FBillAddr1;
+end;
+
+function TCayanPOSCustomer.GetBillAddr2: String;
+begin
+  Result:= FBillAddr2;
+end;
+
+function TCayanPOSCustomer.GetBillCity: String;
+begin
+  Result:= FBillCity;
+end;
+
+function TCayanPOSCustomer.GetBillState: String;
+begin
+  Result:= FBillState;
+end;
+
+function TCayanPOSCustomer.GetBillZip: String;
+begin
+  Result:= FBillZip;
+end;
+
+function TCayanPOSCustomer.GetCellPhone: String;
+begin
+  Result:= FCellPhone;
+end;
+
 function TCayanPOSCustomer.GetCompanyName: String;
 begin
   Result:= FCompanyName;
+end;
+
+function TCayanPOSCustomer.GetEmail: String;
+begin
+  Result:= FEmail;
 end;
 
 function TCayanPOSCustomer.GetFirstName: String;
@@ -147,9 +273,74 @@ begin
   Result:= FLastName;
 end;
 
+function TCayanPOSCustomer.GetMainPhone: String;
+begin
+  Result:= FMainPhone;
+end;
+
+function TCayanPOSCustomer.GetShipAddr1: String;
+begin
+  Result:= FShipAddr1;
+end;
+
+function TCayanPOSCustomer.GetShipAddr2: String;
+begin
+  Result:= FShipAddr2;
+end;
+
+function TCayanPOSCustomer.GetShipCity: String;
+begin
+  Result:= FShipCity;
+end;
+
+function TCayanPOSCustomer.GetShipState: String;
+begin
+  Result:= FShipState;
+end;
+
+function TCayanPOSCustomer.GetShipZip: String;
+begin
+  Result:= FShipZip;
+end;
+
+procedure TCayanPOSCustomer.SetBillAddr1(const Value: String);
+begin
+  FBillAddr1 := Value;
+end;
+
+procedure TCayanPOSCustomer.SetBillAddr2(const Value: String);
+begin
+  FBillAddr2 := Value;
+end;
+
+procedure TCayanPOSCustomer.SetBillCity(const Value: String);
+begin
+  FBillCity := Value;
+end;
+
+procedure TCayanPOSCustomer.SetBillState(const Value: String);
+begin
+  FBillState := Value;
+end;
+
+procedure TCayanPOSCustomer.SetBillZip(const Value: String);
+begin
+  FBillZip := Value;
+end;
+
+procedure TCayanPOSCustomer.SetCellPhone(const Value: String);
+begin
+  FCellPhone := Value;
+end;
+
 procedure TCayanPOSCustomer.SetCompanyName(const Value: String);
 begin
   FCompanyName := Value;
+end;
+
+procedure TCayanPOSCustomer.SetEmail(const Value: String);
+begin
+  FEmail := Value;
 end;
 
 procedure TCayanPOSCustomer.SetFirstName(const Value: String);
@@ -165,6 +356,36 @@ end;
 procedure TCayanPOSCustomer.SetLastName(const Value: String);
 begin
   FLastName := Value;
+end;
+
+procedure TCayanPOSCustomer.SetMainPhone(const Value: String);
+begin
+  FMainPhone := Value;
+end;
+
+procedure TCayanPOSCustomer.SetShipAddr1(const Value: String);
+begin
+  FShipAddr1 := Value;
+end;
+
+procedure TCayanPOSCustomer.SetShipAddr2(const Value: String);
+begin
+  FShipAddr2 := Value;
+end;
+
+procedure TCayanPOSCustomer.SetShipCity(const Value: String);
+begin
+  FShipCity := Value;
+end;
+
+procedure TCayanPOSCustomer.SetShipState(const Value: String);
+begin
+  FShipState := Value;
+end;
+
+procedure TCayanPOSCustomer.SetShipZip(const Value: String);
+begin
+  FShipZip := Value;
 end;
 
 { TCayanPOSCustomers }
@@ -328,6 +549,19 @@ begin
         C.FirstName:= O.S['FirstName'];
         C.LastName:= O.S['LastName'];
         C.CompanyName:= O.S['CompanyName'];
+        C.MainPhone:= O.S['MainPhone'];
+        C.CellPhone:= O.S['CellPhone'];
+        C.Email:= O.S['Email'];
+        C.BillAddr1:= O.S['BillAddr1'];
+        C.BillAddr2:= O.S['BillAddr2'];
+        C.BillCity:= O.S['BillCity'];
+        C.BillState:= O.S['BillState'];
+        C.BillZip:= O.S['BillZip'];
+        C.ShipAddr1:= O.S['ShipAddr1'];
+        C.ShipAddr2:= O.S['ShipAddr2'];
+        C.ShipCity:= O.S['ShipCity'];
+        C.ShipState:= O.S['ShipState'];
+        C.ShipZip:= O.S['ShipZip'];
       end;
     finally
       Result:= Res;

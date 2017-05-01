@@ -76,7 +76,10 @@ end;
 
 destructor TCayanGeniusTransaction.Destroy;
 begin
-
+  if Assigned(FStaging) then begin
+    FStaging._Release;
+    FStaging:= nil;
+  end;
   inherited;
 end;
 

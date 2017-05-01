@@ -185,8 +185,6 @@ type
     ListBoxGroupHeader11: TListBoxGroupHeader;
     Button4: TButton;
     Button5: TButton;
-    MainStyle: TStyleBook;
-    Cayan: TCayan;
     actCustomerLookupTab: TChangeTabAction;
     tabSetup: TTabItem;
     actSetupTab: TChangeTabAction;
@@ -229,8 +227,29 @@ type
     lServerStation: TListBoxItem;
     txtServerPort: TNumberBox;
     txtServerStation: TNumberBox;
-    POS: TCayanPOS;
     Tran: TCayanGeniusTransaction;
+    btnCedKeyed: TButton;
+    lblTerminalStatus: TLabel;
+    liSaveToVault: TListBoxItem;
+    swSaveToVault: TSwitch;
+    txtSaveVaultName: TEdit;
+    lhVaultCards: TListBoxGroupHeader;
+    liVaultCards: TListBoxItem;
+    cboVaultCards: TComboBox;
+    ListBoxItem24: TListBoxItem;
+    Switch1: TSwitch;
+    liCustID: TListBoxItem;
+    txtCustID: TEdit;
+    tabMenu: TTabItem;
+    ListBox1: TListBox;
+    ListBoxGroupHeader14: TListBoxGroupHeader;
+    ListBoxItem26: TListBoxItem;
+    ListBoxItem27: TListBoxItem;
+    ToolBar8: TToolBar;
+    Label8: TLabel;
+    SpeedButton2: TSpeedButton;
+    SpeedButton3: TSpeedButton;
+    ListBoxItem44: TListBoxItem;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
@@ -269,6 +288,9 @@ type
     procedure Button8Click(Sender: TObject);
     procedure lstLookupCustomerItemClick(const Sender: TObject;
       const AItem: TListViewItem);
+    procedure btnCedKeyedClick(Sender: TObject);
+    procedure swSaveToVaultSwitch(Sender: TObject);
+    procedure Button10Click(Sender: TObject);
   private
     FTranStarted: Boolean;
     FProducts: TStringList;
@@ -286,6 +308,7 @@ type
     procedure ClearCustomers;
     function CustomerByID(const ID: Integer): ICayanPOSCustomer;
     procedure ClearCustomer;
+    procedure ShowVaultInfo;
   public
     procedure UpdateCartTotals;
     procedure LoadFromConfig;
@@ -300,7 +323,8 @@ implementation
 {$R *.fmx}
 
 uses
-  System.IOUtils;
+  System.IOUtils,
+  uDM;
 
 procedure ResizeListItems(AListBox: TListBox);
 var
@@ -343,8 +367,12 @@ begin
   Self.CustomerTabs.TabPosition:= TTabPosition.None;
   MainTabs.ActiveTab := tabLogin;
   CustomerTabs.ActiveTab:= tabCustInfo;
-  Width:= 430;
-  Height:= 530;
+
+  pPayButtons.Visible:= False; //TODO: IMPLEMENT SPLIT PAYMENTS!
+  lstPayments.Visible:= False; //TODO: IMPLEMENT SPLIT PAYMENTS!
+
+  Width:= 450;
+  Height:= 550;
 
   LoadFromConfig;
 
@@ -502,6 +530,8 @@ procedure TfrmCayanPOSMain.SetCedBusy(const Value: Boolean);
 begin
   btnCedStart.Visible:= not Value;
   btnCedCancel.Visible:= Value;
+  if not Value then
+    btnCedKeyed.Visible:= Value;
   btnPaymentBack.Enabled:= not Value;
   lstPayDetail.Enabled:= not Value;
   pPayButtons.Enabled:= not Value;
@@ -513,6 +543,7 @@ begin
   //TODO: Start Transaction...
 
   SetCedBusy(True);
+  btnCedKeyed.Visible:= True;
 
   Self.FTranStarted:= True;
   Tran.Amount:= StrToFloat(txtPayAmount.Text);
@@ -581,7 +612,10 @@ begin
   liCardExpiryYear.Visible:= False;
   liCardHolder.Visible:= False;
   liCardCVCode.Visible:= False;
-
+  liSaveToVault.Visible:= False;
+  lhVaultCards.Visible:= False;
+  liVaultCards.Visible:= False;
+  liSaveToVault.Visible:= False;
   ResizeListItems(lstPayDetail);
 end;
 
@@ -593,7 +627,7 @@ begin
   liCardExpiryYear.Visible:= True;
   liCardHolder.Visible:= True;
   liCardCVCode.Visible:= True;
-
+  liSaveToVault.Visible:= True;
   ResizeListItems(lstPayDetail);
 end;
 
@@ -605,26 +639,36 @@ begin
   ResizeListItems(lstPayDetail);
 end;
 
+procedure TfrmCayanPOSMain.ShowVaultInfo;
+begin
+  lhVaultCards.Visible:= True;
+  liVaultCards.Visible:= True;
+  //TODO: Load list of cards registered to customer...
+
+  //cboVaultCards
+
+
+  ResizeListItems(lstPayDetail);
+end;
+
 procedure TfrmCayanPOSMain.SpeedButton1Click(Sender: TObject);
 begin
-
-  //TODO: Save Settings...
-
   Genius.Device.Monitoring:= False;
-
-  Cayan.MerchantName:= txtMerchantName.Text;
-  Cayan.MerchantSiteId:= txtMerchantSiteId.Text;
-  Cayan.MerchantKey:= txtMerchantKey.Text;
+  DM.Cayan.MerchantName:= txtMerchantName.Text;
+  DM.Cayan.MerchantSiteId:= txtMerchantSiteId.Text;
+  DM.Cayan.MerchantKey:= txtMerchantKey.Text;
   Genius.Device.DeviceAddress:= txtCedAddress.Text;
   Genius.Device.DevicePort:= Trunc(txtCedPort.Value);
   Genius.Device.DeviceTimeout:= Trunc(txtCedTimeout.Value);
-
   Self.SaveToConfig;
-
   Genius.Device.Monitoring:= True;
-
   actCustomerTab.ExecuteTarget(Self);
+end;
 
+procedure TfrmCayanPOSMain.swSaveToVaultSwitch(Sender: TObject);
+begin
+  txtSaveVaultName.Visible:= swSaveToVault.IsChecked;
+  txtSaveVaultName.Text:= '';
 end;
 
 procedure TfrmCayanPOSMain.cboPayMethodClick(Sender: TObject);
@@ -637,14 +681,13 @@ begin
   btnPayKeyed.StyleLookup:= 'toolbutton';
   btnPaySwipe.StyleLookup:= 'toolbutton';
   btnPayVault.StyleLookup:= 'toolbutton';
-
   HidePayInfo;
   B:= TButton(Sender);
   B.StyleLookup:= 'buttonstyle';
   case B.Tag of
     0: begin
       //Genius CED
-
+      liSaveToVault.Visible:= True;
     end;
     1: begin
       //Cash
@@ -664,7 +707,7 @@ begin
     end;
     5: begin
       //Vault Card
-
+      ShowVaultInfo;
     end;
   end;
   ResizeListItems(Self.lstPayDetail);
@@ -703,12 +746,12 @@ var
   O: ISuperObject;
 begin
   if not FileExists(ConfigFilename) then begin
-    Cayan.MerchantName:= 'PSTEST';
-    Cayan.MerchantSiteId:= '22222222';
-    Cayan.MerchantKey:= '22222-22222-22222-22222-22222';
-    Cayan.Dba:= 'My Company Name';
-    Cayan.ClerkID:= 'admin';
-    Cayan.StationID:= '1';
+    DM.Cayan.MerchantName:= 'PSTEST';
+    DM.Cayan.MerchantSiteId:= '22222222';
+    DM.Cayan.MerchantKey:= '22222-22222-22222-22222-22222';
+    DM.Cayan.Dba:= 'My Company Name';
+    DM.Cayan.ClerkID:= 'admin';
+    DM.Cayan.StationID:= '1';
     Genius.ForceDuplicate:= False;
     Genius.Device.DeviceAddress:= 'LocalHost';
     Genius.Device.DevicePort:= 8989;
@@ -723,12 +766,12 @@ begin
   end;
   O:= TSuperObject.ParseFile(ConfigFilename);
   if Assigned(O) then begin
-    Cayan.MerchantName:= O.S['merchantName'];
-    Cayan.MerchantSiteId:= O.S['merchantSiteId'];
-    Cayan.MerchantKey:= O.S['merchantKey'];
-    Cayan.Dba:= O.S['dba'];
-    Cayan.ClerkID:= O.S['clerkId'];
-    Cayan.StationID:= O.S['stationId'];
+    DM.Cayan.MerchantName:= O.S['merchantName'];
+    DM.Cayan.MerchantSiteId:= O.S['merchantSiteId'];
+    DM.Cayan.MerchantKey:= O.S['merchantKey'];
+    DM.Cayan.Dba:= O.S['dba'];
+    DM.Cayan.ClerkID:= O.S['clerkId'];
+    DM.Cayan.StationID:= O.S['stationId'];
     Genius.ForceDuplicate:= O.B['forceDuplicates'];
     Genius.Device.DeviceAddress:= O.S['deviceAddress'];
     Genius.Device.DevicePort:= O.I['devicePort'];
@@ -748,18 +791,18 @@ var
   L: TStringList;
 begin
   O:= SO;
-  O.S['merchantName']:= Cayan.MerchantName;
-  O.S['merchantSiteId']:= Cayan.MerchantSiteId;
-  O.S['merchantKey']:= Cayan.MerchantKey;
+  O.S['merchantName']:= DM.Cayan.MerchantName;
+  O.S['merchantSiteId']:= DM.Cayan.MerchantSiteId;
+  O.S['merchantKey']:= DM.Cayan.MerchantKey;
   O.B['forceDuplicates']:= Genius.ForceDuplicate;
   O.S['deviceAddress']:= Genius.Device.DeviceAddress;
   O.I['devicePort']:= Genius.Device.DevicePort;
   O.I['deviceProtocol']:= Integer(Genius.Device.DeviceProtocol);
   O.I['deviceTimeout']:= Genius.Device.DeviceTimeout;
   O.I['deviceVersion']:= Integer(Genius.Device.DeviceVersion);
-  O.S['dba']:= Cayan.Dba;
-  O.S['clerkId']:= Cayan.ClerkID;
-  O.S['stationId']:= Cayan.StationID;
+  O.S['dba']:= DM.Cayan.Dba;
+  O.S['clerkId']:= DM.Cayan.ClerkID;
+  O.S['stationId']:= DM.Cayan.StationID;
   O.S['serverAddr']:= Self.txtServerHost.Text;
   O.I['serverPort']:= Trunc(Self.txtServerPort.Value);
   O.S['serverKey']:= Self.txtServerKey.Text;
@@ -842,20 +885,46 @@ begin
   C:= Self.CustomerByID(AItem.Tag);
   Self.ClearCustomer;
   Self.actCustomerInfoTab.ExecuteTarget(Self);
-
+  txtCustID.Text:= IntToStr(C.ID);
+  txtCustID.Enabled:= False;
   Self.txtCustFirstName.Text:= C.FirstName;
   Self.txtCustLastName.Text:= C.LastName;
   Self.txtCustCompanyName.Text:= C.CompanyName;
-
-
+  Self.txtCustMainPhone.Text:= C.MainPhone;
+  Self.txtCustCellPhone.Text:= C.CellPhone;
+  Self.txtCustEmail.Text:= C.Email;
+  Self.txtCustBillAddr1.Text:= C.BillAddr1;
+  txtCustBillAddr2.Text:= C.BillAddr2;
+  txtCustBillCity.Text:= C.BillCity;
+  txtCustBillState.Text:= C.BillState;
+  txtCustBillZip.Text:= C.BillZip;
+  txtCustShipAddr1.Text:= C.ShipAddr1;
+  txtCustShipAddr2.Text:= C.ShipAddr2;
+  txtCustShipCity.Text:= C.ShipCity;
+  txtCustShipState.Text:= C.ShipState;
+  txtCustShipZip.Text:= C.ShipZip;
 end;
 
 procedure TfrmCayanPOSMain.ClearCustomer;
 begin
+  txtCustID.Text:= '';
+  txtCustID.Enabled:= True;
   Self.txtCustFirstName.Text:= '';
   Self.txtCustLastName.Text:= '';
   Self.txtCustCompanyName.Text:= '';
-
+  Self.txtCustMainPhone.Text:= '';
+  Self.txtCustCellPhone.Text:= '';
+  Self.txtCustEmail.Text:= '';
+  Self.txtCustBillAddr1.Text:= '';
+  txtCustBillAddr2.Text:= '';
+  txtCustBillCity.Text:= '';
+  txtCustBillState.Text:= '';
+  txtCustBillZip.Text:= '';
+  txtCustShipAddr1.Text:= '';
+  txtCustShipAddr2.Text:= '';
+  txtCustShipCity.Text:= '';
+  txtCustShipState.Text:= '';
+  txtCustShipZip.Text:= '';
 end;
 
 procedure TfrmCayanPOSMain.lstNewInvoiceItemClick(Sender: TObject);
@@ -902,18 +971,20 @@ end;
 
 procedure TfrmCayanPOSMain.GeniusDeviceStatus(Sender: IGenius;
   const Status: IGeniusStatusResponse);
+var
+  S: String;
 begin
   //CED status changed
   if Genius.Device.Monitoring then begin
     case Status.Status of
       csOffline: begin
-        Caption:= 'Cayan POS - Device Offline';
+        lblTerminalStatus.Text:= 'Device Offline';
       end;
       csOnline: begin
-        Caption:= 'Cayan POS - Device Online';
+        lblTerminalStatus.Text:= 'Device: ' + GeniusCedScreenToStr(Status.CurrentScreen);
       end;
       csDownloadNeeded: begin
-        Caption:= 'Cayan POS - Device Download Needed';
+        lblTerminalStatus.Text:= 'Device Download Needed';
       end;
     end;
   end;
@@ -938,6 +1009,7 @@ begin
   txtPayAmount.Text:= FormatFloat('0.00', Tran.Amount);
   lblPaymentTitle.Text:= 'Collect ' + FormatFloat('$#,###,##0.00', Tran.Amount);
   actPaymentTab.ExecuteTarget(Self);
+  cboPayMethodClick(btnPayGenius);
 end;
 
 procedure TfrmCayanPOSMain.btnCartBackClick(Sender: TObject);
@@ -983,18 +1055,26 @@ begin
 
 end;
 
+procedure TfrmCayanPOSMain.Button10Click(Sender: TObject);
+begin
+  if MessageDlg('Are you sure you wish to clear the customer?', TMsgDlgType.mtConfirmation,
+    [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo], 0) = mrYes then
+  begin
+    ClearCustomer;
+  end;
+end;
+
 procedure TfrmCayanPOSMain.Button5Click(Sender: TObject);
 begin
 
   //TODO: Load settings...
 
-  txtMerchantName.Text:= Self.Cayan.MerchantName;
-  txtMerchantSiteID.Text:= Self.Cayan.MerchantSiteId;
-  txtMerchantKey.Text:= Self.Cayan.MerchantKey;
+  txtMerchantName.Text:= DM.Cayan.MerchantName;
+  txtMerchantSiteID.Text:= DM.Cayan.MerchantSiteId;
+  txtMerchantKey.Text:= DM.Cayan.MerchantKey;
   txtCedAddress.Text:= Self.Genius.Device.DeviceAddress;
   txtCedPort.Value:= Self.Genius.Device.DevicePort;
   txtCedTimeout.Value:= Self.Genius.Device.DeviceTimeout;
-
 
   actSetupTab.ExecuteTarget(Self);
 
@@ -1016,7 +1096,7 @@ procedure TfrmCayanPOSMain.Button8Click(Sender: TObject);
 begin
   ClearCustomers;
   actCustomerLookupTab.ExecuteTarget(Self);
-  FCustomers:= POS.GetCustomers('');
+  FCustomers:= DM.POS.GetCustomers('');
   LoadCustomers;
 end;
 
@@ -1083,8 +1163,8 @@ procedure TfrmCayanPOSMain.btnLoginClick(Sender: TObject);
 begin
   //TODO: Login...
   Self.SaveToConfig;
-  if POS.UserLogin(txtLoginUser.Text, txtLoginPassword.Text) then begin
-    Self.Cayan.ClerkID:= txtLoginUser.Text;
+  if DM.POS.UserLogin(txtLoginUser.Text, txtLoginPassword.Text) then begin
+    DM.Cayan.ClerkID:= txtLoginUser.Text;
     Genius.Device.Monitoring:= True;
     Self.actCustomerTab.ExecuteTarget(Self);
   end else begin
@@ -1098,11 +1178,13 @@ begin
     [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo], 0) = mrYes then
   begin
     Genius.Device.Monitoring:= False;
-    Self.Caption:= 'Cayan POS';
+    Self.lblTerminalStatus.Text:= '';
     txtLoginUser.Text:= '';
     txtLoginPassword.Text:= '';
     actLoginTab.ExecuteTarget(Self);
     txtLoginUser.SetFocus;
+    Self.ClearCustomer;
+    Self.ClearCustomers;
   end;
 end;
 
@@ -1121,16 +1203,32 @@ end;
 procedure TfrmCayanPOSMain.TranTransactionResult(
   const ATrans: TCayanGeniusTransaction;
   const AResult: IGeniusTransactionResponse);
+var
+  V: IMWVaultBoardingResponse;
 begin
-  Self.SetCedBusy(False);
+  SetCedBusy(False);
 
   DisplayResult(AResult);
 
   case AResult.Status of
     gsApproved: begin
       //Transaction was approved...
-      //ShowMessage('Success!');
-      Self.actResultTab.ExecuteTarget(Self);
+      actResultTab.ExecuteTarget(Self);
+
+      if swSaveToVault.IsChecked then begin
+        V:= Genius.MerchantWare.Credit.VaultBoardCreditByReference(AResult.Token);
+        if V.ErrorMessage <> '' then begin
+          //Error saving card info...
+          ShowMessage('Error saving card info: ' + V.ErrorMessage);
+        end else begin
+          //Successfully saved...
+
+          //TODO: Save to database...
+
+
+          ShowMessage('Card info successfully saved: ' + V.VaultToken);
+        end;
+      end;
     end;
     gsDeclined: begin
       //Transaction was declined...
@@ -1165,6 +1263,14 @@ procedure TfrmCayanPOSMain.TranTransactionStart(
   const ATrans: TCayanGeniusTransaction);
 begin
   Self.SetCedBusy(True);
+end;
+
+procedure TfrmCayanPOSMain.btnCedKeyedClick(Sender: TObject);
+var
+  R: TGeniusKeyedSaleStatus;
+begin
+  btnCedKeyed.Visible:= False;
+  R:= Tran.Genius.Genius.InitiateKeyedEntry;
 end;
 
 procedure TfrmCayanPOSMain.txtLoginUserKeyUp(Sender: TObject; var Key: Word;

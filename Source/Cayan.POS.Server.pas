@@ -112,6 +112,7 @@ type
     procedure HandleGetStatus(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
     procedure HandleGetLog(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
     procedure HandleGetCustomers(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
+    procedure HandlePostCustomer(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
     procedure HandleGetInventory(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
   end;
 
@@ -466,6 +467,8 @@ begin
             AReq.PostStream.Position:= 0;
             if IsAct('UserLogin') then begin
               HandlePostUserLogin(AReq, ARes);
+            end else if IsAct('Customer') then begin
+              HandlePostCustomer(AReq, ARes);
             end else begin
               //TODO
             end;
@@ -557,9 +560,28 @@ var
       efJSON: CO.I[N]:= V;
     end;
   end;
+  procedure AddContent;
+  begin
+    AddInt('ID', FQry.FieldByName('ID').AsInteger);
+    AddStr('FirstName', FQry.FieldByName('FirstName').AsString);
+    AddStr('LastName', FQry.FieldByName('LastName').AsString);
+    AddStr('CompanyName', FQry.FieldByName('CompanyName').AsString);
+    AddStr('MainPhone', FQry.FieldByName('MainPhone').AsString);
+    AddStr('CellPhone', FQry.FieldByName('CellPhone').AsString);
+    AddStr('Email', FQry.FieldByName('Email').AsString);
+    AddStr('BillAddr1', FQry.FieldByName('BillAddr1').AsString);
+    AddStr('BillAddr2', FQry.FieldByName('BillAddr2').AsString);
+    AddStr('BillCity', FQry.FieldByName('BillCity').AsString);
+    AddStr('BillState', FQry.FieldByName('BillState').AsString);
+    AddStr('BillZip', FQry.FieldByName('BillZip').AsString);
+    AddStr('ShipAddr1', FQry.FieldByName('ShipAddr1').AsString);
+    AddStr('ShipAddr2', FQry.FieldByName('ShipAddr2').AsString);
+    AddStr('ShipCity', FQry.FieldByName('ShipCity').AsString);
+    AddStr('ShipState', FQry.FieldByName('ShipState').AsString);
+    AddStr('ShipZip', FQry.FieldByName('ShipZip').AsString);
+  end;
 begin
   Q:= FPar.Values['q'];
-
   FQry.Close;
   FQry.SQL.Clear;
   FQry.Parameters.Clear;
@@ -571,7 +593,6 @@ begin
     FQry.Parameters.ParamValues['cn']:= Q;
   end;
   FQry.SQL.Append('order by LastName, FirstName, CompanyName');
-
   FQry.Open;
   try
     case FFormat of
@@ -580,14 +601,9 @@ begin
         N:= D.AddChild('Customers');
         while not FQry.Eof do begin
           CN:= N.AddChild('Customer');
-          AddInt('ID', FQry.FieldByName('ID').AsInteger);
-          AddStr('FirstName', FQry.FieldByName('FirstName').AsString);
-          AddStr('LastName', FQry.FieldByName('LastName').AsString);
-          AddStr('CompanyName', FQry.FieldByName('CompanyName').AsString);
-
+          AddContent;
           FQry.Next;
         end;
-
         FResponse.LoadXML(D.XML.Text);
       end;
       efJSON: begin
@@ -595,17 +611,12 @@ begin
         while not FQry.Eof do begin
           try
             CO:= SO;
-            AddInt('ID', FQry.FieldByName('ID').AsInteger);
-            AddStr('FirstName', FQry.FieldByName('FirstName').AsString);
-            AddStr('LastName', FQry.FieldByName('LastName').AsString);
-            AddStr('CompanyName', FQry.FieldByName('CompanyName').AsString);
-
+            AddContent;
             FQry.Next;
           finally
             A.Add(CO);
           end;
         end;
-
         FResponse.LoadJSON(A.AsJson(True));
       end;
     end;
@@ -664,7 +675,6 @@ var
   end;
 begin
   Q:= '%'+FPar.Values['q']+'%';
-
   FQry.Close;
   FQry.SQL.Clear;
   FQry.Parameters.Clear;
@@ -679,7 +689,6 @@ begin
     FQry.Parameters.ParamValues['ld']:= Q;
   end;
   FQry.SQL.Append('order by SKU, VendorNum, ShortDescr');
-
   FQry.Open;
   try
     case FFormat of
@@ -710,7 +719,6 @@ begin
   finally
     FQry.Close;
   end;
-
 end;
 
 procedure TCayanPOSServerContext.HandleGetLog(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
@@ -725,6 +733,75 @@ begin
     end;
   finally
     FOwner.FLogLock.Leave;
+  end;
+end;
+
+procedure TCayanPOSServerContext.HandlePostCustomer(
+  const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
+var
+  Req: ISuperObject;
+  ID: Integer;
+begin
+  Self.FResponse.RootElement:= 'CustomerResult';
+  if Assigned(AReq.PostStream) then begin
+    AReq.PostStream.Position:= 0;
+    Req:= TSuperObject.ParseStream(AReq.PostStream);
+    if Assigned(Req) then begin
+      ID:= Req.I['id'];
+      try
+        FQry.SQL.Text:= 'select * from Customers';
+        FQry.SQL.Append('where ID = :id');
+        FQry.Parameters.ParamValues['id']:= ID;
+        FQry.Open;
+        try
+          if FQry.IsEmpty then begin
+            FQry.Append;
+            FQry['DateCreated']:= Now;
+            FQry['UserCreatedID']:= 0; //TODO
+          end else begin
+            FQry.Edit;
+          end;
+          try
+            FQry['StatusID']:= Req.I['StatusID'];
+            FQry['FirstName']:= Req.S['FirstName'];
+            FQry['LastName']:= Req.S['LastName'];
+            FQry['CompanyName']:= Req.S['CompanyName'];
+            FQry['MainPhone']:= Req.S['MainPhone'];
+            FQry['CellPhone']:= Req.S['CellPhone'];
+            FQry['Email']:= Req.S['Email'];
+            FQry['BillAddr1']:= Req.S['BillAddr1'];
+            FQry['BillAddr2']:= Req.S['BillAddr2'];
+            FQry['BillCity']:= Req.S['BillCity'];
+            FQry['BillState']:= Req.S['BillState'];
+            FQry['BillZip']:= Req.S['BillZip'];
+            FQry['ShipAddr1']:= Req.S['ShipAddr1'];
+            FQry['ShipAddr2']:= Req.S['ShipAddr2'];
+            FQry['ShipCity']:= Req.S['ShipCity'];
+            FQry['ShipState']:= Req.S['ShipState'];
+            FQry['ShipZip']:= Req.S['ShipZip'];
+
+          finally
+            FQry.Post;
+          end;
+          ID:= FQry.FieldByName('ID').AsInteger;
+          FResponse.AddStr('Result', 'Success');
+          FResponse.AddInt('ID', ID);
+        except
+          on E: Exception do begin
+            FResponse.AddStr('Result', 'Failed');
+            FResponse.AddStr('Error', 'Exception: ' + E.Message);
+          end;
+        end;
+      finally
+        FQry.Close;
+      end;
+    end else begin
+      FResponse.AddStr('Result', 'Failed');
+      FResponse.AddStr('Error', 'No object in request.');
+    end;
+  end else begin
+    FResponse.AddStr('Result', 'Failed');
+    FResponse.AddStr('Error', 'No post stream in request.');
   end;
 end;
 
