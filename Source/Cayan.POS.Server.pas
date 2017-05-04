@@ -114,6 +114,9 @@ type
     procedure HandleGetCustomers(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
     procedure HandlePostCustomer(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
     procedure HandleGetInventory(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
+    procedure HandlePostVault(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
+    procedure HandleGetVault(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
+    procedure HandleGetSetup(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
   end;
 
 implementation
@@ -459,6 +462,10 @@ begin
               HandleGetCustomers(AReq, ARes);
             end else if IsAct('Inventory') then begin
               HandleGetInventory(AReq, ARes);
+            end else if IsAct('Vault') then begin
+              HandleGetVault(AReq, ARes);
+            end else if IsAct('Setup') then begin
+              HandleGetSetup(AReq, ARes);
             end else begin
               //TODO
             end;
@@ -469,6 +476,8 @@ begin
               HandlePostUserLogin(AReq, ARes);
             end else if IsAct('Customer') then begin
               HandlePostCustomer(AReq, ARes);
+            end else if IsAct('Vault') then begin
+              HandlePostVault(AReq, ARes);
             end else begin
               //TODO
             end;
@@ -524,6 +533,58 @@ function TCayanPOSServerContext.NewQuery: TADOQuery;
 begin
   Result:= TADOQuery.Create(nil);
   Result.Connection:= FDB;
+end;
+
+procedure TCayanPOSServerContext.HandleGetSetup(const AReq: TIdHTTPRequestInfo;
+  ARes: TIdHTTPResponseInfo);
+var
+  V: String;
+  F: Boolean;
+  procedure ChkStr(const N: String);
+  begin
+    if F then Exit;
+    if SameText(N, V) then begin
+      FResponse.AddStr(N, FQry.FieldByName('Val').AsString);
+      F:= True;
+    end;
+  end;
+  procedure ChkInt(const N: String);
+  begin
+    if F then Exit;
+    if SameText(N, V) then begin
+      FResponse.AddInt(N, StrToIntDef(FQry.FieldByName('Val').AsString, 0));
+      F:= True;
+    end;
+  end;
+begin
+  FResponse.RootElement:= 'Status';
+
+  FQry.Close;
+  FQry.SQL.Clear;
+  FQry.Parameters.Clear;
+  FQry.SQL.Text:= 'select * from Setup';
+  FQry.Open;
+  try
+    while not FQry.Eof do begin
+      V:= FQry.FieldByName('Name').AsString;
+      F:= False;
+
+      ChkStr('Merch_Name');
+      ChkStr('Merch_SiteId');
+      ChkStr('Merch_Key');
+      ChkInt('Req_Cust');
+      ChkInt('Req_Phone');
+      ChkInt('Req_Address');
+      ChkInt('Req_Email');
+      ChkInt('Req_FullPay');
+      ChkInt('Force_Duplicates');
+      ChkStr('Dba');
+
+      FQry.Next;
+    end;
+  finally
+    FQry.Close;
+  end;
 end;
 
 procedure TCayanPOSServerContext.HandleGetStatus(const AReq: TIdHTTPRequestInfo; ARes: TIdHTTPResponseInfo);
@@ -861,6 +922,101 @@ begin
   finally
     FQry.Close;
   end;
+end;
+
+procedure TCayanPOSServerContext.HandleGetVault(const AReq: TIdHTTPRequestInfo;
+  ARes: TIdHTTPResponseInfo);
+var
+  I: Integer;
+  A: ISuperArray;
+  CO: ISuperObject;
+  D: IXmlDocument;
+  N, CN: IXmlNode;
+  procedure AddStr(const N: String; const V: String);
+  var
+    T: IXmlNode;
+  begin
+    case FFormat of
+      efXML: begin
+        T:= CN.AddChild(N); T.Text:= V;
+      end;
+      efJSON: CO.S[N]:= V;
+    end;
+  end;
+  procedure AddInt(const N: String; const V: Integer);
+  begin
+    case FFormat of
+      efXML:  AddStr(N, IntToStr(V));
+      efJSON: CO.I[N]:= V;
+    end;
+  end;
+  procedure AddCur(const N: String; const V: Currency);
+  begin
+    case FFormat of
+      efXML:  AddStr(N, CurrToStr(V));
+      efJSON: CO.D[N]:= V;
+    end;
+  end;
+  procedure AddContent;
+  begin
+    AddInt('ID', FQry.FieldByName('ID').AsInteger);
+    AddStr('Caption', FQry.FieldByName('Caption').AsString);
+    AddStr('Token', FQry.FieldByName('Token').AsString);
+    AddStr('Cardholder', FQry.FieldByName('Cardholder').AsString);
+    AddStr('CardNumber', FQry.FieldByName('CardNumber').AsString);
+    AddInt('ExpiryMonth', FQry.FieldByName('ExpiryMonth').AsInteger);
+    AddInt('ExpiryYear', FQry.FieldByName('ExpiryYear').AsInteger);
+    //TODO: Card Brand
+  end;
+begin
+  Self.FResponse.RootElement:= 'VaultResponse';
+  I:= StrToIntDef(AReq.Params.Values['CustomerID'], 0);
+
+  FQry.Close;
+  FQry.SQL.Clear;
+  FQry.Parameters.Clear;
+  FQry.SQL.Text:= 'select * from Vault where CustomerID = :i and StatusID = 1';
+  FQry.Parameters.ParamValues['i']:= I;
+  FQry.Open;
+  try
+    case FFormat of
+      efXML: begin
+        D:= NewXmlDocument;
+        N:= D.AddChild('Vault');
+        while not FQry.Eof do begin
+          CN:= N.AddChild('Card');
+          AddContent;
+          FQry.Next;
+        end;
+        FResponse.LoadXML(D.XML.Text);
+      end;
+      efJSON: begin
+        A:= SA;
+        while not FQry.Eof do begin
+          try
+            CO:= SO;
+            AddContent;
+            FQry.Next;
+          finally
+            A.Add(CO);
+          end;
+        end;
+        FResponse.LoadJSON(A.AsJson(True));
+      end;
+    end;
+  finally
+    FQry.Close;
+  end;
+
+end;
+
+procedure TCayanPOSServerContext.HandlePostVault(const AReq: TIdHTTPRequestInfo;
+  ARes: TIdHTTPResponseInfo);
+begin
+  Self.FResponse.RootElement:= 'VaultAddResult';
+  FQry.SQL.Text:= 'select * from Vault where 1 <> 1';
+
+
 end;
 
 end.

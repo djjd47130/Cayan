@@ -9,6 +9,25 @@ uses
 
 type
 
+  ICayanPOSSetup = interface
+    ['{8F82F808-23B1-4873-AF0C-E866A13FD166}']
+    procedure SetMerch_Key(const Value: String);
+    procedure SetMerch_Name(const Value: String);
+    procedure SetMerch_SiteId(const Value: String);
+    function GetMerch_Key: String;
+    function GetMerch_Name: String;
+    function GetMerch_SiteId: String;
+    function GetDba: String;
+    function GetForceDuplicates: Boolean;
+    procedure SetDba(const Value: String);
+    procedure SetForceDuplicates(const Value: Boolean);
+
+    property Merch_Name: String read GetMerch_Name write SetMerch_Name;
+    property Merch_SiteId: String read GetMerch_SiteId write SetMerch_SiteId;
+    property Merch_Key: String read GetMerch_Key write SetMerch_Key;
+    property ForceDuplicates: Boolean read GetForceDuplicates write SetForceDuplicates;
+    property Dba: String read GetDba write SetDba;
+  end;
 
   ICayanPOSCustomer = interface
     ['{FEEF804E-2412-45CC-9C21-7D92872DC713}']
@@ -78,9 +97,79 @@ type
     property Items[Index: Integer]: ICayanPOSCustomer read GetItem; default;
   end;
 
+  ICayanPOSCard = interface
+    ['{CC13AA4B-6611-421C-9460-B16220FE66BC}']
+    procedure SetCaption(const Value: String);
+    procedure SetCardholder(const Value: String);
+    procedure SetCardNum(const Value: String);
+    procedure SetExpiryMonth(const Value: Integer);
+    procedure SetExpiryYear(const Value: Integer);
+    procedure SetID(const Value: Integer);
+    procedure SetToken(const Value: String);
+    function GetCaption: String;
+    function GetCardholder: String;
+    function GetCardNum: String;
+    function GetExpiryMonth: Integer;
+    function GetExpiryYear: Integer;
+    function GetID: Integer;
+    function GetToken: String;
+
+    property ID: Integer read GetID write SetID;
+    property Caption: String read GetCaption write SetCaption;
+    property Token: String read GetToken write SetToken;
+    property Cardholder: String read GetCardholder write SetCardholder;
+    property CardNum: String read GetCardNum write SetCardNum;
+    property ExpiryMonth: Integer read GetExpiryMonth write SetExpiryMonth;
+    property ExpiryYear: Integer read GetExpiryYear write SetExpiryYear;
+  end;
+
+  ICayanPOSCards = interface
+    ['{CCDE306E-579F-46FA-B09C-272DD123C693}']
+    function GetItem(Index: Integer): ICayanPOSCard;
+
+    function Add: ICayanPOSCard;
+    procedure Delete(const Index: Integer);
+    procedure Clear;
+    function Count: Integer;
+
+    property Items[Index: Integer]: ICayanPOSCard read GetItem; default;
+  end;
 
 
 
+
+
+
+
+
+
+  TCayanPOSSetup = class(TInterfacedObject, ICayanPOSSetup)
+  private
+    FMerch_Key: String;
+    FMerch_Name: String;
+    FMerch_SiteId: String;
+    FForceDuplicates: Boolean;
+    FDba: String;
+    procedure SetMerch_Key(const Value: String);
+    procedure SetMerch_Name(const Value: String);
+    procedure SetMerch_SiteId(const Value: String);
+    function GetMerch_Key: String;
+    function GetMerch_Name: String;
+    function GetMerch_SiteId: String;
+    function GetDba: String;
+    function GetForceDuplicates: Boolean;
+    procedure SetDba(const Value: String);
+    procedure SetForceDuplicates(const Value: Boolean);
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    property Merch_Name: String read GetMerch_Name write SetMerch_Name;
+    property Merch_SiteId: String read GetMerch_SiteId write SetMerch_SiteId;
+    property Merch_Key: String read GetMerch_Key write SetMerch_Key;
+    property ForceDuplicates: Boolean read GetForceDuplicates write SetForceDuplicates;
+    property Dba: String read GetDba write SetDba;
+  end;
 
   TCayanPOSCustomer = class(TInterfacedObject, ICayanPOSCustomer)
   private
@@ -173,6 +262,60 @@ type
     property Items[Index: Integer]: ICayanPOSCustomer read GetItem; default;
   end;
 
+  TCayanPOSCard = class(TInterfacedObject, ICayanPOSCard)
+  private
+    FExpiryYear: Integer;
+    FExpiryMonth: Integer;
+    FID: Integer;
+    FCaption: String;
+    FCardholder: String;
+    FToken: String;
+    FCardNum: String;
+    procedure SetCaption(const Value: String);
+    procedure SetCardholder(const Value: String);
+    procedure SetCardNum(const Value: String);
+    procedure SetExpiryMonth(const Value: Integer);
+    procedure SetExpiryYear(const Value: Integer);
+    procedure SetID(const Value: Integer);
+    procedure SetToken(const Value: String);
+    function GetCaption: String;
+    function GetCardholder: String;
+    function GetCardNum: String;
+    function GetExpiryMonth: Integer;
+    function GetExpiryYear: Integer;
+    function GetID: Integer;
+    function GetToken: String;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    property ID: Integer read GetID write SetID;
+    property Caption: String read GetCaption write SetCaption;
+    property Token: String read GetToken write SetToken;
+    property Cardholder: String read GetCardholder write SetCardholder;
+    property CardNum: String read GetCardNum write SetCardNum;
+    property ExpiryMonth: Integer read GetExpiryMonth write SetExpiryMonth;
+    property ExpiryYear: Integer read GetExpiryYear write SetExpiryYear;
+  end;
+
+  TCayanPOSCards = class(TInterfacedObject, ICayanPOSCards)
+  private
+    FItems: TInterfaceList;
+    function GetItem(Index: Integer): ICayanPOSCard;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    function Add: ICayanPOSCard;
+    procedure Delete(const Index: Integer);
+    procedure Clear;
+    function Count: Integer;
+
+    property Items[Index: Integer]: ICayanPOSCard read GetItem; default;
+  end;
+
+
+
 
 
 
@@ -184,6 +327,7 @@ type
     FHost: String;
     FToken: String;
     FUsername: String;
+    FSetup: ICayanPOSSetup;
     procedure SetHost(const Value: String);
     procedure SetPort(const Value: Integer);
   public
@@ -194,13 +338,78 @@ type
     function PostJSON(const Action: String; Params: TStrings; Obj: ISuperObject): ISuperObject;
 
     function UserLogin(const Username, Password: String): Boolean;
+    function GetSetup: ICayanPOSSetup;
     function GetCustomers(const Q: String): ICayanPOSCustomers;
+    function GetVaultCards(const CustomerID: Integer): ICayanPOSCards;
   published
     property Host: String read FHost write SetHost;
     property Port: Integer read FPort write SetPort;
   end;
 
 implementation
+
+{ TCayanPOSSetup }
+
+constructor TCayanPOSSetup.Create;
+begin
+
+end;
+
+destructor TCayanPOSSetup.Destroy;
+begin
+
+  inherited;
+end;
+
+function TCayanPOSSetup.GetDba: String;
+begin
+  Result:= FDba;
+end;
+
+function TCayanPOSSetup.GetForceDuplicates: Boolean;
+begin
+  Result:= FForceDuplicates;
+end;
+
+function TCayanPOSSetup.GetMerch_Key: String;
+begin
+  Result:= FMerch_Key;
+end;
+
+function TCayanPOSSetup.GetMerch_Name: String;
+begin
+  Result:= FMerch_Name;
+end;
+
+function TCayanPOSSetup.GetMerch_SiteId: String;
+begin
+  Result:= FMerch_SiteId;
+end;
+
+procedure TCayanPOSSetup.SetDba(const Value: String);
+begin
+  FDba:= Value;
+end;
+
+procedure TCayanPOSSetup.SetForceDuplicates(const Value: Boolean);
+begin
+  FForceDuplicates:= Value;
+end;
+
+procedure TCayanPOSSetup.SetMerch_Key(const Value: String);
+begin
+  FMerch_Key := Value;
+end;
+
+procedure TCayanPOSSetup.SetMerch_Name(const Value: String);
+begin
+  FMerch_Name := Value;
+end;
+
+procedure TCayanPOSSetup.SetMerch_SiteId(const Value: String);
+begin
+  FMerch_SiteId := Value;
+end;
 
 { TCayanPOSCustomer }
 
@@ -431,6 +640,132 @@ begin
   Result:= ICayanPOSCustomer(FItems[Index]);
 end;
 
+{ TCayanPOSCard }
+
+constructor TCayanPOSCard.Create;
+begin
+
+end;
+
+destructor TCayanPOSCard.Destroy;
+begin
+
+  inherited;
+end;
+
+function TCayanPOSCard.GetCaption: String;
+begin
+  Result:= FCaption;
+end;
+
+function TCayanPOSCard.GetCardholder: String;
+begin
+  Result:= FCardholder;
+end;
+
+function TCayanPOSCard.GetCardNum: String;
+begin
+  Result:= FCardNum;
+end;
+
+function TCayanPOSCard.GetExpiryMonth: Integer;
+begin
+  Result:= FExpiryMonth;
+end;
+
+function TCayanPOSCard.GetExpiryYear: Integer;
+begin
+  Result:= FExpiryYear;
+end;
+
+function TCayanPOSCard.GetID: Integer;
+begin
+  Result:= FID;
+end;
+
+function TCayanPOSCard.GetToken: String;
+begin
+  Result:= FToken;
+end;
+
+procedure TCayanPOSCard.SetCaption(const Value: String);
+begin
+  FCaption := Value;
+end;
+
+procedure TCayanPOSCard.SetCardholder(const Value: String);
+begin
+  FCardholder := Value;
+end;
+
+procedure TCayanPOSCard.SetCardNum(const Value: String);
+begin
+  FCardNum := Value;
+end;
+
+procedure TCayanPOSCard.SetExpiryMonth(const Value: Integer);
+begin
+  FExpiryMonth := Value;
+end;
+
+procedure TCayanPOSCard.SetExpiryYear(const Value: Integer);
+begin
+  FExpiryYear := Value;
+end;
+
+procedure TCayanPOSCard.SetID(const Value: Integer);
+begin
+  FID := Value;
+end;
+
+procedure TCayanPOSCard.SetToken(const Value: String);
+begin
+  FToken := Value;
+end;
+
+{ TCayanPOSCards }
+
+constructor TCayanPOSCards.Create;
+begin
+  FItems:= TInterfaceList.Create;
+end;
+
+destructor TCayanPOSCards.Destroy;
+begin
+  Clear;
+  FreeAndNil(FItems);
+  inherited;
+end;
+
+function TCayanPOSCards.Add: ICayanPOSCard;
+begin
+  Result:= TCayanPOSCard.Create;
+  Result._AddRef;
+  FItems.Add(Result);
+end;
+
+procedure TCayanPOSCards.Clear;
+begin
+  while Count > 0 do
+    Delete(0);
+end;
+
+function TCayanPOSCards.Count: Integer;
+begin
+  Result:= FItems.Count;
+end;
+
+procedure TCayanPOSCards.Delete(const Index: Integer);
+begin
+  ICayanPOSCard(FItems[Index])._Release;
+  FItems.Delete(Index);
+end;
+
+function TCayanPOSCards.GetItem(Index: Integer): ICayanPOSCard;
+begin
+  Result:= ICayanPOSCard(FItems[Index]);
+end;
+
 { TCayanPOS }
 
 constructor TCayanPOS.Create(AOwner: TComponent);
@@ -444,6 +779,10 @@ end;
 
 destructor TCayanPOS.Destroy;
 begin
+  if Assigned(FSetup) then begin
+    FSetup._Release;
+    FSetup:= nil;
+  end;
   FreeAndNil(FWeb);
   inherited;
 end;
@@ -522,6 +861,61 @@ begin
       FToken:= R.S['Token'];
       FUsername:= R.S['user'];
     end;
+  finally
+    P.Free;
+  end;
+end;
+
+function TCayanPOS.GetVaultCards(const CustomerID: Integer): ICayanPOSCards;
+var
+  P: TStringList;
+  R, O: ISuperObject;
+  Res: TCayanPOSCards;
+  C: ICayanPOSCard;
+  X: Integer;
+begin
+  Result:= nil;
+  P:= TStringList.Create;
+  try
+    P.Values['CustomerID']:= IntToStr(CustomerID);
+    R:= GetJson('Vault', P);
+    Res:= TCayanPOSCards.Create;
+    try
+      for X := 0 to R.AsArray.Length-1 do begin
+        O:= R.AsArray.O[X];
+        C:= Res.Add;
+        C.ID:= O.I['ID'];
+        C.Caption:= O.S['Caption'];
+        C.Token:= O.S['Token'];
+        C.Cardholder:= O.S['Cardholder'];
+        C.CardNum:= O.S['CardNumber'];
+        C.ExpiryMonth:= O.I['ExpiryMonth'];
+        C.ExpiryYear:= O.I['ExpiryYear'];
+      end;
+    finally
+      Result:= Res;
+    end;
+  finally
+    P.Free;
+  end;
+end;
+
+function TCayanPOS.GetSetup: ICayanPOSSetup;
+var
+  P: TStringList;
+  R: ISuperObject;
+begin
+  Result:= TCayanPOSSetup.Create;
+  P:= TStringList.Create;
+  try
+    R:= GetJSON('Setup', P);
+    Result.Merch_Name:= R.S['Merch_Name'];
+    Result.Merch_SiteId:= R.S['Merch_SiteId'];
+    Result.Merch_Key:= R.S['Merch_Key'];
+    Result.ForceDuplicates:= R.I['Force_Duplicates'] = 1;
+    Result.Dba:= R.S['Dba'];
+    FSetup:= Result;
+    FSetup._AddRef;
   finally
     P.Free;
   end;

@@ -213,6 +213,7 @@ begin
   Self.FMerchantWare.SiteId:= Self.Cayan.MerchantSiteId;
   Self.FMerchantWare.Key:= Self.Cayan.MerchantKey;
   Self.FMerchantWare.TestMode:= Self.Cayan.TestMode;
+  Self.FGenius.Dba:= Cayan.Dba;
 end;
 
 end.

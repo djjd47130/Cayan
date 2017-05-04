@@ -93,6 +93,7 @@ type
       const UPC: String = ''): TCayanGeniusLineItem;
     procedure Delete(const Index: Integer; const IgnoreDevice: Boolean = False);
     procedure StartOrder;
+    function EndOrder(const ExternalPaymentType: TGeniusExternalPaymentType = epOther): Boolean;
     procedure UpdateTotal;
 
     property Items[const Index: Integer]: TCayanGeniusLineItem read GetItems; default;
@@ -317,11 +318,11 @@ begin
   Result:= nil;
   if not (csDesigning in ComponentState) then begin
     EnsureLID;
+    FLineItems.DisplayCustomSubtotal:= FDisplayCustomSubTotal;
     Result:= TCayanGeniusLineItem.Create(Self);
-    FLineItems.DisplayCustomSubtotal:= Self.FDisplayCustomSubTotal;
-    Result.FLineItem:= FLineItems.AddItem(TypeValue, Upc,
-      Description, Amount, Tax, Qty, ItemType, Category, DisplayOverride); 
     FItems.Add(Result);
+    Result.FLineItem:= FLineItems.AddItem(TypeValue, Upc,
+      Description, Amount, Tax, Qty, ItemType, Category, DisplayOverride);
     Invalidate;
   end;
 end;
@@ -412,6 +413,18 @@ procedure TCayanGeniusLineItems.SetUpdateTransaction(const Value: Boolean);
 begin
   FUpdateTransaction := Value;
   Invalidate;
+end;
+
+function TCayanGeniusLineItems.EndOrder(
+  const ExternalPaymentType: TGeniusExternalPaymentType = epOther): Boolean;
+var
+  R: IGeniusStartOrderResponse;
+begin
+  Result:= False;
+  R:= FLineItems.EndOrder(ExternalPaymentType);
+  case R.Status of
+    soSuccess: Result:= True;
+  end;
 end;
 
 procedure TCayanGeniusLineItems.EnsureLID;

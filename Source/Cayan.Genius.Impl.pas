@@ -3692,28 +3692,36 @@ begin
       Url:= FOwner.DeviceUrl(Pars.ParamStr);
       XML:= FOwner.SendDeviceRequestXML(Url);
       Node:= GetNodePath(XML, '/OrderResult');
+
       if Assigned(Node) then begin
         Result.Status:= GeniusStrToLineItemStatus(GetNodeValue(Node, 'Status'));
         Result.ResponseMessage:= GetNodeValue(Node, 'ResponseMessage');
-        case Result.Status of
-          soSuccess: begin
-            FOrderTotal:= OrderTotal + ((Amount + TaxAmount) * Quantity);
-            FOrderTax:= OrderTax + (TaxAmount * Quantity);
-            Result.ItemID:= GetNodeValue(Node, 'ItemID');
-            FItems.Add(Result);
-            Result._AddRef;
-          end;
-          soDenied: begin
-            raise Exception.Create('Adding line item denied: ' + Result.ResponseMessage);
-          end;
-          soError: begin
-            raise Exception.Create('Adding line item failed: ' + Result.ResponseMessage);
-          end;
-        end;
       end else begin
         Result.Status:= TGeniusLineItemStatus.soError;
         Result.ResponseMessage:= 'Error in AddItem: OrderResult Node empty';
       end;
+
+      //We want to add the item anyway, no matter what, even if device is offline.
+      FOrderTotal:= OrderTotal + ((Amount + TaxAmount) * Quantity);
+      FOrderTax:= OrderTax + (TaxAmount * Quantity);
+      Result.ItemID:= GetNodeValue(Node, 'ItemID');
+      FItems.Add(Result);
+      Result._AddRef;
+
+      {
+      case Result.Status of
+        soSuccess: begin
+
+        end;
+        soDenied: begin
+          raise Exception.Create('Adding line item denied: ' + Result.ResponseMessage);
+        end;
+        soError: begin
+          raise Exception.Create('Adding line item failed: ' + Result.ResponseMessage);
+        end;
+      end;
+      }
+
     except
       on E: Exception do begin
         Result.Status:= soError;

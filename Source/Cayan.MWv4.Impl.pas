@@ -2931,7 +2931,7 @@ begin
   if MerchantDefinedToken <> '' then
     XML:= XML + XmlVal('merchantDefinedToken', MerchantDefinedToken, True);
 
-  Result:= FOwner.DoRequestVaultBoardingResponse(XML, GetService, GetEndpoint, 'VaultBoardCrediByReference');
+  Result:= FOwner.DoRequestVaultBoardingResponse(XML, GetService, GetEndpoint, 'VaultBoardCreditByReference');
 end;
 
 function TMWCreditTransactions.VaultBoardCreditKeyed(
