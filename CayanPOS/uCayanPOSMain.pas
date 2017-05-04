@@ -121,7 +121,7 @@ type
     btnCedStart: TButton;
     btnCedCancel: TButton;
     liCheckNum: TListBoxItem;
-    Edit19: TEdit;
+    txtPayCheckNum: TEdit;
     tabCustLookup: TTabItem;
     ToolBar6: TToolBar;
     Label3: TLabel;
@@ -234,7 +234,7 @@ type
     txtKeyAddress: TEdit;
     liCardZipCode: TListBoxItem;
     txtKeyZipCode: TEdit;
-    ListBoxItem50: TListBoxItem;
+    liTranType: TListBoxItem;
     liSwipe: TListBoxItem;
     txtSwipe: TMemo;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
@@ -278,6 +278,7 @@ type
     procedure btnCedKeyedClick(Sender: TObject);
     procedure swSaveToVaultSwitch(Sender: TObject);
     procedure Button10Click(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     FTranStarted: Boolean;
     FProducts: TStringList;
@@ -308,6 +309,7 @@ type
     procedure SaveToVault(const Token: String);
     procedure ProcessPaymentSwiped;
     procedure FinishCreditSale(Res: IMWCreditResponse4);
+    procedure ClearPaymentInfo;
   public
     procedure UpdateCartTotals;
     procedure LoadFromConfig;
@@ -372,6 +374,13 @@ begin
   Genius.Cancel;
   Genius.Cancel;
   Self.SaveToConfig;
+end;
+
+procedure TfrmCayanPOSMain.FormCloseQuery(Sender: TObject;
+  var CanClose: Boolean);
+begin
+  CanClose:= MessageDlg('Are you sure you wish to exit?', TMsgDlgType.mtConfirmation,
+    [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo], 0) = mrYes;
 end;
 
 procedure TfrmCayanPOSMain.LoadFromConfig;
@@ -857,6 +866,7 @@ end;
 
 procedure TfrmCayanPOSMain.HidePayInfo;
 begin
+  ClearPaymentInfo;
   liCheckNum.Visible:= False;
   liCardNum.Visible:= False;
   liCardExpiryMonth.Visible:= False;
@@ -1183,26 +1193,57 @@ begin
 end;
 
 procedure TfrmCayanPOSMain.btnCartNextClick(Sender: TObject);
+var
+  S: String;
 begin
   if LID.Count = 0 then begin
     raise Exception.Create('There are no items in the cart.');
   end;
+  ClearPaymentInfo;
   DM.Cayan.Dba:= FSetup.Dba;
   Genius.ForceDuplicate:= FSetup.ForceDuplicates;
   Tran.Amount:= LID.OrderTotal;
   Tran.TaxAmount:= LID.OrderTax;
   txtPayAmount.Text:= FormatFloat('0.00', Tran.Amount);
-  lblPaymentTitle.Text:= 'Collect ' + FormatFloat('$#,###,##0.00', Tran.Amount);
+  case Tran.TransactionType of
+    gtSale: S:= 'Collect';
+    gtRefund: S:= 'Refund';
+    gtLevel2Sale: S:= 'Collect';
+    gtPreAuth: S:= 'Pre Auth';
+    gtPostAuth: S:= 'Post Auth';
+    gtForceSale: S:= 'Force';
+    gtAddValue: S:= 'Add Gift';
+    gtBalanceInquiry: S:= '';
+    gtUnknown: S:= '';
+  end;
+  lblPaymentTitle.Text:= S + ' ' + FormatFloat('$#,###,##0.00', Tran.Amount);
   cboPayMethodClick(btnPayGenius);
   actPaymentTab.ExecuteTarget(Self);
 
   //TODO: Figure out how to not need this ugly work-around!!!!!!!
-  cboPayMethodClick(btnPayVault);
-  cboPayMethodClick(btnPaySwipe);
   cboPayMethodClick(btnPayKeyed);
   cboPayMethodClick(btnPayCheck);
-  cboPayMethodClick(btnPayCash);
   cboPayMethodClick(btnPayGenius);
+
+end;
+
+procedure TfrmCayanPOSMain.ClearPaymentInfo;
+begin
+  liTranType.ItemData.Detail:= GeniusTransactionTypeToStr(Tran.TransactionType);
+  txtPayAmount.Text:= '';
+  swSaveToVault.IsChecked:= False;
+  txtSaveVaultName.Text:= '';
+  txtKeyCardNum.Text:= '';
+  txtKeyExpiryMonth.ItemIndex:= -1;
+  txtKeyExpiryYear.ItemIndex:= -1;
+  txtKeyCardholder.Text:= '';
+  txtKeySecCode.Text:= '';
+  txtKeyAddress.Text:= '';
+  txtKeyZipCode.Text:= '';
+  txtPayCheckNum.Text:= '';
+  cboVaultCards.Items.Clear;
+  txtSwipe.Lines.Clear;
+
 end;
 
 procedure TfrmCayanPOSMain.btnCartBackClick(Sender: TObject);

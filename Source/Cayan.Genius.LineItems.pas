@@ -484,7 +484,8 @@ begin
       Self.UpdateTotal;
     end;
     else begin
-      raise Exception.Create('Error starting Line Item order: ' + R.ResponseMessage);
+      //TODO: Figure out another way to deal with this error, as it seems so often...
+      //raise Exception.Create('Error starting Line Item order: ' + R.ResponseMessage);
     end;
   end;
   Invalidate;

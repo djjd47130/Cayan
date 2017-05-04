@@ -69,12 +69,12 @@ type
   TMWTransactionType = (ttUnknown = 0, ttSale = 1, ttRefund = 2, ttVoid = 3,
     ttForce = 4, ttAuth = 5, ttCapture = 6, ttAdjust = 7, ttRepeatSale = 8,
     ttPostAuth = 9, ttLevelUpSale = 11, ttLevelUpCredit = 12);
-
+                            {
   TMWGiftTransactionType = (gtUnknown = 0, gtRedemption = 1, gtAddValue = 2,
     gtRedeemPoints = 3, gtAddPoints = 4, gtBalanceInquiry = 5,
     gtActivationPurchase = 6, gtActivationReturn = 7, gtCredit = 8,
     gtBalanceTransfer = 9, gtAddTip = 10, gtVoid = 11, gtTotalsInquiry = 12,
-    gtRedemptionForce = 19);
+    gtRedemptionForce = 19);        } //TODO
 
   TMWCheckVerificationMethod = (cvDriversLicense, cvKeyed, cvSwiped,
     cvKeyedWithDriversLicense, cvSwipedWithDriversLicense);
