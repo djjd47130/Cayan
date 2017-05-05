@@ -1,16 +1,16 @@
 # Cayan Delphi Components
 
-Delphi Component Library for Payment Integration using [Cayan's Solutions](http://www.cayan.com)
+Delphi Component Library for Payment Processing using [Cayan's Payment Gateway Solutions](http://www.cayan.com)
 
 ## Disclaimer
 
-This library was written by Jerry Dodge, and not by any direct member of Cayan. No guarantees are made towards this code, and is available on an as-is basis. Neither I or Cayan are responsible for any problems which may arise as a result of using this code.
+This library was written by Jerry Dodge, and not by any direct member of Cayan. No guarantees are made towards this code, and is available on an as-is / what-is basis. Neither I or Cayan are responsible for any problems which may arise as a result of using this code. You are responsible to ensure this code base suites your application's needs, and abides by the PCI compliance laws set with implementing Genius solutions. 
 
 ## Disclaimer
 
-While this library is free and open-source, you are still responsible to acquire certification with Cayan to be allowed to work with their solutions. This library only wraps Cayan's APIs, and you must treat the integration the same as if you wrote this library. Certification works on a per-application basis, so even one certification is not enough to use this library indefinitely.
+While this library is free and open-source, you are still responsible to acquire certification with Cayan to be allowed to work with their solutions. This library only wraps Cayan's APIs, and you must treat the integration the same as if you wrote this library. Certification works on a per-application basis, so even one certification is not enough to use this library indefinitely. The end goal is to become [PCI Compliant](http://www.onlinetech.com/resources/references/what-is-pci-compliance) with the Genius solutions. 
 
-Please visit https://cayan.com/developers for more information.
+Please visit the [Cayan Developer's Page](https://cayan.com/developers) for more information.
 
 ## Super Object
 
