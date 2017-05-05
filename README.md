@@ -1,10 +1,10 @@
 # Cayan Delphi Components
 
-Delphi Library for Payment Integration using Cayan Solutions
+Delphi Component Library for Payment Integration using Cayan Solutions
 
 ## Disclaimer
 
-This library was written by Jerry Dodge, and not by any direct member of Cayan. No guarantees are made towards this code, and is available on an as-is basis. Neither I or Cayan are responsible for any problems which arise as a result of using this code.
+This library was written by Jerry Dodge, and not by any direct member of Cayan. No guarantees are made towards this code, and is available on an as-is basis. Neither I or Cayan are responsible for any problems which may arise as a result of using this code.
 
 ## Disclaimer
 
@@ -18,7 +18,7 @@ This library uses its own copy of X-SuperObject. Since there were modifications 
 
 ## Delphi Support
 
-This library was written for Delphi 10 Seattle. While it should work in most modern Delphi versions, it has not been tested, and there is no guarantee that it will be compatible. It is cross-platform compatible, but not thoroughly tested on any platform other than Windows (32bit and 64bit). It does not depend on VCL or Firemonkey. Past versions of this library have been successfully deployed to MacOS, iOS, and Android, but have gone through extensive modifications since then. All current testing is only on Windows.
+This library was written for Delphi 10 Seattle, and recently tested in Delphi 10.1 Berlin. While it should work in most modern Delphi versions, it has not been tested, and there is no guarantee that it will be compatible. It is cross-platform compatible, but not thoroughly tested on any platform other than Windows (32bit and 64bit). It does not depend on VCL or Firemonkey. Past versions of this library have been successfully deployed to MacOS, iOS, and Android, but have gone through extensive modifications since then. All current testing is only on Windows.
 
 The test applications use a combination of VCL and Firemonkey. The Emulator and the POS applications are both based on the Firemonkey framework, while the stand-alone test application is on the VCL framework. 
 
@@ -61,13 +61,15 @@ Allows you to serve a virtual emulator, mimicing a real Genius CED device. This 
 
 ## POS Application
 
-There is a test application provided with this repo, which demonstrates actual usage of the Genius solution by a Point-of-Sale application. It is as close as possible to a real Point-of-Sale, without any actual database or use-case abilities. It's primarily used for testing and demonstrating the Genius devices.
+There is a test application provided with this repo, which demonstrates actual usage of the Genius solution by a Point-of-Sale application. It is developed for the purpose of demonstrating actual usage of the Genius solutions. 
 
 ![POS](./Readme/POS_SS.png?raw=true)
 
 ## Genius CED Emulator
 
 Included is an emulator application which mimics a Genius device. This emulator can be used in place of a real device, and allows you to test your own integration with Genius without actually needing a device of your own. While the device is as close as possible to the real thing, it is not capable of actually processing real payments. 
+
+**NOTE** This emulator is far from complete, and should not be trusted at this time. 
 
 ![Emulator](./Readme/EmulatorMX915.png?raw=true)
 
