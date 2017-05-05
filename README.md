@@ -1,6 +1,6 @@
 # Cayan Delphi Components
 
-Delphi Component Library for Payment Integration using Cayan Solutions
+Delphi Component Library for Payment Integration using [Cayan's Solutions](http://www.cayan.com)
 
 ## Disclaimer
 
