@@ -221,14 +221,12 @@ type
     liCustID: TListBoxItem;
     txtCustID: TEdit;
     tabMenu: TTabItem;
-    ListBox1: TListBox;
+    lstMenu: TListBox;
     ListBoxGroupHeader14: TListBoxGroupHeader;
     ListBoxItem26: TListBoxItem;
     ListBoxItem27: TListBoxItem;
     ToolBar8: TToolBar;
     Label8: TLabel;
-    SpeedButton2: TSpeedButton;
-    SpeedButton3: TSpeedButton;
     ListBoxItem44: TListBoxItem;
     liCardAddress: TListBoxItem;
     txtKeyAddress: TEdit;
@@ -237,6 +235,8 @@ type
     liTranType: TListBoxItem;
     liSwipe: TListBoxItem;
     txtSwipe: TMemo;
+    ListBoxItem45: TListBoxItem;
+    TabItem1: TTabItem;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
@@ -261,6 +261,7 @@ type
     procedure TranTransactionStart(const ATrans: TCayanGeniusTransaction);
     procedure TranTransactionStaged(const ATrans: TCayanGeniusTransaction);
     procedure TranTransactionResult(const ATrans: TCayanGeniusTransaction;
+      const AStaging: IGeniusStageResponse;
       const AResult: IGeniusTransactionResponse);
     procedure TranCancel(Sender: TObject);
     procedure btnResultBackClick(Sender: TObject);
@@ -343,9 +344,12 @@ begin
   CustomerTabs.ActiveTab:= tabCustInfo;
 
   //TODO: IMPLEMENT SPLIT PAYMENTS!
+  {$IFNDEF SPLIT_PAY}
   pPayButtons.Visible:= False;
   lstPayments.Visible:= False;
-  //lstPayments.Height:= 90;
+  {$ELSE}
+  lstPayments.Height:= 90;
+  {$ENDIF}
 
   Width:= 470;
   Height:= 570;
@@ -356,8 +360,11 @@ begin
   txtLoginPassword.Text:= '';
   txtLoginUser.SetFocus;
 
+  //TODO: Implement real inventory. This is a fake demo.
+  {$IFNDEF INVENT}
   Randomize;
   PopulateProducts;
+  {$ENDIF}
 end;
 
 procedure TfrmCayanPOSMain.FormDestroy(Sender: TObject);
@@ -412,6 +419,8 @@ begin
     Self.txtServerHost.Text:= O.S['serverAddr'];
     Self.txtServerPort.Value:= O.I['serverPort'];;
     Self.txtServerKey.Text:= O.S['serverKey'];
+    DM.POS.Host:= O.S['serverAddr'];
+    DM.POS.Port:= O.I['serverPort'];
     //Self.txtServerStation.Text:= Self.Cayan.StationID;
   end;
 end;
@@ -500,21 +509,29 @@ begin
   lstResult.Items.Clear;
 
   AH('General Information');
+  A('Transaction Type', GeniusTransactionTypeToStr(R.TransactionType));
+  if R.TransactionDate <> 0 then
+    A('Transaction Date', FormatDateTime('m/d/yy h:nn AMPM', R.TransactionDate));
   A('Status', GeniusTransStatusToStr(R.Status));
-  A('Status Detail', R.StatusStr);
+  if R.ErrorMessage <> '' then
+    A('Error Message', R.ErrorMessage);
   A('Amount Approved', FormatFloat('$#,###,##0', R.AmountApproved));
-  A('Authorization Code', R.AuthorizationCode);
-  A('CardHolder', R.CardHolder);
-  A('Account Number', R.AccountNumber);
+  if R.AuthorizationCode <> '' then
+    A('Authorization Code', R.AuthorizationCode);
+  if R.CardHolder <> '' then
+    A('CardHolder', R.CardHolder);
+  if R.AccountNumber <> '' then
+    A('Account Number', R.AccountNumber);
   A('Payment Type', GeniusPaymentTypeToStr(R.PaymentType));
   A('Entry Mode', GeniusEntryModeToStr(R.EntryMode));
-  A('Error Message', R.ErrorMessage);
-  A('Token', R.Token);
-  A('Transaction Date', FormatDateTime('m/d/yy h:nn AMPM', R.TransactionDate));
-  A('Transaction Type', GeniusTransactionTypeToStr(R.TransactionType));
+
+  AH('Additional Information');
+  if R.Token <> '' then
+    A('Token', R.Token);
   A('Response Type', GeniusResponseTypeToStr(R.ResponseType));
   A('Validation Key', R.ValidationKey);
-  A('Signature Data', R.SignatureData); //TODO
+  if R.SignatureData <> '' then
+    A('Signature Data', R.SignatureData); //TODO
 
   AH('Amount Details');
   A('User Tip', FormatFloat('$#,###,##0', R.UserTip));
@@ -533,8 +550,8 @@ begin
     AH('Keyed Details');
     A('Expiration', R.KeyedExpiration);
     A('Zip Code', R.KeyedAvsStreetZipCode);
-    A('Avs Response', R.KeyedAvsResponse);
-    A('Cv Response', R.KeyedCvResponse);
+    //A('Avs Response', R.KeyedAvsResponse);
+    //A('Cv Response', R.KeyedCvResponse);
   end;
 
   if Assigned(R.EmvResponse) then begin
@@ -566,28 +583,32 @@ var
   end;
 begin
   lstResult.Items.Clear;
-
   AH('General Information');
+  A('Transaction Type', MWTransactionTypeCaption(R.TransactionType));
+  if R.TransactionDate <> 0 then
+    A('Transaction Date', FormatDateTime('m/d/yy h:nn ampm', R.TransactionDate));
   A('Status', MWApprovalStatusSetToStr(R.ApprovalStatus));
-  if R.ApprovalCode <> 0 then
-    A('Approval Code', IntToStr(R.ApprovalCode));
-  if R.ApprovalMessage <> '' then
-    A('Approval Msg', R.ApprovalMessage);
-  A('Auth Code', R.AuthorizationCode);
-  //A('AVS Response', R.AvsResponse);
-  A('Cardholder', R.Cardholder);
-  A('Card Num', R.CardNumber);
-  A('Card Type', MWCardTypeCaption(R.CardType));
-  //A('CV Response', R.CvResponse);
-  A('Entry Mode', MWPosEntryTypeCaption(R.EntryMode));
   if R.ErrorMessage <> '' then
-    A('Error Msg', R.ErrorMessage);
+    A('Error Message', R.ErrorMessage);
+  A('Amount Approved', FormatFloat('$#,###,##0.00', R.Amount));
+  if R.AuthorizationCode <> '' then
+    A('Authorization Code', R.AuthorizationCode);
+  if R.Cardholder <> '' then
+    A('Cardholder', R.Cardholder);
+  if R.CardNumber <> '' then
+    A('Account Number', R.CardNumber);
+  A('Payment Type', MWCardTypeCaption(R.CardType));
+  A('Entry Mode', MWPosEntryTypeCaption(R.EntryMode));
+
+  AH('Additional Information');
   if R.Token <> '' then
     A('Token', R.Token);
+  if R.ApprovalMessage <> '' then
+    A('Approval Msg', R.ApprovalMessage);
   if R.InvoiceNumber <> '' then
     A('Invoice Num', R.InvoiceNumber);
-  A('Trans Type', MWTransactionTypeCaption(R.TransactionType));
-  A('Trans Date', FormatDateTime('m/d/yy h:nn ampm', R.TransactionDate));
+  if R.ApprovalCode <> 0 then
+    A('Approval Code', IntToStr(R.ApprovalCode));
   if R.ExtraData <> '' then
     A('Extra Data', R.ExtraData);
 end;
@@ -645,6 +666,7 @@ end;
 
 procedure TfrmCayanPOSMain.TranTransactionResult(
   const ATrans: TCayanGeniusTransaction;
+  const AStaging: IGeniusStageResponse;
   const AResult: IGeniusTransactionResponse);
 begin
   SetCedBusy(False);
@@ -1221,6 +1243,8 @@ begin
   actPaymentTab.ExecuteTarget(Self);
 
   //TODO: Figure out how to not need this ugly work-around!!!!!!!
+  cboPayMethodClick(btnPayVault);
+  cboPayMethodClick(btnPaySwipe);
   cboPayMethodClick(btnPayKeyed);
   cboPayMethodClick(btnPayCheck);
   cboPayMethodClick(btnPayGenius);
@@ -1230,7 +1254,7 @@ end;
 procedure TfrmCayanPOSMain.ClearPaymentInfo;
 begin
   liTranType.ItemData.Detail:= GeniusTransactionTypeToStr(Tran.TransactionType);
-  txtPayAmount.Text:= '';
+  //txtPayAmount.Text:= '';
   swSaveToVault.IsChecked:= False;
   txtSaveVaultName.Text:= '';
   txtKeyCardNum.Text:= '';

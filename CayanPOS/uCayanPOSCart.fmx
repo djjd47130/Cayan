@@ -1,0 +1,350 @@
+object Form2: TForm2
+  Left = 0
+  Top = 0
+  Caption = 'Form2'
+  ClientHeight = 356
+  ClientWidth = 273
+  StyleBook = DM.CayanPOSStyle
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object lstItems: TListView
+    ItemAppearanceClassName = 'TListItemRightDetailAppearance'
+    ItemEditAppearanceClassName = 'TListItemRightDetailDeleteAppearance'
+    HeaderAppearanceClassName = 'TListHeaderObjects'
+    FooterAppearanceClassName = 'TListHeaderObjects'
+    Align = Client
+    Size.Width = 273.000000000000000000
+    Size.Height = 222.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    StyleLookup = 'listviewstyle'
+  end
+  object ToolBar3: TToolBar
+    Size.Width = 273.000000000000000000
+    Size.Height = 46.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object lblTitle: TLabel
+      Align = Contents
+      Size.Width = 273.000000000000000000
+      Size.Height = 46.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'toollabel'
+      TextSettings.HorzAlign = Center
+      Text = 'Cart'
+    end
+    object btnNext: TSpeedButton
+      Hint = 'Collect Payment'
+      Align = Right
+      Cursor = crHandPoint
+      Margins.Right = 5.000000000000000000
+      Position.X = 205.000000000000000000
+      Size.Width = 63.000000000000000000
+      Size.Height = 46.000000000000000000
+      Size.PlatformDefault = False
+      ParentShowHint = False
+      ShowHint = True
+      StyleLookup = 'toolbutton'
+      Text = 'Next'
+    end
+    object btnBack: TSpeedButton
+      Hint = 'New Invoice'
+      Align = Left
+      Cursor = crHandPoint
+      Margins.Left = 5.000000000000000000
+      Position.X = 5.000000000000000000
+      Size.Width = 46.000000000000000000
+      Size.Height = 46.000000000000000000
+      Size.PlatformDefault = False
+      ParentShowHint = False
+      ShowHint = True
+      StyleLookup = 'priortoolbutton'
+      Text = 'Back'
+    end
+  end
+  object TotalsLayout: TGridPanelLayout
+    Align = Bottom
+    Position.Y = 268.000000000000000000
+    Size.Width = 273.000000000000000000
+    Size.Height = 46.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    ColumnCollection = <
+      item
+        Value = 25.000000000000000000
+      end
+      item
+        Value = 25.000000000000000000
+      end
+      item
+        Value = 25.000000000000010000
+      end
+      item
+        Value = 25.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = Label1
+        Row = 0
+      end
+      item
+        Column = 1
+        Control = Label2
+        Row = 0
+      end
+      item
+        Column = 2
+        Control = Label4
+        Row = 0
+      end
+      item
+        Column = 3
+        Control = Label5
+        Row = 0
+      end
+      item
+        Column = 0
+        Control = lblCartQty
+        Row = 1
+      end
+      item
+        Column = 1
+        Control = lblCartSubtotal
+        Row = 1
+      end
+      item
+        Column = 2
+        Control = lblCartTax
+        Row = 1
+      end
+      item
+        Column = 3
+        Control = lblCartTotal
+        Row = 1
+      end>
+    RowCollection = <
+      item
+        Value = 50.000000279396770000
+      end
+      item
+        Value = 49.999999720603230000
+      end
+      item
+        SizeStyle = Auto
+      end>
+    object Label1: TLabel
+      Align = Client
+      StyledSettings = [Family, Size, FontColor]
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Size.Width = 66.250000000000000000
+      Size.Height = 21.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Style = [fsBold]
+      TextSettings.HorzAlign = Center
+      Text = 'Qty'
+    end
+    object Label2: TLabel
+      Align = Client
+      StyledSettings = [Family, Size, FontColor]
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Size.Width = 66.250000000000000000
+      Size.Height = 21.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Style = [fsBold]
+      TextSettings.HorzAlign = Center
+      Text = 'Subtotal'
+    end
+    object Label4: TLabel
+      Align = Client
+      StyledSettings = [Family, Size, FontColor]
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Size.Width = 66.250000000000000000
+      Size.Height = 21.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Style = [fsBold]
+      TextSettings.HorzAlign = Center
+      Text = 'Tax'
+    end
+    object Label5: TLabel
+      Align = Client
+      StyledSettings = [Family, Size, FontColor]
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Size.Width = 66.250000000000000000
+      Size.Height = 21.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Style = [fsBold]
+      TextSettings.HorzAlign = Center
+      Text = 'Total'
+    end
+    object lblCartQty: TLabel
+      Align = Client
+      StyledSettings = [Family, Size, Style]
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Size.Width = 66.250000000000000000
+      Size.Height = 21.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.FontColor = claDodgerblue
+      TextSettings.HorzAlign = Center
+      Text = '0'
+    end
+    object lblCartSubtotal: TLabel
+      Align = Client
+      StyledSettings = [Family, Size, Style]
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Size.Width = 66.250000000000000000
+      Size.Height = 21.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.FontColor = claDodgerblue
+      TextSettings.HorzAlign = Center
+      Text = '$0.00'
+    end
+    object lblCartTax: TLabel
+      Align = Client
+      StyledSettings = [Family, Size, Style]
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Size.Width = 66.250000000000000000
+      Size.Height = 21.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.FontColor = claDodgerblue
+      TextSettings.HorzAlign = Center
+      Text = '$0.00'
+    end
+    object lblCartTotal: TLabel
+      Align = Client
+      StyledSettings = [Family, Size]
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Size.Width = 66.250000000000000000
+      Size.Height = 21.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Style = [fsBold]
+      TextSettings.FontColor = claDarkgreen
+      TextSettings.HorzAlign = Center
+      Text = '$0.00'
+    end
+  end
+  object ButtonsLayout: TGridPanelLayout
+    Align = Bottom
+    Position.Y = 314.000000000000000000
+    Size.Width = 273.000000000000000000
+    Size.Height = 42.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    ColumnCollection = <
+      item
+        Value = 19.999962396387090000
+      end
+      item
+        Value = 20.000006066841700000
+      end
+      item
+        Value = 20.000026832201520000
+      end
+      item
+        Value = 20.000009202553930000
+      end
+      item
+        Value = 19.999995502015770000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = btnCartAdd
+        Row = 0
+      end
+      item
+        Column = 1
+        Control = btnCartEdit
+        Row = 0
+      end
+      item
+        Column = 2
+        Control = btnCartDelete
+        Row = 0
+      end>
+    RowCollection = <
+      item
+        Value = 100.000000000000000000
+      end
+      item
+        SizeStyle = Auto
+      end>
+    object btnCartAdd: TButton
+      Hint = 'Add Item'
+      Align = Center
+      Cursor = crHandPoint
+      Margins.Left = 3.000000000000000000
+      Margins.Top = 3.000000000000000000
+      Margins.Right = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Size.Width = 46.000000000000000000
+      Size.Height = 46.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'additembutton'
+      TabOrder = 2
+      Text = 'Lookup'
+      ParentShowHint = False
+      ShowHint = True
+    end
+    object btnCartEdit: TButton
+      Hint = 'Edit Item'
+      Align = Center
+      Cursor = crHandPoint
+      Margins.Left = 3.000000000000000000
+      Margins.Top = 3.000000000000000000
+      Margins.Right = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Size.Width = 46.000000000000000000
+      Size.Height = 46.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'pagecurltoolbutton'
+      TabOrder = 1
+      Text = 'Save'
+      ParentShowHint = False
+      ShowHint = True
+    end
+    object btnCartDelete: TButton
+      Hint = 'Delete Item'
+      Align = Center
+      Cursor = crHandPoint
+      Margins.Left = 3.000000000000000000
+      Margins.Top = 3.000000000000000000
+      Margins.Right = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Size.Width = 46.000000000000000000
+      Size.Height = 46.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'stoptoolbutton'
+      TabOrder = 0
+      Text = 'Clear'
+      ParentShowHint = False
+      ShowHint = True
+    end
+  end
+end

@@ -14,7 +14,8 @@ type
   TCayanGeniusTransactionEvent = procedure(const ATrans: TCayanGeniusTransaction) of object;
 
   TCayanGeniusTransactionResultEvent = procedure(const ATrans: TCayanGeniusTransaction;
-      const AResult: IGeniusTransactionResponse) of object;
+    const AStaging: IGeniusStageResponse;
+    const AResult: IGeniusTransactionResponse) of object;
 
   TCayanGeniusTransaction = class(TComponent)
   private
@@ -141,8 +142,11 @@ end;
 procedure TCayanGeniusTransaction.ThreadTransactionResponse(Response: IGeniusTransactionResponse);
 begin
   Self.FResult:= Response;
+  if Response.ValidationKey <> FStaging.ValidationKey then begin
+    Response.ErrorMessage:= Response.ErrorMessage + ' (Mis-matching Validation Key)';
+  end;
   if Assigned(Self.FOnTransactionResult) then
-    Self.FOnTransactionResult(Self, Response);
+    Self.FOnTransactionResult(Self, FStaging, Response);
 end;
 
 procedure TCayanGeniusTransaction.StartTransaction;

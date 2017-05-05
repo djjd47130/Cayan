@@ -258,7 +258,15 @@ begin
   FServer.OnDisconnect:= ThreadDisconnect;
   FServer.OnCommandGet:= ThreadCommand;
   FServer.OnCommandOther:= ThreadCommand;
+
+  //FServer.Bindings.Clear;
+  //B:= FServer.Bindings.Add;
+  //B.Port:= FPort;
+
+
   FServer.DefaultPort:= FPort;
+
+
   FServer.Active:= True;
 end;
 
