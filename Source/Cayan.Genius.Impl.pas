@@ -160,7 +160,9 @@ type
     FWebDevice: TIdHTTP;
     FSSLDevice: TIdSSLIOHandlerSocketOpenSSL;
     FOwner: TMerchantWare;
+    {$IFNDEF NO_TIMEOUT}
     FDeviceTimeout: Integer;
+    {$ENDIF}
     FCancelled: Boolean;
     FInTransaction: Boolean;
     FInSignature: Boolean;
@@ -1919,10 +1921,13 @@ begin
 
   if not Assigned(FWebDevice) then Exit;
 
+  {$IFNDEF NO_TIMEOUT}
   if Timeout = 0 then
     FWebDevice.ConnectTimeout:= FDeviceTimeout
   else
     FWebDevice.ConnectTimeout:= Timeout;
+  {$ENDIF}
+
   //Everything is controlled within the URL for device requests
   try
     Result:= FWebDevice.Get(Url);

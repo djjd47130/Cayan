@@ -13,6 +13,7 @@ uses
   Cayan.Genius,
   Cayan.XSuperObject,
 
+  FMX.DialogService,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.TabControl,
   FMX.StdCtrls, FMX.Controls.Presentation, FMX.Gestures, FMX.ActnList,
   FMX.ListBox, FMX.Layouts, FMX.Edit,
@@ -237,6 +238,8 @@ type
     txtSwipe: TMemo;
     ListBoxItem45: TListBoxItem;
     TabItem1: TTabItem;
+    Panel1: TPanel;
+    Panel2: TPanel;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
@@ -315,6 +318,7 @@ type
     procedure UpdateCartTotals;
     procedure LoadFromConfig;
     procedure SaveToConfig;
+    property Setup: ICayanPOSSetup read FSetup;
   end;
 
 var
@@ -385,9 +389,22 @@ end;
 
 procedure TfrmCayanPOSMain.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
+var
+  R: Boolean;
 begin
-  CanClose:= MessageDlg('Are you sure you wish to exit?', TMsgDlgType.mtConfirmation,
-    [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo], 0) = mrYes;
+  R:= False;
+  CanClose:= False;
+  TDialogService.PreferredMode:= TDialogService.TPreferredMode.Platform;
+  TDialogService.MessageDialog('Are you sure you wish to exit?',
+    TMsgDlgType.mtConfirmation,
+    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo, 0,
+    procedure(const AResult: TModalResult)
+    begin
+      if AResult = mrYes then begin
+        R:= True;
+      end;
+    end);
+  CanClose:= R;
 end;
 
 procedure TfrmCayanPOSMain.LoadFromConfig;
@@ -642,10 +659,11 @@ end;
 
 procedure TfrmCayanPOSMain.SetCedBusy(const Value: Boolean);
 begin
+  //TODO: Dim window...
   btnCedStart.Visible:= not Value;
   btnCedCancel.Visible:= Value;
-  if not Value then
-    btnCedKeyed.Visible:= Value;
+  if not Value then //TODO: Why did I do this again?
+    btnCedKeyed.Visible:= False;
   btnPaymentBack.Enabled:= not Value;
   lstPayDetail.Enabled:= not Value;
   pPayButtons.Enabled:= not Value;
@@ -670,6 +688,7 @@ procedure TfrmCayanPOSMain.TranTransactionResult(
   const AResult: IGeniusTransactionResponse);
 begin
   SetCedBusy(False);
+  FTranStarted:= False;
   DisplayResultGenius(AResult);
   case AResult.Status of
     gsApproved: begin
@@ -848,7 +867,7 @@ var
 begin
   Price:= (Random(200) + 5);
   try
-    I:= LID.Add(glSku, 'Inventory', Price, (Price * 0.06), 1, RandomProduct);
+    I:= LID.Add(glSku, 'Inventory', Price, (Price * FSetup.TaxRate), 1, RandomProduct);
     LI:= lstItems.Items.Add;
     LI.Text:= IntToStr(I.Quantity) + ' ' + I.Description;
     LI.Detail:= FormatFloat('$#,###,##0.00', (I.Amount * I.Quantity));
@@ -1274,18 +1293,23 @@ procedure TfrmCayanPOSMain.btnCartBackClick(Sender: TObject);
 var
   R: IGeniusCancelTransactionResponse;
 begin
-  if MessageDlg('Are you sure you wish to cancel invoice?', TMsgDlgType.mtConfirmation,
-    [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo], 0) = mrYes then
-  begin
-    Cursor:= crHandPoint;
-    try
-      actCustomerTab.ExecuteTarget(Self);
-      ClearCart;
-      R:= Genius.Cancel;
-    finally
-      Cursor:= crDefault;
-    end;
-  end;
+  TDialogService.PreferredMode:= TDialogService.TPreferredMode.Platform;
+  TDialogService.MessageDialog('Are you sure you wish to cancel invoice?',
+    TMsgDlgType.mtConfirmation,
+    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo, 0,
+    procedure(const AResult: TModalResult)
+    begin
+      if AResult = mrYes then begin
+        Cursor:= crHandPoint;
+        try
+          actCustomerTab.ExecuteTarget(Self);
+          ClearCart;
+          R:= Genius.Cancel;
+        finally
+          Cursor:= crDefault;
+        end;
+      end;
+    end);
 end;
 
 procedure TfrmCayanPOSMain.btnResultBackClick(Sender: TObject);
@@ -1297,11 +1321,16 @@ end;
 
 procedure TfrmCayanPOSMain.Button10Click(Sender: TObject);
 begin
-  if MessageDlg('Are you sure you wish to clear the customer?', TMsgDlgType.mtConfirmation,
-    [TMsgDlgBtn.mbYes,TMsgDlgBtn.mbNo], 0) = mrYes then
-  begin
-    ClearCustomer;
-  end;
+  TDialogService.PreferredMode:= TDialogService.TPreferredMode.Platform;
+  TDialogService.MessageDialog('Are you sure you wish to clear the customer?',
+    TMsgDlgType.mtConfirmation,
+    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo, 0,
+    procedure(const AResult: TModalResult)
+    begin
+      if AResult = mrYes then begin
+        ClearCustomer;
+      end;
+    end);
 end;
 
 procedure TfrmCayanPOSMain.Button5Click(Sender: TObject);
@@ -1373,10 +1402,6 @@ begin
   //If so, prompt user if they wish to void payments.
 
   actCartTab.ExecuteTarget(Self);
-  if FTranStarted then begin
-    FTranStarted:= False;
-    Genius.Cancel;
-  end;
 
 end;
 
@@ -1402,24 +1427,38 @@ begin
     Genius.Device.Monitoring:= True;
     Self.actCustomerTab.ExecuteTarget(Self);
   end else begin
-    MessageDlg('Login failed!', TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0);
+    TDialogService.PreferredMode:= TDialogService.TPreferredMode.Platform;
+    TDialogService.MessageDialog('Login failed!',
+      TMsgDlgType.mtConfirmation,
+      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbNo, 0,
+      procedure(const AResult: TModalResult)
+      begin
+        if AResult = mrYes then begin
+          ClearCustomer;
+        end;
+      end);
   end;
 end;
 
 procedure TfrmCayanPOSMain.btnCustBackClick(Sender: TObject);
 begin
-  if MessageDlg('Are you sure you wish to log out?', TMsgDlgType.mtConfirmation,
-    [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo], 0) = mrYes then
-  begin
-    Genius.Device.Monitoring:= False;
-    Self.lblTerminalStatus.Text:= '';
-    txtLoginUser.Text:= '';
-    txtLoginPassword.Text:= '';
-    actLoginTab.ExecuteTarget(Self);
-    txtLoginUser.SetFocus;
-    Self.ClearCustomer;
-    Self.ClearCustomers;
-  end;
+  TDialogService.PreferredMode:= TDialogService.TPreferredMode.Platform;
+  TDialogService.MessageDialog('Are you sure you wish to log out?',
+    TMsgDlgType.mtConfirmation,
+    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo, 0,
+    procedure(const AResult: TModalResult)
+    begin
+      if AResult = mrYes then begin
+        Genius.Device.Monitoring:= False;
+        Self.lblTerminalStatus.Text:= '';
+        txtLoginUser.Text:= '';
+        txtLoginPassword.Text:= '';
+        actLoginTab.ExecuteTarget(Self);
+        txtLoginUser.SetFocus;
+        Self.ClearCustomer;
+        Self.ClearCustomers;
+      end;
+    end);
 end;
 
 procedure TfrmCayanPOSMain.btnCedKeyedClick(Sender: TObject);
@@ -1428,10 +1467,9 @@ var
 begin
   btnCedKeyed.Visible:= False;
   R:= Tran.Genius.Genius.InitiateKeyedEntry;
-  case R of
-    gkSuccess: ;
-    gkFailure: ;
-    gkDeclined: ;
+  if R <> gkSuccess then begin
+    btnCedKeyed.Visible:= True;
+    //TODO: Raise error...
   end;
 end;
 

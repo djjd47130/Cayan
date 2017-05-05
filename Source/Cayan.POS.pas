@@ -21,12 +21,30 @@ type
     function GetForceDuplicates: Boolean;
     procedure SetDba(const Value: String);
     procedure SetForceDuplicates(const Value: Boolean);
+    procedure SetRequireAddress(const Value: Boolean);
+    procedure SetRequireCustomer(const Value: Boolean);
+    procedure SetRequireEmail(const Value: Boolean);
+    procedure SetRequireFullPay(const Value: Boolean);
+    procedure SetRequirePhone(const Value: Boolean);
+    procedure SetTaxRate(const Value: Currency);
+    function GetRequireAddress: Boolean;
+    function GetRequireCustomer: Boolean;
+    function GetRequireEmail: Boolean;
+    function GetRequireFullPay: Boolean;
+    function GetRequirePhone: Boolean;
+    function GetTaxRate: Currency;
 
     property Merch_Name: String read GetMerch_Name write SetMerch_Name;
     property Merch_SiteId: String read GetMerch_SiteId write SetMerch_SiteId;
     property Merch_Key: String read GetMerch_Key write SetMerch_Key;
     property ForceDuplicates: Boolean read GetForceDuplicates write SetForceDuplicates;
     property Dba: String read GetDba write SetDba;
+    property RequireCustomer: Boolean read GetRequireCustomer write SetRequireCustomer;
+    property RequirePhone: Boolean read GetRequirePhone write SetRequirePhone;
+    property RequireAddress: Boolean read GetRequireAddress write SetRequireAddress;
+    property RequireEmail: Boolean read GetRequireEmail write SetRequireEmail;
+    property RequireFullPay: Boolean read GetRequireFullPay write SetRequireFullPay;
+    property TaxRate: Currency read GetTaxRate write SetTaxRate;
   end;
 
   ICayanPOSCustomer = interface
@@ -150,6 +168,12 @@ type
     FMerch_SiteId: String;
     FForceDuplicates: Boolean;
     FDba: String;
+    FTaxRate: Currency;
+    FRequireEmail: Boolean;
+    FRequireFullPay: Boolean;
+    FRequireCustomer: Boolean;
+    FRequirePhone: Boolean;
+    FRequireAddress: Boolean;
     procedure SetMerch_Key(const Value: String);
     procedure SetMerch_Name(const Value: String);
     procedure SetMerch_SiteId(const Value: String);
@@ -160,6 +184,18 @@ type
     function GetForceDuplicates: Boolean;
     procedure SetDba(const Value: String);
     procedure SetForceDuplicates(const Value: Boolean);
+    procedure SetRequireAddress(const Value: Boolean);
+    procedure SetRequireCustomer(const Value: Boolean);
+    procedure SetRequireEmail(const Value: Boolean);
+    procedure SetRequireFullPay(const Value: Boolean);
+    procedure SetRequirePhone(const Value: Boolean);
+    procedure SetTaxRate(const Value: Currency);
+    function GetRequireAddress: Boolean;
+    function GetRequireCustomer: Boolean;
+    function GetRequireEmail: Boolean;
+    function GetRequireFullPay: Boolean;
+    function GetRequirePhone: Boolean;
+    function GetTaxRate: Currency;
   public
     constructor Create;
     destructor Destroy; override;
@@ -169,6 +205,12 @@ type
     property Merch_Key: String read GetMerch_Key write SetMerch_Key;
     property ForceDuplicates: Boolean read GetForceDuplicates write SetForceDuplicates;
     property Dba: String read GetDba write SetDba;
+    property RequireCustomer: Boolean read GetRequireCustomer write SetRequireCustomer;
+    property RequirePhone: Boolean read GetRequirePhone write SetRequirePhone;
+    property RequireAddress: Boolean read GetRequireAddress write SetRequireAddress;
+    property RequireEmail: Boolean read GetRequireEmail write SetRequireEmail;
+    property RequireFullPay: Boolean read GetRequireFullPay write SetRequireFullPay;
+    property TaxRate: Currency read GetTaxRate write SetTaxRate;
   end;
 
   TCayanPOSCustomer = class(TInterfacedObject, ICayanPOSCustomer)
@@ -386,6 +428,36 @@ begin
   Result:= FMerch_SiteId;
 end;
 
+function TCayanPOSSetup.GetRequireAddress: Boolean;
+begin
+  Result:= FRequireAddress;
+end;
+
+function TCayanPOSSetup.GetRequireCustomer: Boolean;
+begin
+  Result:= FRequireCustomer;
+end;
+
+function TCayanPOSSetup.GetRequireEmail: Boolean;
+begin
+  Result:= FRequireEmail;
+end;
+
+function TCayanPOSSetup.GetRequireFullPay: Boolean;
+begin
+  Result:= FRequireFullPay;
+end;
+
+function TCayanPOSSetup.GetRequirePhone: Boolean;
+begin
+  Result:= FRequirePhone;
+end;
+
+function TCayanPOSSetup.GetTaxRate: Currency;
+begin
+  Result:= FTaxRate;
+end;
+
 procedure TCayanPOSSetup.SetDba(const Value: String);
 begin
   FDba:= Value;
@@ -409,6 +481,36 @@ end;
 procedure TCayanPOSSetup.SetMerch_SiteId(const Value: String);
 begin
   FMerch_SiteId := Value;
+end;
+
+procedure TCayanPOSSetup.SetRequireAddress(const Value: Boolean);
+begin
+  FRequireAddress := Value;
+end;
+
+procedure TCayanPOSSetup.SetRequireCustomer(const Value: Boolean);
+begin
+  FRequireCustomer := Value;
+end;
+
+procedure TCayanPOSSetup.SetRequireEmail(const Value: Boolean);
+begin
+  FRequireEmail := Value;
+end;
+
+procedure TCayanPOSSetup.SetRequireFullPay(const Value: Boolean);
+begin
+  FRequireFullPay := Value;
+end;
+
+procedure TCayanPOSSetup.SetRequirePhone(const Value: Boolean);
+begin
+  FRequirePhone := Value;
+end;
+
+procedure TCayanPOSSetup.SetTaxRate(const Value: Currency);
+begin
+  FTaxRate := Value;
 end;
 
 { TCayanPOSCustomer }
@@ -914,6 +1016,12 @@ begin
     Result.Merch_Key:= R.S['Merch_Key'];
     Result.ForceDuplicates:= R.I['Force_Duplicates'] = 1;
     Result.Dba:= R.S['Dba'];
+    Result.RequireCustomer:= R.I['Req_Cust'] = 1;
+    Result.RequirePhone:= R.I['Req_Phone'] = 1;
+    Result.RequireAddress:= R.I['Req_Address'] = 1;
+    Result.RequireEmail:= R.I['Req_Email'] = 1;
+    Result.RequireFullPay:= R.I['Req_FullPay'] = 1;
+    Result.TaxRate:= R.F['Tax_Rate'];
     FSetup:= Result;
     FSetup._AddRef;
   finally

@@ -30,7 +30,7 @@ unit Cayan.XSuperObject;
 
 interface
 
-{$I XSuperObject.inc}
+{$I Cayan.XSuperObject.inc}
 
 uses
   Classes,

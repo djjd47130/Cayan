@@ -564,6 +564,14 @@ var
       F:= True;
     end;
   end;
+  procedure ChkCur(const N: String);
+  begin
+    if F then Exit;
+    if SameText(N, V) then begin
+      FResponse.AddCur(N, StrToCurrDef(FQry.FieldByName('Val').AsString, 0));
+      F:= True;
+    end;
+  end;
 begin
   FResponse.RootElement:= 'Status';
 
@@ -587,6 +595,7 @@ begin
       ChkInt('Req_FullPay');
       ChkInt('Force_Duplicates');
       ChkStr('Dba');
+      ChkCur('Tax_Rate');
 
       FQry.Next;
     end;
