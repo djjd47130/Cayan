@@ -3218,7 +3218,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
-          TabOrder = 3
+          TabOrder = 2
           Text = 'Address'
           object txtCedAddress: TEdit
             Touch.InteractiveGestures = [LongTap, DoubleTap]
@@ -3243,7 +3243,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
-          TabOrder = 2
+          TabOrder = 1
           Text = 'Port #'
           object txtCedPort: TNumberBox
             Touch.InteractiveGestures = [LongTap, DoubleTap]
@@ -3252,34 +3252,6 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Cursor = crIBeam
             Max = 65535.000000000000000000
             Value = 8989.000000000000000000
-            Position.X = 410.000000000000000000
-            Position.Y = 5.000000000000000000
-            HorzIncrement = 0.000000000000000000
-            VertIncrement = 0.000000000000000000
-            Margins.Left = 5.000000000000000000
-            Margins.Top = 5.000000000000000000
-            Margins.Right = 5.000000000000000000
-            Margins.Bottom = 5.000000000000000000
-            Size.Width = 164.000000000000000000
-            Size.Height = 32.000000000000000000
-            Size.PlatformDefault = False
-          end
-        end
-        object ListBoxItem25: TListBoxItem
-          Selectable = False
-          Position.Y = 106.000000000000000000
-          Size.Width = 579.000000000000000000
-          Size.Height = 42.000000000000000000
-          Size.PlatformDefault = False
-          StyleLookup = 'listboxitemrightdetail'
-          TabOrder = 1
-          Text = 'Timeout'
-          object txtCedTimeout: TNumberBox
-            Touch.InteractiveGestures = [LongTap, DoubleTap]
-            Align = Right
-            TabOrder = 0
-            Cursor = crIBeam
-            Max = 65535.000000000000000000
             Position.X = 410.000000000000000000
             Position.Y = 5.000000000000000000
             HorzIncrement = 0.000000000000000000
@@ -3842,7 +3814,6 @@ object frmCayanPOSMain: TfrmCayanPOSMain
     Device.DevicePort = 8080
     Device.DeviceProtocol = prHTTPS
     Device.DeviceVersion = gdVer2
-    Device.DeviceTimeout = 900
     Device.Monitoring = False
     ForceDuplicate = False
     OnDeviceStatus = GeniusDeviceStatus

@@ -163,9 +163,6 @@ type
     FWebDevice: TIdHTTP;
     FSSLDevice: TIdSSLIOHandlerSocketOpenSSL;
     FOwner: TMerchantWare;
-    {$IFNDEF NO_TIMEOUT}
-    FDeviceTimeout: Integer;
-    {$ENDIF}
     FCancelled: Boolean;
     FInTransaction: Boolean;
     FInSignature: Boolean;
@@ -175,9 +172,6 @@ type
     FDevicePort: Integer;
     FDeviceProtocol: TGeniusProtocol;
     FDeviceVersion: TGeniusDeviceVersion;
-    {$IFNDEF SEPERATE_LID}
-    FLineItems: TGeniusLineItems;
-    {$ENDIF}
     FTransactionResponse: TGeniusTransactionEvent;
     FDba: String;
     FSoftwareName: String;
@@ -210,9 +204,6 @@ type
     procedure SetDeviceAddress(const Value: String);
     function GetDevicePort: Integer;
     procedure SetDevicePort(const Value: Integer);
-    {$IFNDEF SEPERATE_LID}
-    function GetLineItems: IGeniusLineItems;
-    {$ENDIF}
     function GetDeviceProtocol: TGeniusProtocol;
     procedure SetDeviceProtocol(const Value: TGeniusProtocol);
     function GetDeviceVersion: TGeniusDeviceVersion;
@@ -225,8 +216,6 @@ type
     procedure SetSoftwareName(const Value: String);
     function GetSoftwareVersion: String;
     procedure SetSoftwareVersion(const Value: String);
-    function GetDeviceTimeout: Integer;
-    procedure SetDeviceTimeout(const Value: Integer);
     function GetOnStatus: TGeniusStatusResponseEvent;
     procedure SetOnStatus(const Value: TGeniusStatusResponseEvent);
     function GetMonitoring: Boolean;
@@ -257,14 +246,10 @@ type
     property DevicePort: Integer read GetDevicePort write SetDevicePort;
     property DeviceProtocol: TGeniusProtocol read GetDeviceProtocol write SetDeviceProtocol;
     property DeviceVersion: TGeniusDeviceVersion read GetDeviceVersion write SetDeviceVersion;
-    {$IFNDEF SEPERATE_LID}
-    property LineItems: IGeniusLineItems read GetLineItems;
-    {$ENDIF}
     property TransactionResponse: TGeniusTransactionEvent read GetTransactionResponse write SetTransactionResponse;
     property Dba: String read GetDba write SetDba;
     property SoftwareName: String read GetSoftwareName write SetSoftwareName;
     property SoftwareVersion: String read GetSoftwareVersion write SetSoftwareVersion;
-    property DeviceTimeout: Integer read GetDeviceTimeout write SetDeviceTimeout;
     property Monitoring: Boolean read GetMonitoring write SetMonitoring;
 
     property OnStatus: TGeniusStatusResponseEvent read GetOnStatus write SetOnStatus;
@@ -1714,11 +1699,6 @@ begin
   FWebDevice.IOHandler:= FSSLDevice;
   FWebDevice.HandleRedirects:= True;
 
-  FDeviceTimeout:= 900; //msec
-  {$IFNDEF SEPERATE_LID}
-  FLineItems:= TGeniusLineItems.Create(Self);
-  IGeniusLineItems(FLineItems)._AddRef;
-  {$ENDIF}
   FDeviceVersion:= TGeniusDeviceVersion.gdVer1;
   FStatusThread:= TGeniusStatusThread.Create(Self);
   FStatusThread.OnResponse:= StatusResponse;
@@ -1731,11 +1711,6 @@ begin
   FStatusThread.Terminate;
   FStatusThread.WaitFor; //TODO...?
   FreeAndNil(FStatusThread);
-  {$IFNDEF SEPERATE_LID}
-  FLineItems.ClearItems;
-  IGeniusLineItems(FLineItems)._Release;
-  FLineItems:= nil;
-  {$ENDIF}
   FreeAndNil(FWebDevice);
   FreeAndNil(FSSLDevice);
   FreeAndNil(FWebCayan);
@@ -1771,22 +1746,10 @@ begin
   Result:= FDeviceProtocol;
 end;
 
-function TGenius.GetDeviceTimeout: Integer;
-begin
-  Result:= FDeviceTimeout;
-end;
-
 function TGenius.GetDeviceVersion: TGeniusDeviceVersion;
 begin
   Result:= FDeviceVersion;
 end;
-
-{$IFNDEF SEPERATE_LID}
-function TGenius.GetLineItems: IGeniusLineItems;
-begin
-  Result:= FLineItems;
-end;
-{$ENDIF}
 
 function TGenius.GetMerchantKey: String;
 begin
@@ -1851,11 +1814,6 @@ end;
 procedure TGenius.SetDeviceProtocol(const Value: TGeniusProtocol);
 begin
   FDeviceProtocol:= Value;
-end;
-
-procedure TGenius.SetDeviceTimeout(const Value: Integer);
-begin
-  FDeviceTimeout:= Value;
 end;
 
 procedure TGenius.SetDeviceVersion(const Value: TGeniusDeviceVersion);
@@ -2270,9 +2228,6 @@ begin
   FInAgreement:= False;
   FInCustomerInput:= False;
 
-  {$IFNDEF SEPERATE_LID}
-  FLineItems.FInProgress:= False;
-  {$ENDIF}
   FCancelled:= True;
 
   Pars:= TParamList.Create;

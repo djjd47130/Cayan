@@ -177,9 +177,7 @@ type
     ListBoxGroupHeader13: TListBoxGroupHeader;
     ListBoxItem53: TListBoxItem;
     ListBoxItem23: TListBoxItem;
-    ListBoxItem25: TListBoxItem;
     txtCedAddress: TEdit;
-    txtCedTimeout: TNumberBox;
     txtCedPort: TNumberBox;
     Button6: TButton;
     ListBoxGroupHeader16: TListBoxGroupHeader;
@@ -431,7 +429,6 @@ begin
     Genius.Device.DeviceAddress:= 'LocalHost';
     Genius.Device.DevicePort:= 8989;
     Genius.Device.DeviceProtocol:= prHTTP;
-    Genius.Device.DeviceTimeout:= 900;
     Genius.Device.DeviceVersion:= TGeniusDeviceVersion.gdVer1;
     Self.txtServerHost.Text:= 'LocalHost';
     Self.txtServerPort.Value:= 8787;
@@ -446,7 +443,6 @@ begin
     Genius.Device.DeviceAddress:= O.S['deviceAddress'];
     Genius.Device.DevicePort:= O.I['devicePort'];
     Genius.Device.DeviceProtocol:= TGeniusProtocol.prHTTP; // (O.I['deviceProtocol']);
-    Genius.Device.DeviceTimeout:= O.I['deviceTimeout'];
     Genius.Device.DeviceVersion:= TGeniusDeviceVersion(O.I['deviceVersion']);
     Self.txtServerHost.Text:= O.S['serverAddr'];
     Self.txtServerPort.Value:= O.I['serverPort'];;
@@ -466,7 +462,6 @@ begin
   O.S['deviceAddress']:= Genius.Device.DeviceAddress;
   O.I['devicePort']:= Genius.Device.DevicePort;
   O.I['deviceProtocol']:= Integer(Genius.Device.DeviceProtocol);
-  O.I['deviceTimeout']:= Genius.Device.DeviceTimeout;
   O.I['deviceVersion']:= Integer(Genius.Device.DeviceVersion);
   O.S['stationId']:= DM.Cayan.StationID;
   O.S['serverAddr']:= Self.txtServerHost.Text;
@@ -925,7 +920,6 @@ begin
   Genius.Device.Monitoring:= False;
   Genius.Device.DeviceAddress:= txtCedAddress.Text;
   Genius.Device.DevicePort:= Trunc(txtCedPort.Value);
-  Genius.Device.DeviceTimeout:= Trunc(txtCedTimeout.Value);
   Self.SaveToConfig;
   Genius.Device.Monitoring:= True;
   actCustomerTab.ExecuteTarget(Self);
@@ -1297,7 +1291,6 @@ procedure TfrmCayanPOSMain.Button5Click(Sender: TObject);
 begin
   txtCedAddress.Text:= Self.Genius.Device.DeviceAddress;
   txtCedPort.Value:= Self.Genius.Device.DevicePort;
-  txtCedTimeout.Value:= Self.Genius.Device.DeviceTimeout;
   actSetupTab.ExecuteTarget(Self);
 end;
 

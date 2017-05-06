@@ -21,12 +21,10 @@ type
     function GetDeviceAddress: String;
     function GetDevicePort: Integer;
     function GetDeviceProtocol: TGeniusProtocol;
-    function GetDeviceTimeout: Integer;
     function GetDeviceVersion: TGeniusDeviceVersion;
     procedure SetDeviceAddress(const Value: String);
     procedure SetDevicePort(const Value: Integer);
     procedure SetDeviceProtocol(const Value: TGeniusProtocol);
-    procedure SetDeviceTimeout(const Value: Integer);
     procedure SetDeviceVersion(const Value: TGeniusDeviceVersion);
     function GetMonitoring: Boolean;
     procedure SetMonitoring(const Value: Boolean);
@@ -38,7 +36,6 @@ type
     property DevicePort: Integer read GetDevicePort write SetDevicePort;
     property DeviceProtocol: TGeniusProtocol read GetDeviceProtocol write SetDeviceProtocol;
     property DeviceVersion: TGeniusDeviceVersion read GetDeviceVersion write SetDeviceVersion;
-    property DeviceTimeout: Integer read GetDeviceTimeout write SetDeviceTimeout;
     property Monitoring: Boolean read GetMonitoring write SetMonitoring;
   end;
 
@@ -104,11 +101,6 @@ begin
   Result:= FOwner.FGenius.DeviceProtocol;
 end;
 
-function TCayanGeniusDevice.GetDeviceTimeout: Integer;
-begin
-  Result:= FOwner.FGenius.DeviceTimeout;
-end;
-
 function TCayanGeniusDevice.GetDeviceVersion: TGeniusDeviceVersion;
 begin
   Result:= FOwner.FGenius.DeviceVersion;
@@ -127,11 +119,6 @@ end;
 procedure TCayanGeniusDevice.SetDeviceProtocol(const Value: TGeniusProtocol);
 begin
   FOwner.FGenius.DeviceProtocol:= Value;
-end;
-
-procedure TCayanGeniusDevice.SetDeviceTimeout(const Value: Integer);
-begin
-  FOwner.FGenius.DeviceTimeout:= Value;
 end;
 
 procedure TCayanGeniusDevice.SetDeviceVersion(const Value: TGeniusDeviceVersion);

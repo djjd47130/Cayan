@@ -133,9 +133,6 @@ type
     procedure SetDeviceAddress(const Value: String);
     function GetDevicePort: Integer;
     procedure SetDevicePort(const Value: Integer);
-    {$IFNDEF SEPERATE_LID}
-    function GetLineItems: IGeniusLineItems;
-    {$ENDIF}
     function GetDeviceProtocol: TGeniusProtocol;
     procedure SetDeviceProtocol(const Value: TGeniusProtocol);
     function GetDeviceVersion: TGeniusDeviceVersion;
@@ -148,8 +145,6 @@ type
     procedure SetSoftwareName(const Value: String);
     function GetSoftwareVersion: String;
     procedure SetSoftwareVersion(const Value: String);
-    function GetDeviceTimeout: Integer;
-    procedure SetDeviceTimeout(const Value: Integer);
     function GetOnStatus: TGeniusStatusResponseEvent;
     procedure SetOnStatus(const Value: TGeniusStatusResponseEvent);
     function GetMonitoring: Boolean;
@@ -180,13 +175,9 @@ type
     property DevicePort: Integer read GetDevicePort write SetDevicePort;
     property DeviceProtocol: TGeniusProtocol read GetDeviceProtocol write SetDeviceProtocol;
     property DeviceVersion: TGeniusDeviceVersion read GetDeviceVersion write SetDeviceVersion;
-    {$IFNDEF SEPERATE_LID}
-    property LineItems: IGeniusLineItems read GetLineItems;
-    {$ENDIF}
     property Dba: String read GetDba write SetDba;
     property SoftwareName: String read GetSoftwareName write SetSoftwareName;
     property SoftwareVersion: String read GetSoftwareVersion write SetSoftwareVersion;
-    property DeviceTimeout: Integer read GetDeviceTimeout write SetDeviceTimeout;
     property Monitoring: Boolean read GetMonitoring write SetMonitoring;
 
     property TransactionResponse: TGeniusTransactionEvent read GetTransactionResponse write SetTransactionResponse;

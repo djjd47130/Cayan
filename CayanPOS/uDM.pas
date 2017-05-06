@@ -16,6 +16,7 @@ type
     { Public declarations }
   end;
 
+
 var
   DM: TDM;
 

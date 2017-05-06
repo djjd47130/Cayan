@@ -445,22 +445,16 @@ end;
 
 procedure TCayanGeniusLineItems.CreateLID;
 begin
-  {$IFDEF SEPERATE_LID}
   FLineItems:= TGeniusLineItems.Create(Self.FTransaction.Genius.Genius);
   IGeniusLineItems(FLineItems)._AddRef;
-  {$ELSE}
-  FLineItems:= FTransaction.Genius.Genius.LineItems;
-  {$ENDIF}
 end;
 
 procedure TCayanGeniusLineItems.DestroyLID;
 begin
-  {$IFDEF SEPERATE_LID}
   if Assigned(FLineItems) then begin
     FLineItems.ClearItems;
     IGeniusLineItems(FLineItems)._Release;
   end;
-  {$ENDIF}         
   FLineItems:= nil;
 end;
 
