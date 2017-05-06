@@ -1,6 +1,10 @@
-unit uCayanPOSMain;
+﻿unit uCayanPOSMain;
 
 interface
+
+{$IF CompilerVersion >= 31}
+  {$DEFINE BERLIN_AND_UP}
+{$ENDIF}
 
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes,
@@ -12,7 +16,9 @@ uses
   Cayan.Genius,
   Cayan.XSuperObject,
 
+  {$IFDEF BERLIN_AND_UP}
   FMX.DialogService,
+  {$ENDIF}
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.TabControl,
   FMX.StdCtrls, FMX.Controls.Presentation, FMX.Gestures, FMX.ActnList,
   FMX.ListBox, FMX.Layouts, FMX.Edit,
@@ -20,7 +26,8 @@ uses
   FMX.ListView.Adapters.Base, Cayan, FMX.EditBox, FMX.NumberBox,
   Cayan.Genius.LineItems, Cayan.POS, Cayan.Genius.Transactions, FMX.ScrollBox,
   FMX.Memo,
-  uCayanPOSCart;
+  uCayanPOSCart,
+  uDialog;
 
 type
   TfrmCayanPOSMain = class(TForm)
@@ -217,8 +224,6 @@ type
     txtSwipe: TMemo;
     ListBoxItem45: TListBoxItem;
     tabGift: TTabItem;
-    Panel1: TPanel;
-    Panel2: TPanel;
     ListBoxItem24: TListBoxItem;
     ListBoxItem46: TListBoxItem;
     TabControl1: TTabControl;
@@ -398,6 +403,17 @@ var
 begin
   R:= False;
   CanClose:= False;
+  MessageDlg(Self, 'Are you sure you wish to exit?',
+    TMsgDlgType.mtConfirmation,
+    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo,
+    procedure(const AResult: TModalResult)
+    begin
+      if AResult = mrYes then begin
+        R:= True;
+      end;
+    end);
+
+    {
   TDialogService.PreferredMode:= TDialogService.TPreferredMode.Platform;
   TDialogService.MessageDialog('Are you sure you wish to exit?',
     TMsgDlgType.mtConfirmation,
@@ -408,6 +424,7 @@ begin
         R:= True;
       end;
     end);
+    }
   CanClose:= R;
 end;
 
@@ -1247,10 +1264,9 @@ procedure TfrmCayanPOSMain.btnCartBackClick(Sender: TObject);
 var
   R: IGeniusCancelTransactionResponse;
 begin
-  TDialogService.PreferredMode:= TDialogService.TPreferredMode.Platform;
-  TDialogService.MessageDialog('Are you sure you wish to cancel invoice?',
+  MessageDlg(Self, 'Are you sure you wish to cancel invoice?',
     TMsgDlgType.mtConfirmation,
-    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo, 0,
+    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo,
     procedure(const AResult: TModalResult)
     begin
       if AResult = mrYes then begin
@@ -1275,10 +1291,9 @@ end;
 
 procedure TfrmCayanPOSMain.Button10Click(Sender: TObject);
 begin
-  TDialogService.PreferredMode:= TDialogService.TPreferredMode.Platform;
-  TDialogService.MessageDialog('Are you sure you wish to clear the customer?',
+  MessageDlg(Self, 'Are you sure you wish to clear the customer?',
     TMsgDlgType.mtConfirmation,
-    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo, 0,
+    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo,
     procedure(const AResult: TModalResult)
     begin
       if AResult = mrYes then begin
@@ -1381,10 +1396,9 @@ begin
     Genius.Device.Monitoring:= True;
     Self.actCustomerTab.ExecuteTarget(Self);
   end else begin
-    TDialogService.PreferredMode:= TDialogService.TPreferredMode.Platform;
-    TDialogService.MessageDialog('Login failed!',
+    MessageDlg(Self, 'Login failed!',
       TMsgDlgType.mtConfirmation,
-      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbNo, 0,
+      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbNo,
       procedure(const AResult: TModalResult)
       begin
         if AResult = mrYes then begin
@@ -1396,10 +1410,9 @@ end;
 
 procedure TfrmCayanPOSMain.btnCustBackClick(Sender: TObject);
 begin
-  TDialogService.PreferredMode:= TDialogService.TPreferredMode.Platform;
-  TDialogService.MessageDialog('Are you sure you wish to log out?',
+  MessageDlg(Self, 'Are you sure you wish to log out?',
     TMsgDlgType.mtConfirmation,
-    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo, 0,
+    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo,
     procedure(const AResult: TModalResult)
     begin
       if AResult = mrYes then begin

@@ -1623,7 +1623,7 @@ begin
   {$ENDIF}
   FWeb:= TIdHTTP.Create(nil);
   try
-    FWeb.Request.CustomHeaders.AddPair('Connection', 'Keep-Alive');
+    FWeb.Request.CustomHeaders.Values['Connection']:= 'Keep-Alive';
     while not Terminated do begin
       //Only perform check if active and can report response
       if (FActive) and (Assigned(FOnResponse)) and (not FOwner.TestMode) and

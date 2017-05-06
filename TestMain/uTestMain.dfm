@@ -121,7 +121,6 @@ object Form1: TForm1
     ScrollBars = ssBoth
     TabOrder = 3
     WordWrap = False
-    ExplicitWidth = 273
   end
   object txtTitle: TEdit
     Left = 16
@@ -150,7 +149,6 @@ object Form1: TForm1
     Device.DevicePort = 8080
     Device.DeviceProtocol = prHTTP
     Device.DeviceVersion = gdVer1
-    Device.DeviceTimeout = 900
     Device.Monitoring = False
     ForceDuplicate = False
     Left = 208

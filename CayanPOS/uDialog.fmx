@@ -1,0 +1,202 @@
+object DialogForm: TDialogForm
+  Left = 0
+  Top = 0
+  Caption = 'Form2'
+  ClientHeight = 490
+  ClientWidth = 448
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnClose = FormClose
+  DesignerMasterStyle = 0
+  object DialogLayout: TLayout
+    Align = Top
+    Size.Width = 448.000000000000000000
+    Size.Height = 441.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object DimPanel: TPanel
+      Align = Top
+      Opacity = 0.860000014305114700
+      Size.Width = 448.000000000000000000
+      Size.Height = 385.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      object DialogPanel: TPanel
+        Align = Center
+        Size.Width = 228.000000000000000000
+        Size.Height = 275.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = 'Panel2Style1'
+        TabOrder = 0
+        object ButtonPanel: TPanel
+          Align = Bottom
+          Position.Y = 224.000000000000000000
+          Size.Width = 228.000000000000000000
+          Size.Height = 51.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = 'Panel2Style1'
+          TabOrder = 0
+          object btnYes: TButton
+            Align = Right
+            Position.X = 40.000000000000000000
+            Size.Width = 50.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 0
+            Text = 'Yes'
+            Visible = False
+            OnClick = DialogButtonClick
+          end
+          object btnNo: TButton
+            Tag = 1
+            Align = Right
+            Position.X = 90.000000000000000000
+            Size.Width = 50.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 1
+            Text = 'No'
+            Visible = False
+            OnClick = DialogButtonClick
+          end
+          object btnOK: TButton
+            Tag = 2
+            Align = Right
+            Position.X = 140.000000000000000000
+            Size.Width = 50.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 2
+            Text = 'OK'
+            Visible = False
+            OnClick = DialogButtonClick
+          end
+          object btnCancel: TButton
+            Tag = 3
+            Align = Right
+            Position.X = 190.000000000000000000
+            Size.Width = 50.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 3
+            Text = 'Cancel'
+            Visible = False
+            OnClick = DialogButtonClick
+          end
+          object btnAbort: TButton
+            Tag = 4
+            Align = Right
+            Position.X = 240.000000000000000000
+            Size.Width = 50.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 4
+            Text = 'Abort'
+            Visible = False
+            OnClick = DialogButtonClick
+          end
+          object btnRetry: TButton
+            Tag = 5
+            Align = Right
+            Position.X = 290.000000000000000000
+            Size.Width = 50.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 5
+            Text = 'Retry'
+            Visible = False
+            OnClick = DialogButtonClick
+          end
+          object btnIgnore: TButton
+            Tag = 6
+            Align = Right
+            Position.X = 340.000000000000000000
+            Size.Width = 50.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 6
+            Text = 'Ignore'
+            Visible = False
+            OnClick = DialogButtonClick
+          end
+          object btnAll: TButton
+            Tag = 7
+            Align = Right
+            Position.X = 390.000000000000000000
+            Size.Width = 50.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 7
+            Text = 'All'
+            Visible = False
+            OnClick = DialogButtonClick
+          end
+          object btnNoToAll: TButton
+            Tag = 8
+            Align = Right
+            Position.X = 440.000000000000000000
+            Size.Width = 72.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 8
+            Text = 'No to All'
+            Visible = False
+            OnClick = DialogButtonClick
+          end
+          object btnYesToAll: TButton
+            Tag = 9
+            Align = Right
+            Position.X = 512.000000000000000000
+            Size.Width = 70.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 9
+            Text = 'Yes to All'
+            Visible = False
+            OnClick = DialogButtonClick
+          end
+          object btnHelp: TButton
+            Tag = 10
+            Align = Right
+            Position.X = 582.000000000000000000
+            Size.Width = 50.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 10
+            Text = 'Help'
+            Visible = False
+            OnClick = DialogButtonClick
+          end
+          object btnClose: TButton
+            Tag = 11
+            Align = Right
+            Position.X = 632.000000000000000000
+            Size.Width = 50.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 11
+            Text = 'Close'
+            Visible = False
+            OnClick = DialogButtonClick
+          end
+        end
+        object DialogLabel: TLabel
+          Align = Client
+          StyledSettings = [Family, Style, FontColor]
+          Margins.Left = 10.000000000000000000
+          Margins.Top = 10.000000000000000000
+          Margins.Right = 10.000000000000000000
+          Margins.Bottom = 10.000000000000000000
+          Size.Width = 208.000000000000000000
+          Size.Height = 204.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Size = 16.000000000000000000
+          TextSettings.HorzAlign = Center
+          Text = 'DialogLabel'
+        end
+      end
+    end
+  end
+end
