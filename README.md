@@ -45,19 +45,31 @@ Represents a single connection to Cayan's systems, and is not related to any par
 
 ### `TCayanGenius`
 
-Represents a single connection to one of Cayan's Genius CED payment terminals. Provides the ability to perform transactions and other various features of the device.
+Represents a single connection to one of Cayan's Genius CED payment terminals. Provides the ability to perform various general tasks, but most importantly, attaching other components which control various tasks.
+
+### `TCayanGeniusTransaction`
+
+Represents a single transaction being made using one of Cayan's Genius CED payment terminals. Provides details for a single payment transaction.
 
 ### `TCayanGeniusLineItems`
 
-Allows you to utilize Line Item Display on the device.
+Allows you to utilize Line Item Display on the device. Attaches to a `TCayanGeniusTransaction` component. 
 
 ### `TCayanGeniusAgreement`
 
-Allows you to send a command to the Genius device requesting the consumer to either Accept or Decline an agreement, while displaying a scrollable text area where an agreement is displayed.
+Allows you to send a command to the Genius device requesting the consumer to either Accept or Decline an agreement, while displaying a scrollable text area where an agreement is displayed. Attaches to a `TCayanGeniusTransaction` component. 
 
 ### `TCayanGeniusEmulator`
 
-Allows you to serve a virtual emulator, mimicing a real Genius CED device. This component is primarily used in the Genius CED Emulator application. 
+Allows you to serve a virtual emulator, mimicing a real Genius CED device. This component is primarily used in the Genius CED Emulator application. This project has been put on hold until the real CED payment terminal can be completely implemented. 
+
+### `TCayanPOSServer`
+
+Represents a web server which provides access from a `TCayanPOS` component to its underlying back-end database. 
+
+### `TCayanPOS`
+
+Represents a single instance of a Point-of-Sale application. Used for connection from the POS application to its corresponding server. 
 
 ## POS Application
 
@@ -80,5 +92,5 @@ Complete instructions are included in this repo under the `Readme` folder.
 1. [Getting Started](./Readme/Chapter%201%20-%20Getting%20Started.md)
 2. [MerchantWare Transactions](./Readme/Chapter%202%20-%20MerchantWare%20Transactions.md)
 3. [Genius](./Readme/Chapter%203%20-%20Genius.md)
-
+4. [Genius Transactions](./Readme/Chapter%204%20-%20Genius%20Transactions.md)
 
