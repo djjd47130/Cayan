@@ -6,7 +6,6 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes,
   System.Actions,
 
-
   Cayan.Common,
   Cayan.Genius.Intf,
   Cayan.MWv4.Intf,
@@ -20,7 +19,8 @@ uses
   FMX.ListView, FMX.ListView.Types, FMX.ListView.Appearances,
   FMX.ListView.Adapters.Base, Cayan, FMX.EditBox, FMX.NumberBox,
   Cayan.Genius.LineItems, Cayan.POS, Cayan.Genius.Transactions, FMX.ScrollBox,
-  FMX.Memo;
+  FMX.Memo,
+  uCayanPOSCart;
 
 type
   TfrmCayanPOSMain = class(TForm)
@@ -32,8 +32,6 @@ type
     lblTitle1: TLabel;
     btnCustNext: TSpeedButton;
     tabCart: TTabItem;
-    ToolBar3: TToolBar;
-    lblCartTitle: TLabel;
     tabPayment: TTabItem;
     ToolBar4: TToolBar;
     lblPaymentTitle: TLabel;
@@ -59,7 +57,6 @@ type
     txtCustCellPhone: TEdit;
     ListBoxItem6: TListBoxItem;
     txtCustEmail: TEdit;
-    lstItems: TListView;
     lstPayments: TListView;
     ListBoxGroupHeader3: TListBoxGroupHeader;
     ListBoxItem7: TListBoxItem;
@@ -83,15 +80,6 @@ type
     txtCustShipState: TEdit;
     ListBoxItem16: TListBoxItem;
     txtCustShipZip: TEdit;
-    GridPanelLayout3: TGridPanelLayout;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    lblCartQty: TLabel;
-    lblCartSubtotal: TLabel;
-    lblCartTax: TLabel;
-    lblCartTotal: TLabel;
     lstPayDetail: TListBox;
     liCardNum: TListBoxItem;
     txtKeyCardNum: TEdit;
@@ -106,7 +94,6 @@ type
     lhPayInfo: TListBoxGroupHeader;
     liPayAmount: TListBoxItem;
     txtPayAmount: TEdit;
-    btnCartNext: TSpeedButton;
     GridPanelLayout2: TGridPanelLayout;
     Button8: TButton;
     Button9: TButton;
@@ -116,7 +103,6 @@ type
     actPaymentTab: TChangeTabAction;
     actResultTab: TChangeTabAction;
     actCustomerInfoTab: TChangeTabAction;
-    btnCartBack: TSpeedButton;
     btnPaymentBack: TSpeedButton;
     GridPanelLayout5: TGridPanelLayout;
     btnCedStart: TButton;
@@ -135,10 +121,6 @@ type
     btnPayKeyed: TButton;
     btnPaySwipe: TButton;
     btnPayVault: TButton;
-    GridPanelLayout7: TGridPanelLayout;
-    btnCartAdd: TButton;
-    btnCartEdit: TButton;
-    btnCartDelete: TButton;
     pPayButtons: TGridPanelLayout;
     Button1: TButton;
     Button2: TButton;
@@ -200,7 +182,6 @@ type
     txtCedTimeout: TNumberBox;
     txtCedPort: TNumberBox;
     Button6: TButton;
-    LID: TCayanGeniusLineItems;
     ListBoxGroupHeader16: TListBoxGroupHeader;
     lManageServer: TListBoxItem;
     lServerHost: TListBoxItem;
@@ -237,9 +218,38 @@ type
     liSwipe: TListBoxItem;
     txtSwipe: TMemo;
     ListBoxItem45: TListBoxItem;
-    TabItem1: TTabItem;
+    tabGift: TTabItem;
     Panel1: TPanel;
     Panel2: TPanel;
+    ListBoxItem24: TListBoxItem;
+    ListBoxItem46: TListBoxItem;
+    TabControl1: TTabControl;
+    TabItem2: TTabItem;
+    ToolBar3: TToolBar;
+    Label1: TLabel;
+    SpeedButton3: TSpeedButton;
+    ListBox1: TListBox;
+    ListBoxGroupHeader12: TListBoxGroupHeader;
+    ListBoxItem47: TListBoxItem;
+    Edit1: TEdit;
+    ListBoxItem48: TListBoxItem;
+    Edit2: TEdit;
+    ListBoxGroupHeader17: TListBoxGroupHeader;
+    ListBoxItem55: TListBoxItem;
+    GridPanelLayout1: TGridPanelLayout;
+    Button11: TButton;
+    Button12: TButton;
+    TabItem3: TTabItem;
+    ToolBar9: TToolBar;
+    Label2: TLabel;
+    SpeedButton4: TSpeedButton;
+    TabItem4: TTabItem;
+    actMenuTab: TChangeTabAction;
+    actGiftTab: TChangeTabAction;
+    ToolBar10: TToolBar;
+    Label4: TLabel;
+    SpeedButton2: TSpeedButton;
+    NumberBox1: TNumberBox;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
@@ -260,7 +270,6 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btnCedStartClick(Sender: TObject);
     procedure btnCedCancelClick(Sender: TObject);
-    procedure btnCartAddClick(Sender: TObject);
     procedure TranTransactionStart(const ATrans: TCayanGeniusTransaction);
     procedure TranTransactionStaged(const ATrans: TCayanGeniusTransaction);
     procedure TranTransactionResult(const ATrans: TCayanGeniusTransaction;
@@ -268,7 +277,6 @@ type
       const AResult: IGeniusTransactionResponse);
     procedure TranCancel(Sender: TObject);
     procedure btnResultBackClick(Sender: TObject);
-    procedure btnCartDeleteClick(Sender: TObject);
     procedure lstItemsDeleteItem(Sender: TObject; AIndex: Integer);
     procedure FormDestroy(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
@@ -290,6 +298,8 @@ type
     FCustomer: ICayanPOSCustomer;
     FCards: ICayanPOSCards;
     FSetup: ICayanPOSSetup;
+
+    FCart: TfrmCart;
     procedure HidePayInfo;
     procedure ShowCardInfo;
     procedure ShowCheckInfo;
@@ -314,6 +324,7 @@ type
     procedure ProcessPaymentSwiped;
     procedure FinishCreditSale(Res: IMWCreditResponse4);
     procedure ClearPaymentInfo;
+    procedure CreateSubForms;
   public
     procedure UpdateCartTotals;
     procedure LoadFromConfig;
@@ -340,7 +351,7 @@ begin
   ReportMemoryLeaksOnShutdown:= True;
   {$ENDIF}
 
-  FProducts:= TStringList.Create;
+  CreateSubForms;
 
   MainTabs.TabPosition:= TTabPosition.None;
   CustomerTabs.TabPosition:= TTabPosition.None;
@@ -373,6 +384,7 @@ end;
 
 procedure TfrmCayanPOSMain.FormDestroy(Sender: TObject);
 begin
+  FreeAndNil(FCart);
   FreeAndNil(FProducts);
   FCustomers:= nil;
   FCustomer:= nil;
@@ -405,6 +417,16 @@ begin
       end;
     end);
   CanClose:= R;
+end;
+
+procedure TfrmCayanPOSMain.CreateSubForms;
+begin
+  FProducts:= TStringList.Create;
+  FCart:= TfrmCart.Create(tabCart);
+  FCart.btnBack.OnClick:= Self.btnCartBackClick;
+  FCart.btnNext.OnClick:= Self.btnCartNextClick;
+  FCart.LID.Transaction:= Self.Tran;
+  FCart.Setup:= FSetup;
 end;
 
 procedure TfrmCayanPOSMain.LoadFromConfig;
@@ -650,11 +672,11 @@ begin
 
   //TODO: Check if email required...
 
-  lblCartTitle.Text:= 'Cart - ' + txtCustFirstName.Text + ' ' + txtCustLastName.Text;
+  FCart.lblTitle.Text:= 'Cart - ' + txtCustFirstName.Text + ' ' + txtCustLastName.Text;
   ClearCart;
-  LID.DisplayCustomSubTotal:= txtCustFirstName.Text + ' ' + txtCustLastName.Text;
+  FCart.LID.DisplayCustomSubTotal:= txtCustFirstName.Text + ' ' + txtCustLastName.Text;
   actCartTab.ExecuteTarget(Self);
-  LID.StartOrder;
+  FCart.LID.StartOrder;
 end;
 
 procedure TfrmCayanPOSMain.SetCedBusy(const Value: Boolean);
@@ -676,7 +698,7 @@ begin
     Self.SetCedBusy(False);
   end else
   if MainTabs.ActiveTab = Self.tabCart then begin
-    btnCartBackClick(btnCartBack);
+    btnCartBackClick(nil);
   end else begin
     //Cancelled at unexpected place...
   end;
@@ -759,8 +781,8 @@ end;
 procedure TfrmCayanPOSMain.FinishCreditSale(Res: IMWCreditResponse4);
 begin
   if asApproved in Res.ApprovalStatus then begin
-    if LID.InOrder then begin
-      LID.EndOrder(epOther);
+    if FCart.LID.InOrder then begin
+      FCart.LID.EndOrder(epOther);
     end;
     DisplayResultMWCredit(Res);
     SaveToVault(Res.Token);
@@ -837,14 +859,14 @@ begin
     end;
     1: begin
       //Cash
-      if LID.InOrder then begin
-        LID.EndOrder(epCash);
+      if FCart.LID.InOrder then begin
+        FCart.LID.EndOrder(epCash);
       end;
     end;
     2: begin
       //Check
-      if LID.InOrder then begin
-        LID.EndOrder(epCheck);
+      if FCart.LID.InOrder then begin
+        FCart.LID.EndOrder(epCheck);
       end;
     end;
     3: begin
@@ -859,50 +881,9 @@ begin
   end;
 end;
 
-procedure TfrmCayanPOSMain.btnCartAddClick(Sender: TObject);
-var
-  I: TCayanGeniusLineItem;
-  LI: TListViewItem;
-  Price: Currency;
-begin
-  Price:= (Random(200) + 5);
-  try
-    I:= LID.Add(glSku, 'Inventory', Price, (Price * FSetup.TaxRate), 1, RandomProduct);
-    LI:= lstItems.Items.Add;
-    LI.Text:= IntToStr(I.Quantity) + ' ' + I.Description;
-    LI.Detail:= FormatFloat('$#,###,##0.00', (I.Amount * I.Quantity));
-    LI.Tag:= NativeInt(I);
-    UpdateCartTotals;
-  except
-    on E: Exception do begin
-      //TODO
-    end;
-  end;
-end;
-
-procedure TfrmCayanPOSMain.btnCartDeleteClick(Sender: TObject);
-var
-  I: TCayanGeniusLineItem;
-  X: Integer;
-begin
-  if lstItems.ItemIndex >= 0 then begin
-    I:= TCayanGeniusLineItem(lstItems.Items[lstItems.ItemIndex].Tag);
-    for X := 0 to LID.Count - 1 do begin
-      if LID.Items[X] = I then begin
-        LID.Delete(X);
-        Break;
-      end;
-    end;
-    lstItems.Items.Delete(lstItems.ItemIndex);
-  end;
-end;
-
 procedure TfrmCayanPOSMain.ClearCart;
 begin
-  lstItems.Items.Clear;
-  LID.Clear;
-  Genius.Cancel;
-  UpdateCartTotals;
+  FCart.Clear;
 end;
 
 procedure TfrmCayanPOSMain.HidePayInfo;
@@ -1161,7 +1142,7 @@ begin
   Cursor:= crHandPoint;
   try
     ClearCart;
-    lblCartTitle.Text:= 'New Sale';
+    FCart.lblTitle.Text:= 'New Sale';
     Tran.TransactionType:= TGeniusTransactionType.gtSale;
     Tran.InvoiceNum:= '1234'; //TODO: Generate real invoice number
     Tran.TransactionID:= '1234'; //TODO: Generate real payment number
@@ -1169,7 +1150,7 @@ begin
     actCartTab.ExecuteTarget(Self);
 
     try
-      LID.StartOrder;
+      FCart.LID.StartOrder;
     except
       on E: Exception do begin
         //Exception starting new order...
@@ -1226,25 +1207,22 @@ end;
 
 procedure TfrmCayanPOSMain.UpdateCartTotals;
 begin
-  if Application.Terminated then Exit;  
-  lblCartQty.Text:= IntToStr(LID.TotalQty);
-  lblCartSubtotal.Text:= FormatFloat('$#,###,##0.00', LID.Subtotal);
-  lblCartTax.Text:= FormatFloat('$#,###,##0.00', LID.OrderTax);
-  lblCartTotal.Text:= FormatFloat('$#,###,##0.00', LID.OrderTotal);
+  if Application.Terminated then Exit;
+  FCart.UpdateTotals;
 end;
 
 procedure TfrmCayanPOSMain.btnCartNextClick(Sender: TObject);
 var
   S: String;
 begin
-  if LID.Count = 0 then begin
+  if FCart.LID.Count = 0 then begin
     raise Exception.Create('There are no items in the cart.');
   end;
   ClearPaymentInfo;
   DM.Cayan.Dba:= FSetup.Dba;
   Genius.ForceDuplicate:= FSetup.ForceDuplicates;
-  Tran.Amount:= LID.OrderTotal;
-  Tran.TaxAmount:= LID.OrderTax;
+  Tran.Amount:= FCart.LID.OrderTotal;
+  Tran.TaxAmount:= FCart.LID.OrderTax;
   txtPayAmount.Text:= FormatFloat('0.00', Tran.Amount);
   case Tran.TransactionType of
     gtSale: S:= 'Collect';
@@ -1418,6 +1396,7 @@ begin
   Self.SaveToConfig;
   if DM.POS.UserLogin(txtLoginUser.Text, txtLoginPassword.Text) then begin
     FSetup:= DM.POS.GetSetup;
+    FCart.Setup:= FSetup;
     DM.Cayan.MerchantName:= FSetup.Merch_Name;
     DM.Cayan.MerchantSiteId:= FSetup.Merch_SiteId;
     DM.Cayan.MerchantKey:= FSetup.Merch_Key;

@@ -8,9 +8,9 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
   FMX.ListView.Types, FMX.ListView.Appearances, FMX.ListView.Adapters.Base,
   FMX.StdCtrls, FMX.Controls.Presentation, FMX.ListView, FMX.Layouts,
-  uCayanPOSMain,
   uDM,
   Cayan,
+  Cayan.POS,
   Cayan.Genius,
   Cayan.Genius.Intf,
   Cayan.Genius.LineItems;
@@ -18,6 +18,7 @@ uses
 type
   TfrmCart = class;
 
+  {
   TCartItemType = (citInvent, citCharge);
 
   TCartItem = class(TObject)
@@ -46,6 +47,7 @@ type
     property Qty: Integer read FQty write SetQty;
     property Price: Currency read FPrice write SetPrice;
   end;
+  }
 
   TfrmCart = class(TForm)
     ContentLayout: TLayout;
@@ -69,16 +71,19 @@ type
     lblCartTotal: TLabel;
     LID: TCayanGeniusLineItems;
     procedure btnCartAddClick(Sender: TObject);
+    procedure btnCartDeleteClick(Sender: TObject);
   private
-    FOwner: TfrmCayanPOSMain;
-    FItems: TObjectList<TCartItem>;
+    //FItems: TObjectList<TCartItem>;
+    FSetup: ICayanPOSSetup;
+    procedure SetSetup(const Value: ICayanPOSSetup);
   public
-    constructor Create(AOwner: TfrmCayanPOSMain; AContainer: TControl); reintroduce;
+    constructor Create(AContainer: TControl); reintroduce;
     destructor Destroy; override;
     procedure Clear;
-    function AddItem(const AItemID: Integer): TCartItem;
-    procedure Delete(const Index: Integer);
+    //function AddItem(const AItemID: Integer): TCartItem;
+    //procedure Delete(const Index: Integer);
     procedure UpdateTotals;
+    property Setup: ICayanPOSSetup read FSetup write SetSetup;
   end;
 
 var
@@ -88,8 +93,12 @@ implementation
 
 {$R *.fmx}
 
+uses
+  uCayanPOSMain;
+
 { TCartItem }
 
+{
 constructor TCartItem.Create(AOwner: TfrmCart);
 begin
   FOwner:= AOwner;
@@ -135,24 +144,24 @@ end;
 
 function TCartItem.TotalTax: Currency;
 begin
-  Result:= SubTotal * FOwner.FOwner.Setup.TaxRate;
+  Result:= SubTotal * FOwner.FSetup.TaxRate;
 end;
 
 function TCartItem.GrandTotal: Currency;
 begin
   Result:= SubTotal + TotalTax;
 end;
+}
 
 { TfrmCart }
 
-constructor TfrmCart.Create(AOwner: TfrmCayanPOSMain; AContainer: TControl);
+constructor TfrmCart.Create(AContainer: TControl);
 begin
   if not Assigned(AContainer) then
     raise Exception.Create('Failed to create cart screen: Container must be assigned.');
-  inherited Create(AOwner);
-  FOwner:= AOwner;
+  inherited Create(nil);
   ContentLayout.Parent:= AContainer;
-  FItems:= TObjectList<TCartItem>.Create(True);
+  //FItems:= TObjectList<TCartItem>.Create(True);
 
   UpdateTotals;
 end;
@@ -160,10 +169,16 @@ end;
 destructor TfrmCart.Destroy;
 begin
   Clear;
-  FreeAndNil(FItems);
+  //FreeAndNil(FItems);
   inherited;
 end;
 
+procedure TfrmCart.SetSetup(const Value: ICayanPOSSetup);
+begin
+  FSetup := Value;
+end;
+
+{
 function TfrmCart.AddItem(const AItemID: Integer): TCartItem;
 begin
   Result:= TCartItem.Create(Self);
@@ -188,6 +203,7 @@ begin
   end;
   UpdateTotals;
 end;
+}
 
 procedure TfrmCart.btnCartAddClick(Sender: TObject);
 var
@@ -197,7 +213,7 @@ var
 begin
   Price:= (Random(200) + 5);
   try
-    I:= LID.Add(glSku, 'Inventory', Price, (Price * FOwner.Setup.TaxRate), 1, 'New Item'); //TODO
+    I:= LID.Add(glSku, 'Inventory', Price, (Price * FSetup.TaxRate), 1, 'New Item'); //TODO
     LI:= lstItems.Items.Add;
     LI.Text:= IntToStr(I.Quantity) + ' ' + I.Description;
     LI.Detail:= FormatFloat('$#,###,##0.00', (I.Amount * I.Quantity));
@@ -210,34 +226,38 @@ begin
   end;
 end;
 
+procedure TfrmCart.btnCartDeleteClick(Sender: TObject);
+var
+  I: TCayanGeniusLineItem;
+  X: Integer;
+begin
+  if lstItems.ItemIndex >= 0 then begin
+    I:= TCayanGeniusLineItem(lstItems.Items[lstItems.ItemIndex].Tag);
+    for X := 0 to LID.Count - 1 do begin
+      if LID.Items[X] = I then begin
+        LID.Delete(X);
+        Break;
+      end;
+    end;
+    lstItems.Items.Delete(lstItems.ItemIndex);
+  end;
+  UpdateTotals;
+end;
+
 procedure TfrmCart.Clear;
 begin
-
+  lstItems.Items.Clear;
+  LID.Clear;
+  LID.Transaction.Genius.Cancel;
   UpdateTotals;
 end;
 
 procedure TfrmCart.UpdateTotals;
-var
-  Q: Integer;
-  ST: Currency;
-  TX: Currency;
-  GT: Currency;
-  X: Integer;
 begin
-  Q:= 0;
-  ST:= 0;
-  TX:= 0;
-  GT:= 0;
-  for X := 0 to FItems.Count-1 do begin
-    Q:= Q + FItems[X].Qty;
-    ST:= ST + FItems[X].SubTotal;
-    TX:= TX + FItems[X].TotalTax;
-    GT:= GT + FItems[X].GrandTotal;
-  end;
-  lblCartQty.Text:= IntToStr(Q);
-  lblCartSubtotal.Text:= FormatFloat('$#,###,##0.00', ST);
-  lblCartTax.Text:= FormatFloat('$#,###,##0.00', TX);
-  lblCartTotal.Text:= FormatFloat('$#,###,##0.00', GT);
+  lblCartQty.Text:= IntToStr(LID.TotalQty);
+  lblCartSubtotal.Text:= FormatFloat('$#,###,##0.00', LID.Subtotal);
+  lblCartTax.Text:= FormatFloat('$#,###,##0.00', LID.OrderTax);
+  lblCartTotal.Text:= FormatFloat('$#,###,##0.00', LID.OrderTotal);
 end;
 
 end.

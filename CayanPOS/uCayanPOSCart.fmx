@@ -92,6 +92,7 @@ object frmCart: TfrmCart
         StyleLookup = 'pagecurltoolbutton'
         TabOrder = 1
         Text = 'Save'
+        Visible = False
         ParentShowHint = False
         ShowHint = True
       end
@@ -111,6 +112,7 @@ object frmCart: TfrmCart
         Text = 'Clear'
         ParentShowHint = False
         ShowHint = True
+        OnClick = btnCartDeleteClick
       end
     end
     object lstItems: TListView

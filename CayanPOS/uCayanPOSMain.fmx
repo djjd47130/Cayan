@@ -2,8 +2,8 @@ object frmCayanPOSMain: TfrmCayanPOSMain
   Left = 551
   Top = 105
   Caption = 'Cayan POS'
-  ClientHeight = 610
-  ClientWidth = 580
+  ClientHeight = 573
+  ClientWidth = 583
   Position = ScreenCenter
   StyleBook = DM.CayanPOSStyle
   FormFactor.Width = 320
@@ -21,8 +21,8 @@ object frmCayanPOSMain: TfrmCayanPOSMain
     OnGesture = GestureDone
     Align = Client
     FullSize = False
-    Size.Width = 580.000000000000000000
-    Size.Height = 581.000000000000000000
+    Size.Width = 583.000000000000000000
+    Size.Height = 544.000000000000000000
     Size.PlatformDefault = False
     StyleLookup = 'tabcontrolstyle'
     TabHeight = 49.000000000000000000
@@ -31,22 +31,22 @@ object frmCayanPOSMain: TfrmCayanPOSMain
     TabPosition = PlatformDefault
     OnChange = MainTabsChange
     Sizes = (
-      580s
-      532s
-      580s
-      532s
-      580s
-      532s
-      580s
-      532s
-      580s
-      532s
-      580s
-      532s
-      580s
-      532s
-      580s
-      532s)
+      583s
+      495s
+      583s
+      495s
+      583s
+      495s
+      583s
+      495s
+      583s
+      495s
+      583s
+      495s
+      583s
+      495s
+      583s
+      495s)
     object tabLogin: TTabItem
       CustomIcon = <
         item
@@ -61,13 +61,13 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       ExplicitSize.cx = 49.000000000000000000
       ExplicitSize.cy = 49.000000000000000000
       object ToolBar7: TToolBar
-        Size.Width = 580.000000000000000000
+        Size.Width = 583.000000000000000000
         Size.Height = 46.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         object Label6: TLabel
           Align = Contents
-          Size.Width = 580.000000000000000000
+          Size.Width = 583.000000000000000000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'toollabel'
@@ -79,7 +79,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Cursor = crHandPoint
           Hint = 'Login to POS'
           Margins.Right = 5.000000000000000000
-          Position.X = 510.000000000000000000
+          Position.X = 513.000000000000000000
           Size.Width = 65.000000000000000000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
@@ -92,19 +92,19 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       end
       object lstLogin: TListBox
         Align = Client
-        Size.Width = 580.000000000000000000
-        Size.Height = 486.000000000000000000
+        Size.Width = 583.000000000000000000
+        Size.Height = 449.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 4
         DisableFocusEffect = True
         DefaultItemStyles.ItemStyle = ''
         DefaultItemStyles.GroupHeaderStyle = ''
         DefaultItemStyles.GroupFooterStyle = ''
-        Viewport.Width = 576.000000000000000000
-        Viewport.Height = 482.000000000000000000
+        Viewport.Width = 579.000000000000000000
+        Viewport.Height = 445.000000000000000000
         object ListBoxGroupHeader5: TListBoxGroupHeader
           Selectable = False
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 22.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxplainheader'
@@ -114,7 +114,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object ListBoxItem18: TListBoxItem
           Selectable = False
           Position.Y = 22.000000000000000000
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -124,7 +124,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Touch.InteractiveGestures = [LongTap, DoubleTap]
             Align = Right
             TabOrder = 0
-            Position.X = 407.000000000000000000
+            Position.X = 410.000000000000000000
             Position.Y = 5.000000000000000000
             Margins.Left = 5.000000000000000000
             Margins.Top = 5.000000000000000000
@@ -139,7 +139,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object ListBoxItem21: TListBoxItem
           Selectable = False
           Position.Y = 64.000000000000000000
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -150,7 +150,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Align = Right
             TabOrder = 1
             Password = True
-            Position.X = 407.000000000000000000
+            Position.X = 410.000000000000000000
             Position.Y = 5.000000000000000000
             Margins.Left = 5.000000000000000000
             Margins.Top = 5.000000000000000000
@@ -165,7 +165,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object ListBoxGroupHeader16: TListBoxGroupHeader
           Selectable = False
           Position.Y = 106.000000000000000000
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 22.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxplainheader'
@@ -176,7 +176,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Cursor = crHandPoint
           Selectable = False
           Position.Y = 128.000000000000000000
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -347,24 +347,24 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         OnGesture = GestureDone
         Align = Client
         FullSize = True
-        Size.Width = 580.000000000000000000
-        Size.Height = 532.000000000000000000
+        Size.Width = 583.000000000000000000
+        Size.Height = 495.000000000000000000
         Size.PlatformDefault = False
         TabHeight = 49.000000000000000000
         TabIndex = 0
         TabOrder = 0
         TabPosition = PlatformDefault
         Sizes = (
-          580s
-          483s
-          580s
-          483s)
+          583s
+          446s
+          583s
+          446s)
         object tabCustInfo: TTabItem
           CustomIcon = <
             item
             end>
           IsSelected = True
-          Size.Width = 290.000000000000000000
+          Size.Width = 291.000000000000000000
           Size.Height = 49.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = ''
@@ -373,13 +373,13 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           ExplicitSize.cx = 8.000000000000000000
           ExplicitSize.cy = 8.000000000000000000
           object ToolBar1: TToolBar
-            Size.Width = 580.000000000000000000
+            Size.Width = 583.000000000000000000
             Size.Height = 46.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 0
             object lblTitle1: TLabel
               Align = Contents
-              Size.Width = 580.000000000000000000
+              Size.Width = 583.000000000000000000
               Size.Height = 46.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'toollabel'
@@ -391,7 +391,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
               Cursor = crHandPoint
               Hint = 'Start a New Sale'
               Margins.Right = 5.000000000000000000
-              Position.X = 478.000000000000000000
+              Position.X = 481.000000000000000000
               Size.Width = 97.000000000000000000
               Size.Height = 46.000000000000000000
               Size.PlatformDefault = False
@@ -419,19 +419,19 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           end
           object lstCustomer: TListBox
             Align = Client
-            Size.Width = 580.000000000000000000
-            Size.Height = 395.000000000000000000
+            Size.Width = 583.000000000000000000
+            Size.Height = 358.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 1
             DisableFocusEffect = True
             DefaultItemStyles.ItemStyle = ''
             DefaultItemStyles.GroupHeaderStyle = ''
             DefaultItemStyles.GroupFooterStyle = ''
-            Viewport.Width = 565.000000000000000000
-            Viewport.Height = 391.000000000000000000
+            Viewport.Width = 568.000000000000000000
+            Viewport.Height = 354.000000000000000000
             object ListBoxGroupHeader1: TListBoxGroupHeader
               Selectable = False
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 22.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxplainheader'
@@ -441,7 +441,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object liCustID: TListBoxItem
               Selectable = False
               Position.Y = 22.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -451,7 +451,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -465,7 +465,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem1: TListBoxItem
               Selectable = False
               Position.Y = 64.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -475,7 +475,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -489,7 +489,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem2: TListBoxItem
               Selectable = False
               Position.Y = 106.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -499,7 +499,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -513,7 +513,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem3: TListBoxItem
               Selectable = False
               Position.Y = 148.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -523,7 +523,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -537,7 +537,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxGroupHeader2: TListBoxGroupHeader
               Selectable = False
               Position.Y = 190.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 22.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxplainheader'
@@ -547,7 +547,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem4: TListBoxItem
               Selectable = False
               Position.Y = 212.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -558,7 +558,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Align = Right
                 TabOrder = 0
                 KeyboardType = PhonePad
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -572,7 +572,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem5: TListBoxItem
               Selectable = False
               Position.Y = 254.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -583,7 +583,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Align = Right
                 TabOrder = 0
                 KeyboardType = PhonePad
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -597,7 +597,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem6: TListBoxItem
               Selectable = False
               Position.Y = 296.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -608,7 +608,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Align = Right
                 TabOrder = 0
                 KeyboardType = EmailAddress
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -622,7 +622,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxGroupHeader3: TListBoxGroupHeader
               Selectable = False
               Position.Y = 338.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 22.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxplainheader'
@@ -632,7 +632,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem7: TListBoxItem
               Selectable = False
               Position.Y = 360.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -642,7 +642,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -656,7 +656,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem8: TListBoxItem
               Selectable = False
               Position.Y = 402.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -666,7 +666,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -680,7 +680,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem9: TListBoxItem
               Selectable = False
               Position.Y = 444.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -690,7 +690,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -704,7 +704,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem10: TListBoxItem
               Selectable = False
               Position.Y = 486.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -714,7 +714,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -728,7 +728,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem11: TListBoxItem
               Selectable = False
               Position.Y = 528.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -738,7 +738,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -752,7 +752,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxGroupHeader4: TListBoxGroupHeader
               Selectable = False
               Position.Y = 570.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 22.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxplainheader'
@@ -762,7 +762,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Align = Right
                 Cursor = crHandPoint
                 StyledSettings = [Family, Style, FontColor]
-                Position.X = 445.000000000000000000
+                Position.X = 448.000000000000000000
                 Size.Width = 120.000000000000000000
                 Size.Height = 22.000000000000000000
                 Size.PlatformDefault = False
@@ -775,7 +775,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem12: TListBoxItem
               Selectable = False
               Position.Y = 592.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -785,7 +785,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -799,7 +799,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem13: TListBoxItem
               Selectable = False
               Position.Y = 634.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -809,7 +809,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -823,7 +823,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem14: TListBoxItem
               Selectable = False
               Position.Y = 676.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -833,7 +833,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -847,7 +847,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem15: TListBoxItem
               Selectable = False
               Position.Y = 718.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -857,7 +857,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -871,7 +871,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             object ListBoxItem16: TListBoxItem
               Selectable = False
               Position.Y = 760.000000000000000000
-              Size.Width = 565.000000000000000000
+              Size.Width = 568.000000000000000000
               Size.Height = 42.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'listboxitemnodetail'
@@ -881,7 +881,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
                 Touch.InteractiveGestures = [LongTap, DoubleTap]
                 Align = Right
                 TabOrder = 0
-                Position.X = 396.000000000000000000
+                Position.X = 399.000000000000000000
                 Position.Y = 5.000000000000000000
                 Margins.Left = 5.000000000000000000
                 Margins.Top = 5.000000000000000000
@@ -895,8 +895,8 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           end
           object GridPanelLayout2: TGridPanelLayout
             Align = Bottom
-            Position.Y = 441.000000000000000000
-            Size.Width = 580.000000000000000000
+            Position.Y = 404.000000000000000000
+            Size.Width = 583.000000000000000000
             Size.Height = 42.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 2
@@ -1040,7 +1040,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             item
             end>
           IsSelected = False
-          Size.Width = 290.000000000000000000
+          Size.Width = 292.000000000000000000
           Size.Height = 49.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = ''
@@ -1049,13 +1049,13 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           ExplicitSize.cx = 131.000000000000000000
           ExplicitSize.cy = 49.000000000000000000
           object ToolBar6: TToolBar
-            Size.Width = 580.000000000000000000
+            Size.Width = 583.000000000000000000
             Size.Height = 46.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 0
             object Label3: TLabel
               Align = Contents
-              Size.Width = 580.000000000000000000
+              Size.Width = 583.000000000000000000
               Size.Height = 46.000000000000000000
               Size.PlatformDefault = False
               StyleLookup = 'toollabel'
@@ -1083,8 +1083,8 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             HeaderAppearanceClassName = 'TListHeaderObjects'
             FooterAppearanceClassName = 'TListHeaderObjects'
             Align = Client
-            Size.Width = 580.000000000000000000
-            Size.Height = 437.000000000000000000
+            Size.Width = 583.000000000000000000
+            Size.Height = 400.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 3
             ItemAppearance.ItemHeight = 42
@@ -1341,349 +1341,6 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       Text = 'Cart'
       ExplicitSize.cx = 102.000000000000000000
       ExplicitSize.cy = 49.000000000000000000
-      object ToolBar3: TToolBar
-        Size.Width = 580.000000000000000000
-        Size.Height = 46.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 0
-        object lblCartTitle: TLabel
-          Align = Contents
-          Size.Width = 580.000000000000000000
-          Size.Height = 46.000000000000000000
-          Size.PlatformDefault = False
-          StyleLookup = 'toollabel'
-          TextSettings.HorzAlign = Center
-          Text = 'Cart'
-        end
-        object btnCartNext: TSpeedButton
-          Align = Right
-          Cursor = crHandPoint
-          Hint = 'Collect Payment'
-          Margins.Right = 5.000000000000000000
-          Position.X = 486.000000000000000000
-          Size.Width = 89.000000000000000000
-          Size.Height = 46.000000000000000000
-          Size.PlatformDefault = False
-          ParentShowHint = False
-          ShowHint = True
-          StyleLookup = 'toolbutton'
-          Text = 'Payment'
-          OnClick = btnCartNextClick
-        end
-        object btnCartBack: TSpeedButton
-          Align = Left
-          Cursor = crHandPoint
-          Hint = 'New Invoice'
-          Margins.Left = 5.000000000000000000
-          Position.X = 5.000000000000000000
-          Size.Width = 46.000000000000000000
-          Size.Height = 46.000000000000000000
-          Size.PlatformDefault = False
-          ParentShowHint = False
-          ShowHint = True
-          StyleLookup = 'priortoolbutton'
-          Text = 'Back'
-          OnClick = btnCartBackClick
-        end
-      end
-      object lstItems: TListView
-        ItemAppearanceClassName = 'TListItemRightDetailAppearance'
-        ItemEditAppearanceClassName = 'TListItemRightDetailDeleteAppearance'
-        HeaderAppearanceClassName = 'TListHeaderObjects'
-        FooterAppearanceClassName = 'TListHeaderObjects'
-        Align = Client
-        Size.Width = 580.000000000000000000
-        Size.Height = 398.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 3
-        StyleLookup = 'listviewstyle'
-        OnDeleteItem = lstItemsDeleteItem
-      end
-      object GridPanelLayout3: TGridPanelLayout
-        Align = Bottom
-        Position.Y = 444.000000000000000000
-        Size.Width = 580.000000000000000000
-        Size.Height = 46.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 1
-        ColumnCollection = <
-          item
-            Value = 25.000000000000000000
-          end
-          item
-            Value = 25.000000000000000000
-          end
-          item
-            Value = 25.000000000000010000
-          end
-          item
-            Value = 25.000000000000000000
-          end>
-        ControlCollection = <
-          item
-            Column = 0
-            Control = Label1
-            Row = 0
-          end
-          item
-            Column = 1
-            Control = Label2
-            Row = 0
-          end
-          item
-            Column = 2
-            Control = Label4
-            Row = 0
-          end
-          item
-            Column = 3
-            Control = Label5
-            Row = 0
-          end
-          item
-            Column = 0
-            Control = lblCartQty
-            Row = 1
-          end
-          item
-            Column = 1
-            Control = lblCartSubtotal
-            Row = 1
-          end
-          item
-            Column = 2
-            Control = lblCartTax
-            Row = 1
-          end
-          item
-            Column = 3
-            Control = lblCartTotal
-            Row = 1
-          end>
-        RowCollection = <
-          item
-            Value = 50.000000279396770000
-          end
-          item
-            Value = 49.999999720603230000
-          end
-          item
-            SizeStyle = Auto
-          end>
-        object Label1: TLabel
-          Align = Client
-          StyledSettings = [Family, Size, FontColor]
-          Margins.Left = 1.000000000000000000
-          Margins.Top = 1.000000000000000000
-          Margins.Right = 1.000000000000000000
-          Margins.Bottom = 1.000000000000000000
-          Size.Width = 143.000000000000000000
-          Size.Height = 21.000000000000000000
-          Size.PlatformDefault = False
-          TextSettings.Font.StyleExt = {00070000000000000004000000}
-          TextSettings.HorzAlign = Center
-          Text = 'Qty'
-        end
-        object Label2: TLabel
-          Align = Client
-          StyledSettings = [Family, Size, FontColor]
-          Margins.Left = 1.000000000000000000
-          Margins.Top = 1.000000000000000000
-          Margins.Right = 1.000000000000000000
-          Margins.Bottom = 1.000000000000000000
-          Size.Width = 143.000000000000000000
-          Size.Height = 21.000000000000000000
-          Size.PlatformDefault = False
-          TextSettings.Font.StyleExt = {00070000000000000004000000}
-          TextSettings.HorzAlign = Center
-          Text = 'Subtotal'
-        end
-        object Label4: TLabel
-          Align = Client
-          StyledSettings = [Family, Size, FontColor]
-          Margins.Left = 1.000000000000000000
-          Margins.Top = 1.000000000000000000
-          Margins.Right = 1.000000000000000000
-          Margins.Bottom = 1.000000000000000000
-          Size.Width = 143.000000000000000000
-          Size.Height = 21.000000000000000000
-          Size.PlatformDefault = False
-          TextSettings.Font.StyleExt = {00070000000000000004000000}
-          TextSettings.HorzAlign = Center
-          Text = 'Tax'
-        end
-        object Label5: TLabel
-          Align = Client
-          StyledSettings = [Family, Size, FontColor]
-          Margins.Left = 1.000000000000000000
-          Margins.Top = 1.000000000000000000
-          Margins.Right = 1.000000000000000000
-          Margins.Bottom = 1.000000000000000000
-          Size.Width = 143.000000000000000000
-          Size.Height = 21.000000000000000000
-          Size.PlatformDefault = False
-          TextSettings.Font.StyleExt = {00070000000000000004000000}
-          TextSettings.HorzAlign = Center
-          Text = 'Total'
-        end
-        object lblCartQty: TLabel
-          Align = Client
-          StyledSettings = [Family, Size, Style]
-          Margins.Left = 1.000000000000000000
-          Margins.Top = 1.000000000000000000
-          Margins.Right = 1.000000000000000000
-          Margins.Bottom = 1.000000000000000000
-          Size.Width = 143.000000000000000000
-          Size.Height = 21.000000000000000000
-          Size.PlatformDefault = False
-          TextSettings.FontColor = claDodgerblue
-          TextSettings.HorzAlign = Center
-          Text = '0'
-        end
-        object lblCartSubtotal: TLabel
-          Align = Client
-          StyledSettings = [Family, Size, Style]
-          Margins.Left = 1.000000000000000000
-          Margins.Top = 1.000000000000000000
-          Margins.Right = 1.000000000000000000
-          Margins.Bottom = 1.000000000000000000
-          Size.Width = 143.000000000000000000
-          Size.Height = 21.000000000000000000
-          Size.PlatformDefault = False
-          TextSettings.FontColor = claDodgerblue
-          TextSettings.HorzAlign = Center
-          Text = '$0.00'
-        end
-        object lblCartTax: TLabel
-          Align = Client
-          StyledSettings = [Family, Size, Style]
-          Margins.Left = 1.000000000000000000
-          Margins.Top = 1.000000000000000000
-          Margins.Right = 1.000000000000000000
-          Margins.Bottom = 1.000000000000000000
-          Size.Width = 143.000000000000000000
-          Size.Height = 21.000000000000000000
-          Size.PlatformDefault = False
-          TextSettings.FontColor = claDodgerblue
-          TextSettings.HorzAlign = Center
-          Text = '$0.00'
-        end
-        object lblCartTotal: TLabel
-          Align = Client
-          StyledSettings = [Family, Size]
-          Margins.Left = 1.000000000000000000
-          Margins.Top = 1.000000000000000000
-          Margins.Right = 1.000000000000000000
-          Margins.Bottom = 1.000000000000000000
-          Size.Width = 143.000000000000000000
-          Size.Height = 21.000000000000000000
-          Size.PlatformDefault = False
-          TextSettings.Font.StyleExt = {00070000000000000004000000}
-          TextSettings.FontColor = claDarkgreen
-          TextSettings.HorzAlign = Center
-          Text = '$0.00'
-        end
-      end
-      object GridPanelLayout7: TGridPanelLayout
-        Align = Bottom
-        Position.Y = 490.000000000000000000
-        Size.Width = 580.000000000000000000
-        Size.Height = 42.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 2
-        ColumnCollection = <
-          item
-            Value = 19.999962396387090000
-          end
-          item
-            Value = 20.000006066841700000
-          end
-          item
-            Value = 20.000026832201520000
-          end
-          item
-            Value = 20.000009202553930000
-          end
-          item
-            Value = 19.999995502015770000
-          end>
-        ControlCollection = <
-          item
-            Column = 0
-            Control = btnCartAdd
-            Row = 0
-          end
-          item
-            Column = 1
-            Control = btnCartEdit
-            Row = 0
-          end
-          item
-            Column = 2
-            Control = btnCartDelete
-            Row = 0
-          end>
-        RowCollection = <
-          item
-            Value = 100.000000000000000000
-          end
-          item
-            SizeStyle = Auto
-          end>
-        object btnCartAdd: TButton
-          Align = Center
-          Cursor = crHandPoint
-          Hint = 'Add Item'
-          Margins.Left = 3.000000000000000000
-          Margins.Top = 3.000000000000000000
-          Margins.Right = 3.000000000000000000
-          Margins.Bottom = 3.000000000000000000
-          Size.Width = 46.000000000000000000
-          Size.Height = 46.000000000000000000
-          Size.PlatformDefault = False
-          StyleLookup = 'additembutton'
-          TabOrder = 2
-          Text = 'Lookup'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = btnCartAddClick
-        end
-        object btnCartEdit: TButton
-          Align = Center
-          Cursor = crHandPoint
-          Hint = 'Edit Item'
-          Margins.Left = 3.000000000000000000
-          Margins.Top = 3.000000000000000000
-          Margins.Right = 3.000000000000000000
-          Margins.Bottom = 3.000000000000000000
-          Size.Width = 46.000000000000000000
-          Size.Height = 46.000000000000000000
-          Size.PlatformDefault = False
-          StyleLookup = 'pagecurltoolbutton'
-          TabOrder = 1
-          Text = 'Save'
-          ParentShowHint = False
-          ShowHint = True
-        end
-        object btnCartDelete: TButton
-          Align = Center
-          Cursor = crHandPoint
-          Hint = 'Delete Item'
-          Margins.Left = 3.000000000000000000
-          Margins.Top = 3.000000000000000000
-          Margins.Right = 3.000000000000000000
-          Margins.Bottom = 3.000000000000000000
-          Size.Width = 46.000000000000000000
-          Size.Height = 46.000000000000000000
-          Size.PlatformDefault = False
-          StyleLookup = 'stoptoolbutton'
-          TabOrder = 0
-          Text = 'Clear'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = btnCartDeleteClick
-        end
-      end
     end
     object tabPayment: TTabItem
       CustomIcon = <
@@ -1758,14 +1415,14 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       ExplicitSize.cx = 101.000000000000000000
       ExplicitSize.cy = 49.000000000000000000
       object ToolBar4: TToolBar
-        Size.Width = 580.000000000000000000
+        Size.Width = 583.000000000000000000
         Size.Height = 46.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         object lblPaymentTitle: TLabel
           Align = Contents
           StyledSettings = [Family, Size, Style]
-          Size.Width = 580.000000000000000000
+          Size.Width = 583.000000000000000000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'toollabel'
@@ -1795,8 +1452,8 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         HeaderAppearanceClassName = 'TListHeaderObjects'
         FooterAppearanceClassName = 'TListHeaderObjects'
         Align = Bottom
-        Position.Y = 437.000000000000000000
-        Size.Width = 580.000000000000000000
+        Position.Y = 400.000000000000000000
+        Size.Width = 583.000000000000000000
         Size.Height = 53.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 4
@@ -1804,19 +1461,19 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       end
       object lstPayDetail: TListBox
         Align = Client
-        Size.Width = 580.000000000000000000
-        Size.Height = 290.000000000000000000
+        Size.Width = 583.000000000000000000
+        Size.Height = 253.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 5
         DisableFocusEffect = True
         DefaultItemStyles.ItemStyle = ''
         DefaultItemStyles.GroupHeaderStyle = ''
         DefaultItemStyles.GroupFooterStyle = ''
-        Viewport.Width = 565.000000000000000000
-        Viewport.Height = 286.000000000000000000
+        Viewport.Width = 568.000000000000000000
+        Viewport.Height = 249.000000000000000000
         object lhPayInfo: TListBoxGroupHeader
           Selectable = False
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 22.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxplainheader'
@@ -1827,7 +1484,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Selectable = False
           ItemData.Detail = 'Sale'
           Position.Y = 22.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -1837,7 +1494,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object liPayAmount: TListBoxItem
           Selectable = False
           Position.Y = 64.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -1847,7 +1504,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Touch.InteractiveGestures = [LongTap, DoubleTap]
             Align = Right
             TabOrder = 1
-            Position.X = 360.000000000000000000
+            Position.X = 363.000000000000000000
             Position.Y = 5.000000000000000000
             Margins.Left = 5.000000000000000000
             Margins.Top = 5.000000000000000000
@@ -1861,7 +1518,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object liSaveToVault: TListBoxItem
           Selectable = False
           Position.Y = 106.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -1875,7 +1532,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Margins.Top = 5.000000000000000000
             Margins.Right = 5.000000000000000000
             Margins.Bottom = 5.000000000000000000
-            Position.X = 516.000000000000000000
+            Position.X = 519.000000000000000000
             Position.Y = 11.000000000000000000
             Size.Width = 44.000000000000000000
             Size.Height = 20.000000000000000000
@@ -1902,7 +1559,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object liCardNum: TListBoxItem
           Selectable = False
           Position.Y = 148.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -1912,7 +1569,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Touch.InteractiveGestures = [LongTap, DoubleTap]
             Align = Right
             TabOrder = 0
-            Position.X = 360.000000000000000000
+            Position.X = 363.000000000000000000
             Position.Y = 5.000000000000000000
             Margins.Left = 5.000000000000000000
             Margins.Top = 5.000000000000000000
@@ -1926,7 +1583,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object liCardExpiryMonth: TListBoxItem
           Selectable = False
           Position.Y = 190.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -1951,7 +1608,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Margins.Top = 5.000000000000000000
             Margins.Right = 5.000000000000000000
             Margins.Bottom = 5.000000000000000000
-            Position.X = 360.000000000000000000
+            Position.X = 363.000000000000000000
             Position.Y = 5.000000000000000000
             Size.Width = 200.000000000000000000
             Size.Height = 32.000000000000000000
@@ -1962,7 +1619,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object liCardExpiryYear: TListBoxItem
           Selectable = False
           Position.Y = 232.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -2000,7 +1657,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Margins.Top = 5.000000000000000000
             Margins.Right = 5.000000000000000000
             Margins.Bottom = 5.000000000000000000
-            Position.X = 360.000000000000000000
+            Position.X = 363.000000000000000000
             Position.Y = 5.000000000000000000
             Size.Width = 200.000000000000000000
             Size.Height = 32.000000000000000000
@@ -2011,7 +1668,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object liCardHolder: TListBoxItem
           Selectable = False
           Position.Y = 274.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -2021,7 +1678,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Touch.InteractiveGestures = [LongTap, DoubleTap]
             Align = Right
             TabOrder = 1
-            Position.X = 360.000000000000000000
+            Position.X = 363.000000000000000000
             Position.Y = 5.000000000000000000
             Margins.Left = 5.000000000000000000
             Margins.Top = 5.000000000000000000
@@ -2035,7 +1692,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object liCardCVCode: TListBoxItem
           Selectable = False
           Position.Y = 316.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -2045,7 +1702,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Touch.InteractiveGestures = [LongTap, DoubleTap]
             Align = Right
             TabOrder = 1
-            Position.X = 360.000000000000000000
+            Position.X = 363.000000000000000000
             Position.Y = 5.000000000000000000
             Margins.Left = 5.000000000000000000
             Margins.Top = 5.000000000000000000
@@ -2059,7 +1716,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object liCardAddress: TListBoxItem
           Selectable = False
           Position.Y = 358.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -2069,7 +1726,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Touch.InteractiveGestures = [LongTap, DoubleTap]
             Align = Right
             TabOrder = 1
-            Position.X = 360.000000000000000000
+            Position.X = 363.000000000000000000
             Position.Y = 5.000000000000000000
             Margins.Left = 5.000000000000000000
             Margins.Top = 5.000000000000000000
@@ -2083,7 +1740,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object liCardZipCode: TListBoxItem
           Selectable = False
           Position.Y = 400.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -2093,7 +1750,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Touch.InteractiveGestures = [LongTap, DoubleTap]
             Align = Right
             TabOrder = 1
-            Position.X = 360.000000000000000000
+            Position.X = 363.000000000000000000
             Position.Y = 5.000000000000000000
             Margins.Left = 5.000000000000000000
             Margins.Top = 5.000000000000000000
@@ -2107,7 +1764,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object liCheckNum: TListBoxItem
           Selectable = False
           Position.Y = 442.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -2117,7 +1774,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Touch.InteractiveGestures = [LongTap, DoubleTap]
             Align = Right
             TabOrder = 1
-            Position.X = 360.000000000000000000
+            Position.X = 363.000000000000000000
             Position.Y = 5.000000000000000000
             Margins.Left = 5.000000000000000000
             Margins.Top = 5.000000000000000000
@@ -2131,7 +1788,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object liVaultCards: TListBoxItem
           Selectable = False
           Position.Y = 484.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -2146,7 +1803,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Margins.Top = 5.000000000000000000
             Margins.Right = 5.000000000000000000
             Margins.Bottom = 5.000000000000000000
-            Position.X = 360.000000000000000000
+            Position.X = 363.000000000000000000
             Position.Y = 5.000000000000000000
             Size.Width = 200.000000000000000000
             Size.Height = 32.000000000000000000
@@ -2157,7 +1814,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object liSwipe: TListBoxItem
           Selectable = False
           Position.Y = 526.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 96.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemnodetail'
@@ -2171,7 +1828,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Margins.Top = 5.000000000000000000
             Margins.Right = 5.000000000000000000
             Margins.Bottom = 5.000000000000000000
-            Position.X = 360.000000000000000000
+            Position.X = 363.000000000000000000
             Position.Y = 5.000000000000000000
             Size.Width = 200.000000000000000000
             Size.Height = 86.000000000000000000
@@ -2184,8 +1841,8 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       end
       object GridPanelLayout5: TGridPanelLayout
         Align = Bottom
-        Position.Y = 387.000000000000000000
-        Size.Width = 580.000000000000000000
+        Position.Y = 350.000000000000000000
+        Size.Width = 583.000000000000000000
         Size.Height = 50.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
@@ -2230,7 +1887,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 187.333358764648400000
+          Size.Width = 188.333358764648400000
           Size.Height = 44.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 1
@@ -2246,7 +1903,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 187.333328247070300000
+          Size.Width = 188.333328247070300000
           Size.Height = 44.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 2
@@ -2262,7 +1919,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 187.333312988281300000
+          Size.Width = 188.333312988281300000
           Size.Height = 44.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 0
@@ -2276,7 +1933,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       object pPayType: TGridPanelLayout
         Align = Top
         Position.Y = 46.000000000000000000
-        Size.Width = 580.000000000000000000
+        Size.Width = 583.000000000000000000
         Size.Height = 51.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 3
@@ -2345,7 +2002,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 90.666656494140630000
+          Size.Width = 91.166656494140630000
           Size.Height = 45.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'buttonstyle'
@@ -2364,7 +2021,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 90.666656494140630000
+          Size.Width = 91.166656494140630000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'speedbuttonstyle'
@@ -2383,7 +2040,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 90.666687011718750000
+          Size.Width = 91.166687011718750000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'speedbuttonstyle'
@@ -2402,7 +2059,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 90.666687011718750000
+          Size.Width = 91.166687011718750000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'speedbuttonstyle'
@@ -2421,7 +2078,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 90.666656494140630000
+          Size.Width = 91.166656494140630000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'speedbuttonstyle'
@@ -2440,7 +2097,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 90.666656494140630000
+          Size.Width = 91.166656494140630000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'speedbuttonstyle'
@@ -2453,8 +2110,8 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       end
       object pPayButtons: TGridPanelLayout
         Align = Bottom
-        Position.Y = 490.000000000000000000
-        Size.Width = 580.000000000000000000
+        Position.Y = 453.000000000000000000
+        Size.Width = 583.000000000000000000
         Size.Height = 42.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 2
@@ -3221,13 +2878,13 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       ExplicitSize.cx = 99.000000000000000000
       ExplicitSize.cy = 49.000000000000000000
       object ToolBar5: TToolBar
-        Size.Width = 580.000000000000000000
+        Size.Width = 583.000000000000000000
         Size.Height = 46.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         object lblTitle5: TLabel
           Align = Contents
-          Size.Width = 580.000000000000000000
+          Size.Width = 583.000000000000000000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'toollabel'
@@ -3252,18 +2909,18 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       end
       object lstResult: TListBox
         Align = Client
-        Size.Width = 580.000000000000000000
-        Size.Height = 486.000000000000000000
+        Size.Width = 583.000000000000000000
+        Size.Height = 449.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
         DisableFocusEffect = True
         DefaultItemStyles.ItemStyle = ''
         DefaultItemStyles.GroupHeaderStyle = ''
         DefaultItemStyles.GroupFooterStyle = ''
-        Viewport.Width = 565.000000000000000000
-        Viewport.Height = 482.000000000000000000
+        Viewport.Width = 568.000000000000000000
+        Viewport.Height = 445.000000000000000000
         object ListBoxGroupHeader6: TListBoxGroupHeader
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 22.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 5
@@ -3272,7 +2929,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object ListBoxItem17: TListBoxItem
           ItemData.Detail = 'Success'
           Position.Y = 22.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3282,7 +2939,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object ListBoxItem19: TListBoxItem
           ItemData.Detail = '$0.00'
           Position.Y = 64.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3291,7 +2948,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem20: TListBoxItem
           Position.Y = 106.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3300,7 +2957,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem22: TListBoxItem
           Position.Y = 148.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3309,7 +2966,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem28: TListBoxItem
           Position.Y = 190.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3318,7 +2975,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem29: TListBoxItem
           Position.Y = 232.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3327,7 +2984,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem30: TListBoxItem
           Position.Y = 274.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3336,7 +2993,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem31: TListBoxItem
           Position.Y = 316.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3345,7 +3002,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem32: TListBoxItem
           Position.Y = 358.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3354,7 +3011,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem33: TListBoxItem
           Position.Y = 400.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3363,7 +3020,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem34: TListBoxItem
           Position.Y = 442.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3372,7 +3029,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem35: TListBoxItem
           Position.Y = 484.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3381,7 +3038,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem36: TListBoxItem
           Position.Y = 526.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3390,7 +3047,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxGroupHeader7: TListBoxGroupHeader
           Position.Y = 568.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 22.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 4
@@ -3398,7 +3055,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem37: TListBoxItem
           Position.Y = 590.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3407,7 +3064,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem38: TListBoxItem
           Position.Y = 632.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3416,7 +3073,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem39: TListBoxItem
           Position.Y = 674.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3425,7 +3082,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem40: TListBoxItem
           Position.Y = 716.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3434,7 +3091,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem41: TListBoxItem
           Position.Y = 758.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3443,7 +3100,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem42: TListBoxItem
           Position.Y = 800.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3452,7 +3109,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxItem43: TListBoxItem
           Position.Y = 842.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3461,7 +3118,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxGroupHeader8: TListBoxGroupHeader
           Position.Y = 884.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 22.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 3
@@ -3469,7 +3126,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxGroupHeader9: TListBoxGroupHeader
           Position.Y = 906.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 22.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 2
@@ -3477,7 +3134,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxGroupHeader10: TListBoxGroupHeader
           Position.Y = 928.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 22.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 1
@@ -3485,7 +3142,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
         object ListBoxGroupHeader11: TListBoxGroupHeader
           Position.Y = 950.000000000000000000
-          Size.Width = 565.000000000000000000
+          Size.Width = 568.000000000000000000
           Size.Height = 22.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 0
@@ -3507,13 +3164,13 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       ExplicitSize.cx = 62.000000000000000000
       ExplicitSize.cy = 49.000000000000000000
       object ToolBar2: TToolBar
-        Size.Width = 580.000000000000000000
+        Size.Width = 583.000000000000000000
         Size.Height = 46.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         object Label7: TLabel
           Align = Contents
-          Size.Width = 580.000000000000000000
+          Size.Width = 583.000000000000000000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'toollabel'
@@ -3537,18 +3194,18 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       end
       object lstSetup: TListBox
         Align = Client
-        Size.Width = 580.000000000000000000
-        Size.Height = 486.000000000000000000
+        Size.Width = 583.000000000000000000
+        Size.Height = 449.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
         DisableFocusEffect = True
         DefaultItemStyles.ItemStyle = ''
         DefaultItemStyles.GroupHeaderStyle = ''
         DefaultItemStyles.GroupFooterStyle = ''
-        Viewport.Width = 576.000000000000000000
-        Viewport.Height = 482.000000000000000000
+        Viewport.Width = 579.000000000000000000
+        Viewport.Height = 445.000000000000000000
         object ListBoxGroupHeader13: TListBoxGroupHeader
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 22.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 0
@@ -3557,7 +3214,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object ListBoxItem53: TListBoxItem
           Selectable = False
           Position.Y = 22.000000000000000000
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3568,7 +3225,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Align = Right
             TabOrder = 0
             Text = 'LocalHost'
-            Position.X = 407.000000000000000000
+            Position.X = 410.000000000000000000
             Position.Y = 5.000000000000000000
             Margins.Left = 5.000000000000000000
             Margins.Top = 5.000000000000000000
@@ -3582,7 +3239,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object ListBoxItem23: TListBoxItem
           Selectable = False
           Position.Y = 64.000000000000000000
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3595,7 +3252,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Cursor = crIBeam
             Max = 65535.000000000000000000
             Value = 8989.000000000000000000
-            Position.X = 407.000000000000000000
+            Position.X = 410.000000000000000000
             Position.Y = 5.000000000000000000
             HorzIncrement = 0.000000000000000000
             VertIncrement = 0.000000000000000000
@@ -3611,7 +3268,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         object ListBoxItem25: TListBoxItem
           Selectable = False
           Position.Y = 106.000000000000000000
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitemrightdetail'
@@ -3623,7 +3280,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             TabOrder = 0
             Cursor = crIBeam
             Max = 65535.000000000000000000
-            Position.X = 407.000000000000000000
+            Position.X = 410.000000000000000000
             Position.Y = 5.000000000000000000
             HorzIncrement = 0.000000000000000000
             VertIncrement = 0.000000000000000000
@@ -3653,19 +3310,19 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       ExplicitSize.cy = 49.000000000000000000
       object lstMenu: TListBox
         Align = Client
-        Size.Width = 580.000000000000000000
-        Size.Height = 486.000000000000000000
+        Size.Width = 583.000000000000000000
+        Size.Height = 449.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 4
         DisableFocusEffect = True
         DefaultItemStyles.ItemStyle = ''
         DefaultItemStyles.GroupHeaderStyle = ''
         DefaultItemStyles.GroupFooterStyle = ''
-        Viewport.Width = 576.000000000000000000
-        Viewport.Height = 482.000000000000000000
+        Viewport.Width = 579.000000000000000000
+        Viewport.Height = 445.000000000000000000
         object ListBoxGroupHeader14: TListBoxGroupHeader
           Selectable = False
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 22.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxplainheader'
@@ -3676,7 +3333,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Selectable = False
           ItemData.Detail = 'Create a new sale invoice'
           Position.Y = 22.000000000000000000
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitembottomdetail'
@@ -3687,43 +3344,63 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Selectable = False
           ItemData.Detail = 'Enter payment on existing invoices'
           Position.Y = 68.000000000000000000
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitembottomdetail'
-          TabOrder = 4
+          TabOrder = 6
           Text = 'New Payment'
         end
         object ListBoxItem44: TListBoxItem
           Selectable = False
           ItemData.Detail = 'Return items from previous sales'
           Position.Y = 114.000000000000000000
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitembottomdetail'
-          TabOrder = 3
+          TabOrder = 5
           Text = 'New Return'
         end
         object ListBoxItem45: TListBoxItem
           Selectable = False
           Position.Y = 160.000000000000000000
-          Size.Width = 576.000000000000000000
+          Size.Width = 579.000000000000000000
+          Size.Height = 46.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = 'listboxitembottomdetail'
+          TabOrder = 4
+          Text = 'Activate Gift Card'
+        end
+        object ListBoxItem24: TListBoxItem
+          Selectable = False
+          Position.Y = 206.000000000000000000
+          Size.Width = 579.000000000000000000
+          Size.Height = 46.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = 'listboxitembottomdetail'
+          TabOrder = 3
+          Text = 'Add to Gift Card'
+        end
+        object ListBoxItem46: TListBoxItem
+          Selectable = False
+          Position.Y = 252.000000000000000000
+          Size.Width = 579.000000000000000000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'listboxitembottomdetail'
           TabOrder = 2
-          Text = 'Activate Gift Card'
+          Text = 'Check Gift Card Balance'
         end
       end
       object ToolBar8: TToolBar
-        Size.Width = 580.000000000000000000
+        Size.Width = 583.000000000000000000
         Size.Height = 46.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         object Label8: TLabel
           Align = Contents
-          Size.Width = 580.000000000000000000
+          Size.Width = 583.000000000000000000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'toollabel'
@@ -3732,7 +3409,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
         end
       end
     end
-    object TabItem1: TTabItem
+    object tabGift: TTabItem
       CustomIcon = <
         item
         end>
@@ -3745,13 +3422,345 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       Text = 'Gift'
       ExplicitSize.cx = 47.000000000000000000
       ExplicitSize.cy = 49.000000000000000000
+      object TabControl1: TTabControl
+        OnGesture = GestureDone
+        Align = Client
+        FullSize = True
+        Size.Width = 583.000000000000000000
+        Size.Height = 495.000000000000000000
+        Size.PlatformDefault = False
+        TabHeight = 49.000000000000000000
+        TabIndex = 0
+        TabOrder = 0
+        TabPosition = PlatformDefault
+        Sizes = (
+          583s
+          446s
+          583s
+          446s
+          583s
+          446s)
+        object TabItem2: TTabItem
+          CustomIcon = <
+            item
+            end>
+          IsSelected = True
+          Size.Width = 194.000000000000000000
+          Size.Height = 49.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = ''
+          TabOrder = 0
+          Text = 'Activate'
+          ExplicitSize.cx = 8.000000000000000000
+          ExplicitSize.cy = 8.000000000000000000
+          object ToolBar3: TToolBar
+            Size.Width = 583.000000000000000000
+            Size.Height = 46.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 0
+            object Label1: TLabel
+              Align = Contents
+              Size.Width = 583.000000000000000000
+              Size.Height = 46.000000000000000000
+              Size.PlatformDefault = False
+              StyleLookup = 'toollabel'
+              TextSettings.HorzAlign = Center
+            end
+            object SpeedButton3: TSpeedButton
+              Action = actCustomerTab
+              Align = Left
+              Cursor = crHandPoint
+              Enabled = True
+              ImageIndex = -1
+              Margins.Left = 5.000000000000000000
+              Position.X = 5.000000000000000000
+              Size.Width = 46.000000000000000000
+              Size.Height = 46.000000000000000000
+              Size.PlatformDefault = False
+              ParentShowHint = False
+              ShowHint = True
+              StyleLookup = 'priortoolbutton'
+              Visible = True
+            end
+          end
+          object ListBox1: TListBox
+            Align = Client
+            Size.Width = 583.000000000000000000
+            Size.Height = 358.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 1
+            DisableFocusEffect = True
+            DefaultItemStyles.ItemStyle = ''
+            DefaultItemStyles.GroupHeaderStyle = ''
+            DefaultItemStyles.GroupFooterStyle = ''
+            Viewport.Width = 579.000000000000000000
+            Viewport.Height = 354.000000000000000000
+            object ListBoxGroupHeader12: TListBoxGroupHeader
+              Selectable = False
+              Size.Width = 579.000000000000000000
+              Size.Height = 22.000000000000000000
+              Size.PlatformDefault = False
+              StyleLookup = 'listboxplainheader'
+              TabOrder = 0
+              Text = 'Card Information'
+            end
+            object ListBoxItem47: TListBoxItem
+              Selectable = False
+              Position.Y = 22.000000000000000000
+              Size.Width = 579.000000000000000000
+              Size.Height = 42.000000000000000000
+              Size.PlatformDefault = False
+              StyleLookup = 'listboxitemnodetail'
+              TabOrder = 1
+              Text = 'Card Number'
+              object Edit1: TEdit
+                Touch.InteractiveGestures = [LongTap, DoubleTap]
+                Align = Right
+                TabOrder = 0
+                Position.X = 410.000000000000000000
+                Position.Y = 5.000000000000000000
+                Margins.Left = 5.000000000000000000
+                Margins.Top = 5.000000000000000000
+                Margins.Right = 5.000000000000000000
+                Margins.Bottom = 5.000000000000000000
+                Size.Width = 164.000000000000000000
+                Size.Height = 32.000000000000000000
+                Size.PlatformDefault = False
+              end
+            end
+            object ListBoxItem48: TListBoxItem
+              Selectable = False
+              Position.Y = 64.000000000000000000
+              Size.Width = 579.000000000000000000
+              Size.Height = 42.000000000000000000
+              Size.PlatformDefault = False
+              StyleLookup = 'listboxitemnodetail'
+              TabOrder = 2
+              Text = 'PIN'
+              object Edit2: TEdit
+                Touch.InteractiveGestures = [LongTap, DoubleTap]
+                Align = Right
+                TabOrder = 0
+                Position.X = 410.000000000000000000
+                Position.Y = 5.000000000000000000
+                Margins.Left = 5.000000000000000000
+                Margins.Top = 5.000000000000000000
+                Margins.Right = 5.000000000000000000
+                Margins.Bottom = 5.000000000000000000
+                Size.Width = 164.000000000000000000
+                Size.Height = 32.000000000000000000
+                Size.PlatformDefault = False
+              end
+            end
+            object ListBoxGroupHeader17: TListBoxGroupHeader
+              Selectable = False
+              Position.Y = 106.000000000000000000
+              Size.Width = 579.000000000000000000
+              Size.Height = 22.000000000000000000
+              Size.PlatformDefault = False
+              StyleLookup = 'listboxplainheader'
+              TabOrder = 3
+              Text = 'Amount Information'
+            end
+            object ListBoxItem55: TListBoxItem
+              Selectable = False
+              Position.Y = 128.000000000000000000
+              Size.Width = 579.000000000000000000
+              Size.Height = 42.000000000000000000
+              Size.PlatformDefault = False
+              StyleLookup = 'listboxitemnodetail'
+              TabOrder = 4
+              Text = 'Amount'
+              object NumberBox1: TNumberBox
+                Touch.InteractiveGestures = [LongTap, DoubleTap]
+                Align = Right
+                TabOrder = 0
+                Cursor = crIBeam
+                Max = 65535.000000000000000000
+                Position.X = 410.000000000000000000
+                Position.Y = 5.000000000000000000
+                HorzIncrement = 0.000000000000000000
+                VertIncrement = 0.000000000000000000
+                Margins.Left = 5.000000000000000000
+                Margins.Top = 5.000000000000000000
+                Margins.Right = 5.000000000000000000
+                Margins.Bottom = 5.000000000000000000
+                Size.Width = 164.000000000000000000
+                Size.Height = 32.000000000000000000
+                Size.PlatformDefault = False
+              end
+            end
+          end
+          object GridPanelLayout1: TGridPanelLayout
+            Align = Bottom
+            Position.Y = 404.000000000000000000
+            Size.Width = 583.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 2
+            ColumnCollection = <
+              item
+                Value = 19.999962396387090000
+              end
+              item
+                Value = 20.000006066841700000
+              end
+              item
+                Value = 20.000026832201520000
+              end
+              item
+                Value = 20.000009202553930000
+              end
+              item
+                Value = 19.999995502015770000
+              end>
+            ControlCollection = <
+              item
+                Column = 0
+                Control = Button11
+                Row = 0
+              end
+              item
+                Column = 1
+                Control = Button12
+                Row = 0
+              end>
+            RowCollection = <
+              item
+                Value = 100.000000000000000000
+              end
+              item
+                SizeStyle = Auto
+              end>
+            object Button11: TButton
+              Align = Center
+              Cursor = crHandPoint
+              Margins.Left = 3.000000000000000000
+              Margins.Top = 3.000000000000000000
+              Margins.Right = 3.000000000000000000
+              Margins.Bottom = 3.000000000000000000
+              Size.Width = 46.000000000000000000
+              Size.Height = 46.000000000000000000
+              Size.PlatformDefault = False
+              StyleLookup = 'trashtoolbutton'
+              TabOrder = 1
+              Text = 'Go to Lookup'
+              ParentShowHint = False
+              ShowHint = True
+            end
+            object Button12: TButton
+              Align = Center
+              Cursor = crHandPoint
+              Hint = 'Save Customer'
+              Margins.Left = 3.000000000000000000
+              Margins.Top = 3.000000000000000000
+              Margins.Right = 3.000000000000000000
+              Margins.Bottom = 3.000000000000000000
+              Size.Width = 46.000000000000000000
+              Size.Height = 46.000000000000000000
+              Size.PlatformDefault = False
+              StyleLookup = 'addtoolbutton'
+              TabOrder = 0
+              Text = 'Save'
+              ParentShowHint = False
+              ShowHint = True
+            end
+          end
+        end
+        object TabItem3: TTabItem
+          CustomIcon = <
+            item
+            end>
+          IsSelected = False
+          Size.Width = 194.000000000000000000
+          Size.Height = 49.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = ''
+          TabOrder = 0
+          Text = 'Add Funds'
+          ExplicitSize.cx = 131.000000000000000000
+          ExplicitSize.cy = 49.000000000000000000
+          object ToolBar9: TToolBar
+            Size.Width = 583.000000000000000000
+            Size.Height = 46.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 0
+            object Label2: TLabel
+              Align = Contents
+              Size.Width = 583.000000000000000000
+              Size.Height = 46.000000000000000000
+              Size.PlatformDefault = False
+              StyleLookup = 'toollabel'
+              TextSettings.HorzAlign = Center
+            end
+            object SpeedButton4: TSpeedButton
+              Action = actCustomerTab
+              Align = Left
+              Cursor = crHandPoint
+              Enabled = True
+              ImageIndex = -1
+              Margins.Left = 5.000000000000000000
+              Position.X = 5.000000000000000000
+              Size.Width = 46.000000000000000000
+              Size.Height = 46.000000000000000000
+              Size.PlatformDefault = False
+              StyleLookup = 'priortoolbutton'
+              Visible = True
+            end
+          end
+        end
+        object TabItem4: TTabItem
+          CustomIcon = <
+            item
+            end>
+          IsSelected = False
+          Size.Width = 195.000000000000000000
+          Size.Height = 49.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = ''
+          TabOrder = 0
+          Text = 'Balance'
+          ExplicitSize.cx = 195.000000000000000000
+          ExplicitSize.cy = 49.000000000000000000
+          object ToolBar10: TToolBar
+            Size.Width = 583.000000000000000000
+            Size.Height = 46.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 0
+            object Label4: TLabel
+              Align = Contents
+              Size.Width = 583.000000000000000000
+              Size.Height = 46.000000000000000000
+              Size.PlatformDefault = False
+              StyleLookup = 'toollabel'
+              TextSettings.HorzAlign = Center
+            end
+            object SpeedButton2: TSpeedButton
+              Action = actCustomerTab
+              Align = Left
+              Cursor = crHandPoint
+              Enabled = True
+              ImageIndex = -1
+              Margins.Left = 5.000000000000000000
+              Position.X = 5.000000000000000000
+              Size.Width = 46.000000000000000000
+              Size.Height = 46.000000000000000000
+              Size.PlatformDefault = False
+              ParentShowHint = False
+              ShowHint = True
+              StyleLookup = 'priortoolbutton'
+              Visible = True
+            end
+          end
+        end
+      end
     end
   end
   object lblTerminalStatus: TLabel
     Align = Bottom
     StyledSettings = [Family, Size, Style]
-    Position.Y = 581.000000000000000000
-    Size.Width = 580.000000000000000000
+    Position.Y = 544.000000000000000000
+    Size.Width = 583.000000000000000000
     Size.Height = 29.000000000000000000
     Size.PlatformDefault = False
     StyleLookup = 'toollabel'
@@ -3818,6 +3827,14 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       Category = 'Tab'
       Tab = tabSetup
     end
+    object actMenuTab: TChangeTabAction
+      Category = 'Tab'
+      Tab = tabMenu
+    end
+    object actGiftTab: TChangeTabAction
+      Category = 'Tab'
+      Tab = tabGift
+    end
   end
   object Genius: TCayanGenius
     Cayan = DM.Cayan
@@ -3831,15 +3848,6 @@ object frmCayanPOSMain: TfrmCayanPOSMain
     OnDeviceStatus = GeniusDeviceStatus
     OnCancel = TranCancel
     Left = 80
-    Top = 432
-  end
-  object LID: TCayanGeniusLineItems
-    Transaction = Tran
-    AutoTotal = True
-    DisplayCustomSubTotal = 'This is a test.'
-    UpdateTransaction = True
-    OnChange = LIDChange
-    Left = 160
     Top = 432
   end
   object Tran: TCayanGeniusTransaction
