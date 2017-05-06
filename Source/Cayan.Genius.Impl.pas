@@ -136,15 +136,18 @@ type
     FOwner: TGenius;
     FResponse: IGeniusStatusResponse;
     FActive: Boolean;
-    FStatusCheckProc: TGeniusStatusCheckProc;
+    FWeb: TIdHTTP;
     FOnResponse: TGeniusStatusResponseEvent;
     procedure DoOnResponse;
     procedure SetActive(const Value: Boolean);
     procedure FreeResponse;
+    procedure DoCheck;
+    function SendDeviceRequest(const Url: String): String;
+    function SendDeviceRequestXML(const Url: String): IXMLDocument;
   protected
     procedure Execute; override;
   public
-    constructor Create(AOwner: TGenius);
+    constructor Create(const AOwner: TGenius);
     destructor Destroy; override;
     property Active: Boolean read FActive write SetActive;
     property OnResponse: TGeniusStatusResponseEvent read FOnResponse write FOnResponse;
@@ -187,9 +190,9 @@ type
       const Ver: TGeniusDeviceVersion = gdVer1): String;
     function TransportUrl(const Ver, Req: String): String;
     function SendDeviceRequest(const Url: String; const Timeout: Integer = 0): String;
+    function SendDeviceRequestXML(const Url: String; const Timeout: Integer = 0): IXMLDocument;
     function SendTransportRequest(const SvcUrl: String; const Ver: String; const ActionUrl: String;
       const Action: String; const AXML: String; const CredMerch: Boolean = True; const Cap: Boolean = False): IXMLDocument;
-    function SendDeviceRequestXML(const Url: String; const Timeout: Integer = 0): IXMLDocument;
     procedure StatusResponse(Sender: IGenius;
       const Status: IGeniusStatusResponse);
   public
@@ -1530,16 +1533,10 @@ end;
 
 { TGeniusStatusThread }
 
-constructor TGeniusStatusThread.Create(AOwner: TGenius);
+constructor TGeniusStatusThread.Create(const AOwner: TGenius);
 begin
   inherited Create(True);
-  try
-    FOwner:= AOwner;
-    FStatusCheckProc:= FOwner.StatusCheck;
-  finally
-    //Resume;
-    //TODO
-  end;
+  FOwner:= AOwner;
 end;
 
 destructor TGeniusStatusThread.Destroy;
@@ -1563,25 +1560,95 @@ begin
   end;
 end;
 
+function TGeniusStatusThread.SendDeviceRequest(const Url: String): String;
+begin
+  Result:= '';
+  if not Assigned(FWeb) then Exit;
+  try
+    Result:= FWeb.Get(Url);
+  except
+    on E: Exception do begin
+      raise Exception.Create('Failed to send device request: ' + E.Message);
+    end;
+  end;
+end;
+
+function TGeniusStatusThread.SendDeviceRequestXML(const Url: String): IXMLDocument;
+var
+  Res: String;
+begin
+  Res:= SendDeviceRequest(Url);
+  Result:= TXMLDocument.Create(nil);
+  Result.LoadFromXML(Res);
+end;
+
+procedure TGeniusStatusThread.DoCheck;
+var
+  Pars: TParamList;
+  XML: IXMLDocument;
+  Node: IXmlNode;
+begin
+(*
+  Action=Status There are two versions of the Status request available.
+  Version 1 sends a request to the CED to check which screen the device is on.
+  Version 2 is analogous with verison 1 but also includes any AdditionalParameters fields.
+
+  http://[CED-IP-Address]:8080/v2/pos?Action=Status&Format=XML
+  https://[CED-IP-Address]:8443/v2/pos?Action=Status&Format=XML
+*)
+  FResponse:= TGeniusStatusResponse.Create;
+
+  if FOwner.TestMode then begin
+    FResponse.Status:= TGeniusCedStatus.csOnline;
+    FResponse.CurrentScreen:= TGeniusCedScreen.csIdle;
+    Exit;
+  end;
+
+  Pars:= TParamList.Create;
+  try
+    Pars['Action']:= 'Status';
+    Pars['Format']:= 'XML';
+
+    XML:= SendDeviceRequestXML(FOwner.DeviceUrl(Pars.ParamStr));
+    Node:= GetNodePath(XML, '/StatusResult');
+    if Assigned(Node) then begin
+      //TODO
+      FResponse.Status:= GeniusStrToCedStatus(GetNodeValue(Node, 'Status'));
+      FResponse.CurrentScreen:= GeniusStrToCedScreen(GetNodeValue(Node, 'CurrentScreen'));
+      FResponse.ResponseMessage:= GetNodeValue(Node, 'ResponseMessage');
+      FResponse.SerialNumber:= GetNodeValue(Node, 'SerialNumber');
+      FResponse.ApplicationVersion:= GetNodeValue(Node, 'ApplicationVersion');
+      FResponse.OSVersion:= GetNodeValue(Node, 'OSVersion');
+      FResponse.PaymentDataCaptured:= SameText(GetNodeValue(Node, 'PaymentDataCaptured'), 'true');
+    end else begin
+      //Failed to get result
+      FResponse.Status:= TGeniusCedStatus.csOffline;
+      FResponse.ResponseMessage:= 'Failed to get status from CED';
+      FResponse.PaymentDataCaptured:= False;
+    end;
+  finally
+    FreeAndNil(Pars);
+  end;
+end;
+
 procedure TGeniusStatusThread.Execute;
 begin
   {$IFDEF MSWINDOWS}
   CoInitialize(nil);
   {$ENDIF}
+  FWeb:= TIdHTTP.Create(nil);
   try
+    FWeb.Request.CustomHeaders.AddPair('Connection', 'Keep-Alive');
     while not Terminated do begin
       //Only perform check if active and can report response
-      if (FActive) and (Assigned(FOnResponse)) and
-        (FOwner.Monitoring) and (not FOwner.TestMode) then
+      if (FActive) and (Assigned(FOnResponse)) and (not FOwner.TestMode) and
+        (FOwner.Monitoring) then
       begin
         while (FActive) and (not Terminated) do begin
-
           FreeResponse;
-
           try
             if Terminated or (not FActive) then Break;
-            FResponse:= FStatusCheckProc(700);
-            FResponse._AddRef;
+            DoCheck;
           except
             on E: Exception do begin
               FResponse:= TGeniusStatusResponse.Create;
@@ -1592,7 +1659,7 @@ begin
             end;
           end;
           Synchronize(DoOnResponse);
-          //Sleep for 3 second3, 200 ms intervals
+          //Sleep for 1 second, 200 ms intervals
 
           if Terminated or (not FActive) then Break;
           Sleep(200);
@@ -1605,31 +1672,6 @@ begin
           if Terminated or (not FActive) then Break;
           Sleep(200);
           if Terminated or (not FActive) then Break;
-
-          if Terminated or (not FActive) then Break;
-          Sleep(200);
-          if Terminated or (not FActive) then Break;
-          Sleep(200);
-          if Terminated or (not FActive) then Break;
-          Sleep(200);
-          if Terminated or (not FActive) then Break;
-          Sleep(200);
-          if Terminated or (not FActive) then Break;
-          Sleep(200);
-          if Terminated or (not FActive) then Break;
-
-          if Terminated or (not FActive) then Break;
-          Sleep(200);
-          if Terminated or (not FActive) then Break;
-          Sleep(200);
-          if Terminated or (not FActive) then Break;
-          Sleep(200);
-          if Terminated or (not FActive) then Break;
-          Sleep(200);
-          if Terminated or (not FActive) then Break;
-          Sleep(200);
-          if Terminated or (not FActive) then Break;
-
 
         end;
         Sleep(200);
@@ -1641,6 +1683,7 @@ begin
     FreeResponse;
 
   finally
+    FreeAndNil(FWeb);
     {$IFDEF MSWINDOWS}
     CoUninitialize;
     {$ENDIF}
@@ -1918,25 +1961,12 @@ end;
 function TGenius.SendDeviceRequest(const Url: String; const Timeout: Integer = 0): String;
 begin
   Result:= '';
-
   if not Assigned(FWebDevice) then Exit;
-
-  {$IFNDEF NO_TIMEOUT}
-  if Timeout = 0 then
-    FWebDevice.ConnectTimeout:= FDeviceTimeout
-  else
-    FWebDevice.ConnectTimeout:= Timeout;
-  {$ENDIF}
-
-  //Everything is controlled within the URL for device requests
   try
     Result:= FWebDevice.Get(Url);
   except
-    on E: EIdConnectTimeout do begin
-      //do nothing
-    end;
     on E: Exception do begin
-
+      raise Exception.Create('Failed to send device request: ' + E.Message);
     end;
   end;
 end;

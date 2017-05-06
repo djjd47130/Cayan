@@ -733,7 +733,7 @@ var
   begin
     case FFormat of
       efXML:  AddStr(N, CurrToStr(V));
-      efJSON: CO.D[N]:= V;
+      efJSON: CO.F[N]:= V;
     end;
   end;
   procedure AddContent;

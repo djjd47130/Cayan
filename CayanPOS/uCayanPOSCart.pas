@@ -13,53 +13,30 @@ uses
   Cayan.POS,
   Cayan.Genius,
   Cayan.Genius.Intf,
-  Cayan.Genius.LineItems;
+  Cayan.Genius.LineItems, FMX.TabControl, System.Actions, FMX.ActnList,
+  FMX.Edit, FMX.ListBox;
 
 type
   TfrmCart = class;
 
-  {
-  TCartItemType = (citInvent, citCharge);
-
-  TCartItem = class(TObject)
-  private
-    FOwner: TfrmCart;
-    FLineItem: TCayanGeniusLineItem;
-    FItemID: Integer;
-    FPrice: Currency;
-    FQty: Integer;
-    FItemType: TCartItemType;
-    FID: Integer;
-    procedure SetID(const Value: Integer);
-    procedure SetItemID(const Value: Integer);
-    procedure SetItemType(const Value: TCartItemType);
-    procedure SetPrice(const Value: Currency);
-    procedure SetQty(const Value: Integer);
-  public
-    constructor Create(AOwner: TfrmCart);
-    destructor Destroy; override;
-    function SubTotal: Currency;
-    function TotalTax: Currency;
-    function GrandTotal: Currency;
-    property ID: Integer read FID write SetID;
-    property ItemID: Integer read FItemID write SetItemID;
-    property ItemType: TCartItemType read FItemType write SetItemType;
-    property Qty: Integer read FQty write SetQty;
-    property Price: Currency read FPrice write SetPrice;
-  end;
-  }
-
   TfrmCart = class(TForm)
     ContentLayout: TLayout;
-    ButtonsLayout: TGridPanelLayout;
-    btnCartAdd: TButton;
-    btnCartEdit: TButton;
-    btnCartDelete: TButton;
-    lstItems: TListView;
+    LID: TCayanGeniusLineItems;
+    Acts: TActionList;
+    actItemsTab: TChangeTabAction;
+    actLookupTab: TChangeTabAction;
+    actDetailTab: TChangeTabAction;
+    CartTabs: TTabControl;
+    tabItems: TTabItem;
     ToolBar3: TToolBar;
     lblTitle: TLabel;
     btnNext: TSpeedButton;
     btnBack: TSpeedButton;
+    lstItems: TListView;
+    ButtonsLayout: TGridPanelLayout;
+    btnCartAdd: TButton;
+    btnCartEdit: TButton;
+    btnCartDelete: TButton;
     TotalsLayout: TGridPanelLayout;
     Label1: TLabel;
     Label2: TLabel;
@@ -69,19 +46,41 @@ type
     lblCartSubtotal: TLabel;
     lblCartTax: TLabel;
     lblCartTotal: TLabel;
-    LID: TCayanGeniusLineItems;
-    procedure btnCartAddClick(Sender: TObject);
+    tabLookup: TTabItem;
+    ToolBar1: TToolBar;
+    Label3: TLabel;
+    SpeedButton2: TSpeedButton;
+    tabDetail: TTabItem;
+    ToolBar2: TToolBar;
+    Label6: TLabel;
+    SpeedButton4: TSpeedButton;
+    lstLookup: TListView;
+    lstSetup: TListBox;
+    ListBoxGroupHeader13: TListBoxGroupHeader;
+    ListBoxItem53: TListBoxItem;
+    txtCedAddress: TEdit;
+    ListBoxItem1: TListBoxItem;
+    Edit1: TEdit;
+    ListBoxItem2: TListBoxItem;
+    Edit2: TEdit;
     procedure btnCartDeleteClick(Sender: TObject);
+    procedure lstLookupSearchChange(Sender: TObject);
+    procedure lstItemsItemClick(const Sender: TObject;
+      const AItem: TListViewItem);
+    procedure Button1Click(Sender: TObject);
+    procedure lstLookupItemClick(const Sender: TObject;
+      const AItem: TListViewItem);
+    procedure btnCartEditClick(Sender: TObject);
   private
-    //FItems: TObjectList<TCartItem>;
     FSetup: ICayanPOSSetup;
+    FItems: ICayanPOSItems;
     procedure SetSetup(const Value: ICayanPOSSetup);
+    procedure DisplayItems;
+    function ItemByID(const ID: Integer): ICayanPOSItem;
   public
     constructor Create(AContainer: TControl); reintroduce;
     destructor Destroy; override;
     procedure Clear;
-    //function AddItem(const AItemID: Integer): TCartItem;
-    //procedure Delete(const Index: Integer);
     procedure UpdateTotals;
     property Setup: ICayanPOSSetup read FSetup write SetSetup;
   end;
@@ -96,63 +95,6 @@ implementation
 uses
   uCayanPOSMain;
 
-{ TCartItem }
-
-{
-constructor TCartItem.Create(AOwner: TfrmCart);
-begin
-  FOwner:= AOwner;
-  FLineItem:= nil;
-
-end;
-
-destructor TCartItem.Destroy;
-begin
-
-  inherited;
-end;
-
-procedure TCartItem.SetID(const Value: Integer);
-begin
-  FID := Value;
-end;
-
-procedure TCartItem.SetItemID(const Value: Integer);
-begin
-  FItemID := Value;
-end;
-
-procedure TCartItem.SetItemType(const Value: TCartItemType);
-begin
-  FItemType := Value;
-end;
-
-procedure TCartItem.SetPrice(const Value: Currency);
-begin
-  FPrice := Value;
-end;
-
-procedure TCartItem.SetQty(const Value: Integer);
-begin
-  FQty := Value;
-end;
-
-function TCartItem.SubTotal: Currency;
-begin
-  Result:= FPrice * FQty;
-end;
-
-function TCartItem.TotalTax: Currency;
-begin
-  Result:= SubTotal * FOwner.FSetup.TaxRate;
-end;
-
-function TCartItem.GrandTotal: Currency;
-begin
-  Result:= SubTotal + TotalTax;
-end;
-}
-
 { TfrmCart }
 
 constructor TfrmCart.Create(AContainer: TControl);
@@ -161,7 +103,8 @@ begin
     raise Exception.Create('Failed to create cart screen: Container must be assigned.');
   inherited Create(nil);
   ContentLayout.Parent:= AContainer;
-  //FItems:= TObjectList<TCartItem>.Create(True);
+  CartTabs.TabPosition:= TTabPosition.None;
+  CartTabs.ActiveTab:= Self.tabItems;
 
   UpdateTotals;
 end;
@@ -169,8 +112,56 @@ end;
 destructor TfrmCart.Destroy;
 begin
   Clear;
-  //FreeAndNil(FItems);
+  if Assigned(FItems) then begin
+    FItems._Release;
+    FItems:= nil;
+  end;
   inherited;
+end;
+
+procedure TfrmCart.lstItemsItemClick(const Sender: TObject;
+  const AItem: TListViewItem);
+begin
+  //TODO: Populate item details...
+
+  Self.actDetailTab.ExecuteTarget(Self);
+end;
+
+function TfrmCart.ItemByID(const ID: Integer): ICayanPOSItem;
+var
+  X: Integer;
+begin
+  Result:= nil;
+  for X := 0 to FItems.Count-1 do begin
+    if FItems[X].ID = ID then begin
+      Result:= FItems[X];
+      Break;
+    end;
+  end;
+end;
+
+procedure TfrmCart.lstLookupItemClick(const Sender: TObject;
+  const AItem: TListViewItem);
+var
+  I: ICayanPOSItem;
+  LineItem: TCayanGeniusLineItem;
+  LI: TListViewItem;
+begin
+  I:= ItemByID(AItem.Tag);
+  LineItem:= LID.Add(glSku, 'Invent', I.Price, (I.Price * FSetup.TaxRate), 1, I.ShortDescr); //TODO
+  LI:= lstItems.Items.Add;
+  LI.Text:= IntToStr(LineItem.Quantity) + ' ' + LineItem.Description;
+  LI.Detail:= FormatFloat('$#,###,##0.00', (LineItem.Amount * LineItem.Quantity));
+  LI.Tag:= NativeInt(LineItem);
+  lstItems.ScrollTo(lstItems.Items.Count-1);
+  UpdateTotals;
+  Self.actItemsTab.ExecuteTarget(Self);
+end;
+
+procedure TfrmCart.lstLookupSearchChange(Sender: TObject);
+begin
+  //TODO: Search for items...
+
 end;
 
 procedure TfrmCart.SetSetup(const Value: ICayanPOSSetup);
@@ -178,59 +169,12 @@ begin
   FSetup := Value;
 end;
 
-{
-function TfrmCart.AddItem(const AItemID: Integer): TCartItem;
-begin
-  Result:= TCartItem.Create(Self);
-  Result.ItemType:= TCartItemType.citInvent;
-  Result.ItemID:= AItemID;
-  //TODO: Load item from database...
-
-  UpdateTotals;
-end;
-
-procedure TfrmCart.Delete(const Index: Integer);
-var
-  I: TCartItem;
-begin
-  I:= FItems[Index];
-  try
-    //TODO: Remove from Line Item Display...
-    I.FLineItem.Description; //TEMP
-
-  finally
-    FItems.Delete(Index);
-  end;
-  UpdateTotals;
-end;
-}
-
-procedure TfrmCart.btnCartAddClick(Sender: TObject);
-var
-  I: TCayanGeniusLineItem;
-  LI: TListViewItem;
-  Price: Currency;
-begin
-  Price:= (Random(200) + 5);
-  try
-    I:= LID.Add(glSku, 'Inventory', Price, (Price * FSetup.TaxRate), 1, 'New Item'); //TODO
-    LI:= lstItems.Items.Add;
-    LI.Text:= IntToStr(I.Quantity) + ' ' + I.Description;
-    LI.Detail:= FormatFloat('$#,###,##0.00', (I.Amount * I.Quantity));
-    LI.Tag:= NativeInt(I);
-    UpdateTotals;
-  except
-    on E: Exception do begin
-      //TODO
-    end;
-  end;
-end;
-
 procedure TfrmCart.btnCartDeleteClick(Sender: TObject);
 var
   I: TCayanGeniusLineItem;
   X: Integer;
 begin
+  //TODO: Prompt user
   if lstItems.ItemIndex >= 0 then begin
     I:= TCayanGeniusLineItem(lstItems.Items[lstItems.ItemIndex].Tag);
     for X := 0 to LID.Count - 1 do begin
@@ -240,8 +184,50 @@ begin
       end;
     end;
     lstItems.Items.Delete(lstItems.ItemIndex);
+  end else begin
+    //No item is selected...
+
   end;
   UpdateTotals;
+end;
+
+procedure TfrmCart.btnCartEditClick(Sender: TObject);
+begin
+
+  actDetailTab.ExecuteTarget(Self);
+end;
+
+procedure TfrmCart.Button1Click(Sender: TObject);
+begin
+  if Assigned(FItems) then begin
+    FItems._Release;
+    FItems:= nil;
+  end;
+
+  Self.actLookupTab.ExecuteTarget(Self);
+
+  FItems:= DM.POS.GetInventory(''); //TODO
+  FItems._AddRef;
+  DisplayItems;
+end;
+
+procedure TfrmCart.DisplayItems;
+var
+  I: ICayanPOSItem;
+  LI: TListViewItem;
+  X: Integer;
+begin
+  Self.lstLookup.Items.Clear;
+
+  for X := 0 to FItems.Count-1 do begin
+    I:= FItems[X];
+    LI:= Self.lstLookup.Items.Add;
+    LI.Text:= I.ShortDescr;
+    LI.Detail:= FormatFloat('$#,###,##0.00', I.Price);
+    LI.Tag:= I.ID;
+
+  end;
+
 end;
 
 procedure TfrmCart.Clear;

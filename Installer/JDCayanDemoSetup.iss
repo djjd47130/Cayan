@@ -2,7 +2,7 @@
 #define MyAppName "Cayan Demo"
 #define MyAppVersion "1.0"
 #define MyAppPublisher "JD Software Inc."
-#define MyAppURL "http://www.jerrydodge.com/Cayan"
+#define MyAppURL "https://github.com/djjd47130/Cayan"
 #define MyAppExeName "CayanPOS.exe"
 
 [Setup]

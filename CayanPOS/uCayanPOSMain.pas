@@ -293,12 +293,10 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     FTranStarted: Boolean;
-    FProducts: TStringList;
     FCustomers: ICayanPOSCustomers;
     FCustomer: ICayanPOSCustomer;
     FCards: ICayanPOSCards;
     FSetup: ICayanPOSSetup;
-
     FCart: TfrmCart;
     procedure HidePayInfo;
     procedure ShowCardInfo;
@@ -307,9 +305,9 @@ type
     procedure SetCedBusy(const Value: Boolean);
     procedure DisplayResultGenius(const R: IGeniusTransactionResponse);
     procedure DisplayResultMWCredit(const R: IMWCreditResponse4);
+    procedure DisplayResultCash(const Amount: Currency);
+    procedure DisplayResultCheck(const Amount: Currency; const CheckNum: String);
     procedure ClearCart;
-    procedure PopulateProducts;
-    function RandomProduct: String;
     procedure LoadCustomers;
     procedure ClearCustomers;
     function CustomerByID(const ID: Integer): ICayanPOSCustomer;
@@ -325,6 +323,8 @@ type
     procedure FinishCreditSale(Res: IMWCreditResponse4);
     procedure ClearPaymentInfo;
     procedure CreateSubForms;
+    procedure AddResultHeader(const Str: String);
+    procedure AddResultStr(const Name, Val: String);
   public
     procedure UpdateCartTotals;
     procedure LoadFromConfig;
@@ -375,17 +375,11 @@ begin
   txtLoginPassword.Text:= '';
   txtLoginUser.SetFocus;
 
-  //TODO: Implement real inventory. This is a fake demo.
-  {$IFNDEF INVENT}
-  Randomize;
-  PopulateProducts;
-  {$ENDIF}
 end;
 
 procedure TfrmCayanPOSMain.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FCart);
-  FreeAndNil(FProducts);
   FCustomers:= nil;
   FCustomer:= nil;
   FCards:= nil;
@@ -421,7 +415,6 @@ end;
 
 procedure TfrmCayanPOSMain.CreateSubForms;
 begin
-  FProducts:= TStringList.Create;
   FCart:= TfrmCart.Create(tabCart);
   FCart.btnBack.OnClick:= Self.btnCartBackClick;
   FCart.btnNext.OnClick:= Self.btnCartNextClick;
@@ -496,160 +489,145 @@ begin
   Result:= TPath.Combine(Result, 'POSConfig.json');
 end;
 
-procedure TfrmCayanPOSMain.PopulateProducts;
-  procedure A(const S: String);
-  begin
-    FProducts.Append(S);
-  end;
+procedure TfrmCayanPOSMain.AddResultHeader(const Str: String);
+var
+  H: TListBoxGroupHeader;
 begin
-  FProducts.Clear;
-  A('Area Rug');
-  A('Arm Chair');
-  A('Dining Table');
-  A('Dining Chairs');
-  A('China Cabinet');
-  A('Runner Rug');
-  A('Small Rug');
-  A('Rug Pad');
-  A('Area Rug');
-  A('Gallery Rug');
+  H:= TListBoxGroupHeader.Create(lstResult);
+  H.Parent:= lstResult;
+  H.Text:= Str;
 end;
 
-function TfrmCayanPOSMain.RandomProduct: String;
+procedure TfrmCayanPOSMain.AddResultStr(const Name, Val: String);
 var
-  I: Integer;
+  I: TListBoxItem;
 begin
-  I:= Random(FProducts.Count);
-  Result:= FProducts[I];
+  I:= TListBoxItem.Create(lstResult);
+  I.Parent:= lstResult;
+  I.StyleLookup:= 'listboxitemrightdetail';
+  I.Height:= 42;
+  I.Text:= Name;
+  I.ItemData.Detail:= Val;
+end;
+
+procedure TfrmCayanPOSMain.DisplayResultCash(const Amount: Currency);
+begin
+  lstResult.Items.Clear;
+
+  AddResultHeader('General Information');
+  AddResultStr('Transaction Type', 'Sale');
+  AddResultStr('Payment Type', 'Cash');
+  AddResultStr('Amount Approved', FormatFloat('$#,###,##0', Amount));
+
+  actResultTab.ExecuteTarget(Self);
+end;
+
+procedure TfrmCayanPOSMain.DisplayResultCheck(const Amount: Currency;
+  const CheckNum: String);
+begin
+  lstResult.Items.Clear;
+
+  AddResultHeader('General Information');
+  AddResultStr('Transaction Type', 'Sale');
+  AddResultStr('Payment Type', 'Check');
+  AddResultStr('Amount Approved', FormatFloat('$#,###,##0', Amount));
+  AddResultStr('Check #', Self.txtPayCheckNum.Text);
+
+  actResultTab.ExecuteTarget(Self);
 end;
 
 procedure TfrmCayanPOSMain.DisplayResultGenius(const R: IGeniusTransactionResponse);
 var
   X: Integer;
-  I: TListBoxItem;
-  H: TListBoxGroupHeader;
   D: IGeniusTransactionDiscount;
-  procedure AH(const S: String);
-  begin
-    H:= TListBoxGroupHeader.Create(lstResult);
-    H.Parent:= lstResult;
-    H.Text:= S;
-  end;
-  procedure A(const N, V: String);
-  begin
-    I:= TListBoxItem.Create(lstResult);
-    I.Parent:= lstResult;
-    I.StyleLookup:= 'listboxitemrightdetail';
-    I.Height:= 42;
-    I.Text:= N;
-    I.ItemData.Detail:= V;
-  end;
 begin
   lstResult.Items.Clear;
 
-  AH('General Information');
-  A('Transaction Type', GeniusTransactionTypeToStr(R.TransactionType));
+  AddResultHeader('General Information');
+  AddResultStr('Transaction Type', GeniusTransactionTypeToStr(R.TransactionType));
   if R.TransactionDate <> 0 then
-    A('Transaction Date', FormatDateTime('m/d/yy h:nn AMPM', R.TransactionDate));
-  A('Status', GeniusTransStatusToStr(R.Status));
+    AddResultStr('Transaction Date', FormatDateTime('m/d/yy h:nn AMPM', R.TransactionDate));
+  AddResultStr('Status', GeniusTransStatusToStr(R.Status));
   if R.ErrorMessage <> '' then
-    A('Error Message', R.ErrorMessage);
-  A('Amount Approved', FormatFloat('$#,###,##0', R.AmountApproved));
+    AddResultStr('Error Message', R.ErrorMessage);
+  AddResultStr('Amount Approved', FormatFloat('$#,###,##0', R.AmountApproved));
   if R.AuthorizationCode <> '' then
-    A('Authorization Code', R.AuthorizationCode);
+    AddResultStr('Authorization Code', R.AuthorizationCode);
   if R.CardHolder <> '' then
-    A('CardHolder', R.CardHolder);
+    AddResultStr('CardHolder', R.CardHolder);
   if R.AccountNumber <> '' then
-    A('Account Number', R.AccountNumber);
-  A('Payment Type', GeniusPaymentTypeToStr(R.PaymentType));
-  A('Entry Mode', GeniusEntryModeToStr(R.EntryMode));
+    AddResultStr('Account Number', R.AccountNumber);
+  AddResultStr('Payment Type', GeniusPaymentTypeToStr(R.PaymentType));
+  AddResultStr('Entry Mode', GeniusEntryModeToStr(R.EntryMode));
 
-  AH('Additional Information');
+  AddResultHeader('Additional Information');
   if R.Token <> '' then
-    A('Token', R.Token);
-  A('Response Type', GeniusResponseTypeToStr(R.ResponseType));
-  A('Validation Key', R.ValidationKey);
+    AddResultStr('Token', R.Token);
+  AddResultStr('Response Type', GeniusResponseTypeToStr(R.ResponseType));
+  AddResultStr('Validation Key', R.ValidationKey);
   if R.SignatureData <> '' then
-    A('Signature Data', R.SignatureData); //TODO
+    AddResultStr('Signature Data', R.SignatureData); //TODO
 
-  AH('Amount Details');
-  A('User Tip', FormatFloat('$#,###,##0', R.UserTip));
-  A('Cashback', FormatFloat('$#,###,##0', R.Cashback));
-  A('Donation', FormatFloat('$#,###,##0', R.Donation));
-  A('Surcharge', FormatFloat('$#,###,##0', R.Surcharge));
+  AddResultHeader('Amount Details');
+  AddResultStr('User Tip', FormatFloat('$#,###,##0', R.UserTip));
+  AddResultStr('Cashback', FormatFloat('$#,###,##0', R.Cashback));
+  AddResultStr('Donation', FormatFloat('$#,###,##0', R.Donation));
+  AddResultStr('Surcharge', FormatFloat('$#,###,##0', R.Surcharge));
 
-  AH('Discounts');
-  A('Total Discount', FormatFloat('$#,###,##0', R.Discount));
+  AddResultHeader('Discounts');
+  AddResultStr('Total Discount', FormatFloat('$#,###,##0', R.Discount));
   for X := 0 to R.DiscountsAppliedCount-1 do begin
     D:= R.DiscountsApplied[X];
-    A(D.DiscountType, FormatFloat('$#,###,##0', D.Amount));
+    AddResultStr(D.DiscountType, FormatFloat('$#,###,##0', D.Amount));
   end;
 
   if R.EntryMode = TGeniusEntryMode.geManual then begin
-    AH('Keyed Details');
-    A('Expiration', R.KeyedExpiration);
-    A('Zip Code', R.KeyedAvsStreetZipCode);
+    AddResultHeader('Keyed Details');
+    AddResultStr('Expiration', R.KeyedExpiration);
+    AddResultStr('Zip Code', R.KeyedAvsStreetZipCode);
     //A('Avs Response', R.KeyedAvsResponse);
     //A('Cv Response', R.KeyedCvResponse);
   end;
 
   if Assigned(R.EmvResponse) then begin
-    AH('EMV Transaction Info');
-    A('Aid', R.EmvResponse.Aid);
-    A('Application Label', R.EmvResponse.ApplicationLabel);
-    A('PIN Statement', R.EmvResponse.PINStatement);
+    AddResultHeader('EMV Transaction Info');
+    AddResultStr('Aid', R.EmvResponse.Aid);
+    AddResultStr('Application Label', R.EmvResponse.ApplicationLabel);
+    AddResultStr('PIN Statement', R.EmvResponse.PINStatement);
   end;
 end;
 
 procedure TfrmCayanPOSMain.DisplayResultMWCredit(const R: IMWCreditResponse4);
-var
-  I: TListBoxItem;
-  H: TListBoxGroupHeader;
-  procedure AH(const S: String);
-  begin
-    H:= TListBoxGroupHeader.Create(lstResult);
-    H.Parent:= lstResult;
-    H.Text:= S;
-  end;
-  procedure A(const N, V: String);
-  begin
-    I:= TListBoxItem.Create(lstResult);
-    I.Parent:= lstResult;
-    I.StyleLookup:= 'listboxitemrightdetail';
-    I.Height:= 42;
-    I.Text:= N;
-    I.ItemData.Detail:= V;
-  end;
 begin
   lstResult.Items.Clear;
-  AH('General Information');
-  A('Transaction Type', MWTransactionTypeCaption(R.TransactionType));
+  AddResultHeader('General Information');
+  AddResultStr('Transaction Type', MWTransactionTypeCaption(R.TransactionType));
   if R.TransactionDate <> 0 then
-    A('Transaction Date', FormatDateTime('m/d/yy h:nn ampm', R.TransactionDate));
-  A('Status', MWApprovalStatusSetToStr(R.ApprovalStatus));
+    AddResultStr('Transaction Date', FormatDateTime('m/d/yy h:nn ampm', R.TransactionDate));
+  AddResultStr('Status', MWApprovalStatusSetToStr(R.ApprovalStatus));
   if R.ErrorMessage <> '' then
-    A('Error Message', R.ErrorMessage);
-  A('Amount Approved', FormatFloat('$#,###,##0.00', R.Amount));
+    AddResultStr('Error Message', R.ErrorMessage);
+  AddResultStr('Amount Approved', FormatFloat('$#,###,##0.00', R.Amount));
   if R.AuthorizationCode <> '' then
-    A('Authorization Code', R.AuthorizationCode);
+    AddResultStr('Authorization Code', R.AuthorizationCode);
   if R.Cardholder <> '' then
-    A('Cardholder', R.Cardholder);
+    AddResultStr('Cardholder', R.Cardholder);
   if R.CardNumber <> '' then
-    A('Account Number', R.CardNumber);
-  A('Payment Type', MWCardTypeCaption(R.CardType));
-  A('Entry Mode', MWPosEntryTypeCaption(R.EntryMode));
+    AddResultStr('Account Number', R.CardNumber);
+  AddResultStr('Payment Type', MWCardTypeCaption(R.CardType));
+  AddResultStr('Entry Mode', MWPosEntryTypeCaption(R.EntryMode));
 
-  AH('Additional Information');
+  AddResultHeader('Additional Information');
   if R.Token <> '' then
-    A('Token', R.Token);
+    AddResultStr('Token', R.Token);
   if R.ApprovalMessage <> '' then
-    A('Approval Msg', R.ApprovalMessage);
+    AddResultStr('Approval Msg', R.ApprovalMessage);
   if R.InvoiceNumber <> '' then
-    A('Invoice Num', R.InvoiceNumber);
+    AddResultStr('Invoice Num', R.InvoiceNumber);
   if R.ApprovalCode <> 0 then
-    A('Approval Code', IntToStr(R.ApprovalCode));
+    AddResultStr('Approval Code', IntToStr(R.ApprovalCode));
   if R.ExtraData <> '' then
-    A('Extra Data', R.ExtraData);
+    AddResultStr('Extra Data', R.ExtraData);
 end;
 
 procedure TfrmCayanPOSMain.btnBackClick(Sender: TObject);
@@ -861,12 +839,16 @@ begin
       //Cash
       if FCart.LID.InOrder then begin
         FCart.LID.EndOrder(epCash);
+        Self.FTranStarted:= False;
+        DisplayResultCash(Self.Tran.Amount);
       end;
     end;
     2: begin
       //Check
       if FCart.LID.InOrder then begin
         FCart.LID.EndOrder(epCheck);
+        Self.FTranStarted:= False;
+        DisplayResultCheck(Self.Tran.Amount, Self.txtPayCheckNum.Text);
       end;
     end;
     3: begin

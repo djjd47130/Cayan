@@ -26,7 +26,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
     Size.PlatformDefault = False
     StyleLookup = 'tabcontrolstyle'
     TabHeight = 49.000000000000000000
-    TabIndex = 2
+    TabIndex = 5
     TabOrder = 0
     TabPosition = PlatformDefault
     OnChange = MainTabsChange
@@ -1332,7 +1332,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             0000000000000000000000000000000000E0515F7DF5FF0150580EF83B73A771
             0000000049454E44AE426082}
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 51.000000000000000000
       Size.Height = 49.000000000000000000
       Size.PlatformDefault = False
@@ -1919,7 +1919,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 188.333312988281300000
+          Size.Width = 188.333312988281200000
           Size.Height = 44.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 0
@@ -2002,7 +2002,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 91.166656494140630000
+          Size.Width = 91.166656494140620000
           Size.Height = 45.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'buttonstyle'
@@ -2021,7 +2021,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 91.166656494140630000
+          Size.Width = 91.166656494140620000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'speedbuttonstyle'
@@ -2078,7 +2078,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 91.166656494140630000
+          Size.Width = 91.166656494140620000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'speedbuttonstyle'
@@ -2097,7 +2097,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Margins.Top = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Margins.Bottom = 3.000000000000000000
-          Size.Width = 91.166656494140630000
+          Size.Width = 91.166656494140620000
           Size.Height = 46.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'speedbuttonstyle'
@@ -3154,7 +3154,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       CustomIcon = <
         item
         end>
-      IsSelected = False
+      IsSelected = True
       Size.Width = 63.000000000000000000
       Size.Height = 49.000000000000000000
       Size.PlatformDefault = False
@@ -3769,7 +3769,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
   end
   object Panel1: TPanel
     Align = Client
-    Opacity = 0.860000014305114700
+    Opacity = 0.860000014305114800
     Size.Width = 601.000000000000000000
     Size.Height = 592.000000000000000000
     Size.PlatformDefault = False

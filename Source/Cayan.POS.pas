@@ -9,6 +9,10 @@ uses
 
 type
 
+  TCayanPOSItemType = (itInvent, itSku, itCharge, itOther);
+
+  TCayanPOSItemStatus = (isInactive, isActive);
+
   ICayanPOSSetup = interface
     ['{8F82F808-23B1-4873-AF0C-E866A13FD166}']
     procedure SetMerch_Key(const Value: String);
@@ -152,6 +156,63 @@ type
 
     property Items[Index: Integer]: ICayanPOSCard read GetItem; default;
   end;
+
+  ICayanPOSItem = interface
+    ['{0EDC780C-4CAB-497A-9E09-51497A25E2C9}']
+    procedure SetID(const Value: Integer);
+    procedure SetItemType(const Value: TCayanPOSItemType);
+    procedure SetLongDescr(const Value: String);
+    procedure SetMSRP(const Value: Currency);
+    procedure SetPrice(const Value: Currency);
+    procedure SetQtyHand(const Value: Integer);
+    procedure SetQtyOrder(const Value: Integer);
+    procedure SetShortDescr(const Value: String);
+    procedure SetSku(const Value: String);
+    procedure SetStatus(const Value: TCayanPOSItemStatus);
+    procedure SetUpc(const Value: String);
+    procedure SetVendorID(const Value: Integer);
+    procedure SetVendorNum(const Value: String);
+    function GetID: Integer;
+    function GetItemType: TCayanPOSItemType;
+    function GetLongDescr: String;
+    function GetMSRP: Currency;
+    function GetPrice: Currency;
+    function GetQtyHand: Integer;
+    function GetQtyOrder: Integer;
+    function GetShortDescr: String;
+    function GetSku: String;
+    function GetStatus: TCayanPOSItemStatus;
+    function GetUpc: String;
+    function GetVendorID: Integer;
+    function GetVendorNum: String;
+
+    property ID: Integer read GetID write SetID;
+    property VendorID: Integer read GetVendorID write SetVendorID;
+    property ItemType: TCayanPOSItemType read GetItemType write SetItemType;
+    property Status: TCayanPOSItemStatus read GetStatus write SetStatus;
+    property QtyHand: Integer read GetQtyHand write SetQtyHand;
+    property QtyOrder: Integer read GetQtyOrder write SetQtyOrder;
+    property Sku: String read GetSku write SetSku;
+    property Upc: String read GetUpc write SetUpc;
+    property VendorNum: String read GetVendorNum write SetVendorNum;
+    property MSRP: Currency read GetMSRP write SetMSRP;
+    property Price: Currency read GetPrice write SetPrice;
+    property ShortDescr: String read GetShortDescr write SetShortDescr;
+    property LongDescr: String read GetLongDescr write SetLongDescr;
+  end;
+
+  ICayanPOSItems = interface
+    ['{91A6F634-3D52-41B8-8744-DC416E2BB9E7}']
+    function GetItem(Index: Integer): ICayanPOSItem;
+
+    function Add: ICayanPOSItem;
+    procedure Delete(const Index: Integer);
+    procedure Clear;
+    function Count: Integer;
+
+    property Items[Index: Integer]: ICayanPOSItem read GetItem; default;
+  end;
+
 
 
 
@@ -356,6 +417,82 @@ type
     property Items[Index: Integer]: ICayanPOSCard read GetItem; default;
   end;
 
+  TCayanPOSItem = class(TInterfacedObject, ICayanPOSItem)
+  private
+    FShortDescr: String;
+    FVendorID: Integer;
+    FQtyHand: Integer;
+    FPrice: Currency;
+    FItemType: TCayanPOSItemType;
+    FLongDescr: String;
+    FMSRP: Currency;
+    FID: Integer;
+    FStatus: TCayanPOSItemStatus;
+    FSku: String;
+    FQtyOrder: Integer;
+    FVendorNum: String;
+    FUpc: String;
+    procedure SetID(const Value: Integer);
+    procedure SetItemType(const Value: TCayanPOSItemType);
+    procedure SetLongDescr(const Value: String);
+    procedure SetMSRP(const Value: Currency);
+    procedure SetPrice(const Value: Currency);
+    procedure SetQtyHand(const Value: Integer);
+    procedure SetQtyOrder(const Value: Integer);
+    procedure SetShortDescr(const Value: String);
+    procedure SetSku(const Value: String);
+    procedure SetStatus(const Value: TCayanPOSItemStatus);
+    procedure SetUpc(const Value: String);
+    procedure SetVendorID(const Value: Integer);
+    procedure SetVendorNum(const Value: String);
+    function GetID: Integer;
+    function GetItemType: TCayanPOSItemType;
+    function GetLongDescr: String;
+    function GetMSRP: Currency;
+    function GetPrice: Currency;
+    function GetQtyHand: Integer;
+    function GetQtyOrder: Integer;
+    function GetShortDescr: String;
+    function GetSku: String;
+    function GetStatus: TCayanPOSItemStatus;
+    function GetUpc: String;
+    function GetVendorID: Integer;
+    function GetVendorNum: String;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    property ID: Integer read GetID write SetID;
+    property VendorID: Integer read GetVendorID write SetVendorID;
+    property ItemType: TCayanPOSItemType read GetItemType write SetItemType;
+    property Status: TCayanPOSItemStatus read GetStatus write SetStatus;
+    property QtyHand: Integer read GetQtyHand write SetQtyHand;
+    property QtyOrder: Integer read GetQtyOrder write SetQtyOrder;
+    property Sku: String read GetSku write SetSku;
+    property Upc: String read GetUpc write SetUpc;
+    property VendorNum: String read GetVendorNum write SetVendorNum;
+    property MSRP: Currency read GetMSRP write SetMSRP;
+    property Price: Currency read GetPrice write SetPrice;
+    property ShortDescr: String read GetShortDescr write SetShortDescr;
+    property LongDescr: String read GetLongDescr write SetLongDescr;
+  end;
+
+  TCayanPOSItems = class(TInterfacedObject, ICayanPOSItems)
+  private
+    FItems: TInterfaceList;
+    function GetItem(Index: Integer): ICayanPOSItem;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    function Add: ICayanPOSItem;
+    procedure Delete(const Index: Integer);
+    procedure Clear;
+    function Count: Integer;
+
+    property Items[Index: Integer]: ICayanPOSItem read GetItem; default;
+  end;
+
+
 
 
 
@@ -383,6 +520,7 @@ type
     function GetSetup: ICayanPOSSetup;
     function GetCustomers(const Q: String): ICayanPOSCustomers;
     function GetVaultCards(const CustomerID: Integer): ICayanPOSCards;
+    function GetInventory(const Q: String): ICayanPOSItems;
   published
     property Host: String read FHost write SetHost;
     property Port: Integer read FPort write SetPort;
@@ -868,6 +1006,192 @@ begin
   Result:= ICayanPOSCard(FItems[Index]);
 end;
 
+{ TCayanPOSItem }
+
+constructor TCayanPOSItem.Create;
+begin
+
+end;
+
+destructor TCayanPOSItem.Destroy;
+begin
+
+  inherited;
+end;
+
+function TCayanPOSItem.GetID: Integer;
+begin
+  Result:= FID;
+end;
+
+function TCayanPOSItem.GetItemType: TCayanPOSItemType;
+begin
+  Result:= FItemType;
+end;
+
+function TCayanPOSItem.GetLongDescr: String;
+begin
+  Result:= FLongDescr;
+end;
+
+function TCayanPOSItem.GetMSRP: Currency;
+begin
+  Result:= FMSRP;
+end;
+
+function TCayanPOSItem.GetPrice: Currency;
+begin
+  Result:= FPrice;
+end;
+
+function TCayanPOSItem.GetQtyHand: Integer;
+begin
+  Result:= FQtyHand;
+end;
+
+function TCayanPOSItem.GetQtyOrder: Integer;
+begin
+  Result:= FQtyOrder;
+end;
+
+function TCayanPOSItem.GetShortDescr: String;
+begin
+  Result:= FShortDescr;
+end;
+
+function TCayanPOSItem.GetSku: String;
+begin
+  Result:= FSku;
+end;
+
+function TCayanPOSItem.GetStatus: TCayanPOSItemStatus;
+begin
+  Result:= FStatus;
+end;
+
+function TCayanPOSItem.GetUpc: String;
+begin
+  Result:= FUpc;
+end;
+
+function TCayanPOSItem.GetVendorID: Integer;
+begin
+  Result:= FVendorID;
+end;
+
+function TCayanPOSItem.GetVendorNum: String;
+begin
+  Result:= FVendorNum;
+end;
+
+procedure TCayanPOSItem.SetID(const Value: Integer);
+begin
+  FID := Value;
+end;
+
+procedure TCayanPOSItem.SetItemType(const Value: TCayanPOSItemType);
+begin
+  FItemType := Value;
+end;
+
+procedure TCayanPOSItem.SetLongDescr(const Value: String);
+begin
+  FLongDescr := Value;
+end;
+
+procedure TCayanPOSItem.SetMSRP(const Value: Currency);
+begin
+  FMSRP := Value;
+end;
+
+procedure TCayanPOSItem.SetPrice(const Value: Currency);
+begin
+  FPrice := Value;
+end;
+
+procedure TCayanPOSItem.SetQtyHand(const Value: Integer);
+begin
+  FQtyHand := Value;
+end;
+
+procedure TCayanPOSItem.SetQtyOrder(const Value: Integer);
+begin
+  FQtyOrder := Value;
+end;
+
+procedure TCayanPOSItem.SetShortDescr(const Value: String);
+begin
+  FShortDescr := Value;
+end;
+
+procedure TCayanPOSItem.SetSku(const Value: String);
+begin
+  FSku := Value;
+end;
+
+procedure TCayanPOSItem.SetStatus(const Value: TCayanPOSItemStatus);
+begin
+  FStatus := Value;
+end;
+
+procedure TCayanPOSItem.SetUpc(const Value: String);
+begin
+  FUpc := Value;
+end;
+
+procedure TCayanPOSItem.SetVendorID(const Value: Integer);
+begin
+  FVendorID := Value;
+end;
+
+procedure TCayanPOSItem.SetVendorNum(const Value: String);
+begin
+  FVendorNum := Value;
+end;
+
+{ TCayanPOSItems }
+
+constructor TCayanPOSItems.Create;
+begin
+  FItems:= TInterfaceList.Create;
+end;
+
+destructor TCayanPOSItems.Destroy;
+begin
+  Clear;
+  FreeAndNil(FItems);
+  inherited;
+end;
+
+function TCayanPOSItems.Add: ICayanPOSItem;
+begin
+  Result:= TCayanPOSItem.Create;
+  Result._AddRef;
+  FItems.Add(Result);
+end;
+
+procedure TCayanPOSItems.Clear;
+begin
+  while Count > 0 do
+    Delete(0);
+end;
+
+function TCayanPOSItems.Count: Integer;
+begin
+  Result:= FItems.Count;
+end;
+
+procedure TCayanPOSItems.Delete(const Index: Integer);
+begin
+  ICayanPOSItem(FItems[Index])._Release;
+  FItems.Delete(Index);
+end;
+
+function TCayanPOSItems.GetItem(Index: Integer): ICayanPOSItem;
+begin
+  Result:= ICayanPOSItem(FItems[Index]);
+end;
+
 { TCayanPOS }
 
 constructor TCayanPOS.Create(AOwner: TComponent);
@@ -1064,6 +1388,44 @@ begin
         C.ShipCity:= O.S['ShipCity'];
         C.ShipState:= O.S['ShipState'];
         C.ShipZip:= O.S['ShipZip'];
+      end;
+    finally
+      Result:= Res;
+    end;
+  finally
+    P.Free;
+  end;
+end;
+
+function TCayanPOS.GetInventory(const Q: String): ICayanPOSItems;
+var
+  P: TStringList;
+  R, O: ISuperObject;
+  Res: TCayanPOSItems;
+  C: ICayanPOSItem;
+  X: Integer;
+begin
+  Result:= nil;
+  P:= TStringList.Create;
+  try
+    P.Values['q']:= Q;
+    R:= GetJson('Inventory', P);
+    Res:= TCayanPOSItems.Create;
+    try
+      for X := 0 to R.AsArray.Length-1 do begin
+        O:= R.AsArray.O[X];
+        C:= Res.Add;
+        C.ID:= O.I['ID'];
+        C.VendorID:= O.I['VendorID'];
+        C.ItemType:= TCayanPOSItemType(O.I['ItemTypeID']);
+        C.Status:= TCayanPOSItemStatus(O.I['StatusID']);
+        C.QtyHand:= O.I['QtyHand'];
+        C.QtyOrder:= O.I['QtyOrder'];
+        C.MSRP:= O.F['MSRP'];
+        C.Price:= O.F['Price'];
+        C.ShortDescr:= O.S['ShortDescr'];
+        C.LongDescr:= O.S['LongDescr'];
+
       end;
     finally
       Result:= Res;
