@@ -1,8 +1,10 @@
 # Chapter 4 - Genius Transactions
 
-The most basic types of transactions on the Genius platform are done through the `TCayanGenius` component.
+The core base of credit card transactions on the Genius platform are done through the `TCayanGeniusTransaction` component.
 
-NOTE: Actually, the plan is to create a separate `TCayanGeniusTransaction` component, so this topic is being put on hold.
+## `TCayanGeniusTransaction` Component
+
+A single possible transaction is encapsulated within an instance of a `TCayanGeniusTransaction` component. It provides direct access to performing card transactions via Genius solutions. It also allows you to add on a `TCayanGeniusLineItems` component to implement Line Item Display.
 
 
 
