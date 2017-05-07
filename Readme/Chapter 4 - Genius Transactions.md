@@ -14,7 +14,7 @@ To start a new transaction, fill out the properties available on this component.
 
 ### Performing Transactions
 
-Once you have prepared the transaction, you are ready to send the command to the device to capture card information and perform the actual transaction. Please note that if there is any chance at this point that the customer may choose a different form of payment (such as cash or check), then you should not use this. Instead, if you are using Line Item Display, then you need to use `TCayanGeniusLineItems.EndOrder` to let the device know a different payment method has been used. 
+Once you have prepared the transaction, you are ready to send the command to the device to capture card information and perform the actual transaction. This is done using the procedure `TCayanGeniusTransaction.StartTransaction`. Please note that if there is any chance at this point that the customer may choose a different form of payment (such as cash or check), then you should not use this. Instead, if you are using Line Item Display, then you need to use `TCayanGeniusLineItems.EndOrder` to let the device know a different payment method has been used. 
 
 ### Events
 
