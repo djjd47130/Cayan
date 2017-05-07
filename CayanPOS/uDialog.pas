@@ -5,7 +5,7 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
-  FMX.Controls.Presentation, FMX.Layouts;
+  FMX.Controls.Presentation, FMX.Layouts, System.ImageList, FMX.ImgList;
 
 type
   TDialogForm = class(TForm)
@@ -26,12 +26,18 @@ type
     btnHelp: TButton;
     btnClose: TButton;
     DialogLabel: TLabel;
+    imgError: TImageControl;
+    imgInfo: TImageControl;
+    imgConfirm: TImageControl;
+    imgWarn: TImageControl;
     procedure FormCreate(Sender: TObject);
     procedure DialogButtonClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     FCloseDialogProc: TInputCloseDialogProc;
+    FDone: Boolean;
     procedure ShowButtons(const AButtons: TMsgDlgButtons);
+    procedure ShowIcon(const ADialogType: TMsgDlgType);
   public
 
   end;
@@ -53,17 +59,22 @@ procedure MessageDlg(AParent: TFmxObject; const AMessage: string; const ADialogT
 var
   F: TDialogForm;
 begin
-  //TMsgDlgType = (mtWarning, mtError, mtInformation, mtConfirmation, mtCustom);
-
   F:= TDialogForm.Create(nil);
-
-  F.FCloseDialogProc:= ACloseDialogProc;
-  F.DialogLabel.Text:= AMessage;
-  F.ShowButtons(AButtons);
-  //TODO: Dialog type...
-
-  F.DialogLayout.Parent:= AParent;
-
+  try
+    F.FCloseDialogProc:= ACloseDialogProc;
+    F.DialogLabel.Text:= AMessage;
+    F.ShowButtons(AButtons);
+    F.ShowIcon(ADialogType);
+    Application.ProcessMessages;
+    F.DialogLayout.Parent:= AParent;
+    F.DialogLayout.SetFocus;
+    while not F.FDone do begin
+      Application.ProcessMessages;
+      Sleep(50);
+    end;
+  finally
+    F.Close;
+  end;
 end;
 
 { TDialogForm }
@@ -87,9 +98,33 @@ var
 begin
   DialogLayout.Visible:= False;
   B:= TButton(Sender);
-  R:= TModalResult(B.Tag);
-  Self.FCloseDialogProc(R);
-  Close; //TODO: ???
+  case B.Tag of
+    0: R:= mrYes;
+    1: R:= mrNo;
+    2: R:= mrOK;
+    3: R:= mrCancel;
+    4: R:= mrAbort;
+    5: R:= mrRetry;
+    6: R:= mrIgnore;
+    7: R:= mrAll;
+    8: R:= mrNoToAll;
+    9: R:= mrYesToAll;
+    10: R:= mrHelp;
+    11: R:= mrClose;
+  end;
+  FCloseDialogProc(R);
+  FDone:= True;
+end;
+
+procedure TDialogForm.ShowIcon(const ADialogType: TMsgDlgType);
+begin
+  case ADialogType of
+    TMsgDlgType.mtWarning:      imgWarn.Visible:= True;
+    TMsgDlgType.mtError:        imgError.Visible:= True;
+    TMsgDlgType.mtInformation:  imgInfo.Visible:= True;
+    TMsgDlgType.mtConfirmation: imgConfirm.Visible:= True;
+    TMsgDlgType.mtCustom:       ;
+  end;
 end;
 
 procedure TDialogForm.ShowButtons(const AButtons: TMsgDlgButtons);
@@ -98,7 +133,7 @@ procedure TDialogForm.ShowButtons(const AButtons: TMsgDlgButtons);
     ABtn.Visible:= True;
     ABtn.Align:= TAlignLayout.Left;
     ABtn.Align:= TAlignLayout.Right; //Forces it to left side of prior buttons
-    ABtn.Width:= 80;
+    ABtn.Width:= 120;
   end;
 begin
   if TMsgDlgBtn.mbYes in AButtons then begin

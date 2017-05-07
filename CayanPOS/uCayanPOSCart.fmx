@@ -99,7 +99,6 @@ object frmCart: TfrmCart
           Size.PlatformDefault = False
           TabOrder = 3
           StyleLookup = 'listviewstyle'
-          OnItemClick = lstItemsItemClick
         end
         object ButtonsLayout: TGridPanelLayout
           Align = Bottom
@@ -474,11 +473,8 @@ object frmCart: TfrmCart
             Text = 'Item Details'
           end
           object SpeedButton4: TSpeedButton
-            Action = actItemsTab
             Align = Left
             Cursor = crHandPoint
-            Enabled = True
-            ImageIndex = -1
             Margins.Left = 5.000000000000000000
             Position.X = 5.000000000000000000
             Size.Width = 46.000000000000000000
@@ -487,7 +483,8 @@ object frmCart: TfrmCart
             ParentShowHint = False
             ShowHint = True
             StyleLookup = 'priortoolbutton'
-            Visible = True
+            Text = 'Go to Items'
+            OnClick = SpeedButton4Click
           end
         end
         object lstSetup: TListBox
@@ -506,19 +503,19 @@ object frmCart: TfrmCart
             Size.Width = 448.000000000000000000
             Size.Height = 22.000000000000000000
             Size.PlatformDefault = False
-            TabOrder = 0
+            TabOrder = 1
             Text = 'Identification'
           end
-          object ListBoxItem53: TListBoxItem
+          object liID: TListBoxItem
             Selectable = False
             Position.Y = 22.000000000000000000
             Size.Width = 448.000000000000000000
             Size.Height = 42.000000000000000000
             Size.PlatformDefault = False
             StyleLookup = 'listboxitemrightdetail'
-            TabOrder = 3
+            TabOrder = 6
             Text = 'ID'
-            object txtCedAddress: TEdit
+            object txtID: TEdit
               Touch.InteractiveGestures = [LongTap, DoubleTap]
               Align = Right
               TabOrder = 0
@@ -533,16 +530,16 @@ object frmCart: TfrmCart
               Size.PlatformDefault = False
             end
           end
-          object ListBoxItem1: TListBoxItem
+          object liSKU: TListBoxItem
             Selectable = False
             Position.Y = 64.000000000000000000
             Size.Width = 448.000000000000000000
             Size.Height = 42.000000000000000000
             Size.PlatformDefault = False
             StyleLookup = 'listboxitemrightdetail'
-            TabOrder = 1
+            TabOrder = 2
             Text = 'SKU Code'
-            object Edit1: TEdit
+            object txtSKU: TEdit
               Touch.InteractiveGestures = [LongTap, DoubleTap]
               Align = Right
               TabOrder = 0
@@ -557,21 +554,85 @@ object frmCart: TfrmCart
               Size.PlatformDefault = False
             end
           end
-          object ListBoxItem2: TListBoxItem
+          object liUPC: TListBoxItem
             Selectable = False
             Position.Y = 106.000000000000000000
             Size.Width = 448.000000000000000000
             Size.Height = 42.000000000000000000
             Size.PlatformDefault = False
             StyleLookup = 'listboxitemrightdetail'
-            TabOrder = 2
+            TabOrder = 4
             Text = 'UPC Code'
-            object Edit2: TEdit
+            object txtUPC: TEdit
               Touch.InteractiveGestures = [LongTap, DoubleTap]
               Align = Right
               TabOrder = 0
               Position.X = 279.000000000000000000
               Position.Y = 5.000000000000000000
+              Margins.Left = 5.000000000000000000
+              Margins.Top = 5.000000000000000000
+              Margins.Right = 5.000000000000000000
+              Margins.Bottom = 5.000000000000000000
+              Size.Width = 164.000000000000000000
+              Size.Height = 32.000000000000000000
+              Size.PlatformDefault = False
+            end
+          end
+          object ListBoxGroupHeader1: TListBoxGroupHeader
+            Position.Y = 148.000000000000000000
+            Size.Width = 448.000000000000000000
+            Size.Height = 22.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 0
+            Text = 'Amounts'
+          end
+          object liQuantity: TListBoxItem
+            Selectable = False
+            Position.Y = 170.000000000000000000
+            Size.Width = 448.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            StyleLookup = 'listboxitemrightdetail'
+            TabOrder = 5
+            Text = 'Quantity'
+            object txtQty: TNumberBox
+              Touch.InteractiveGestures = [LongTap, DoubleTap]
+              Align = Right
+              TabOrder = 0
+              Cursor = crIBeam
+              Max = 65535.000000000000000000
+              Position.X = 279.000000000000000000
+              Position.Y = 5.000000000000000000
+              HorzIncrement = 0.000000000000000000
+              VertIncrement = 0.000000000000000000
+              Margins.Left = 5.000000000000000000
+              Margins.Top = 5.000000000000000000
+              Margins.Right = 5.000000000000000000
+              Margins.Bottom = 5.000000000000000000
+              Size.Width = 164.000000000000000000
+              Size.Height = 32.000000000000000000
+              Size.PlatformDefault = False
+            end
+          end
+          object liPrice: TListBoxItem
+            Selectable = False
+            Position.Y = 212.000000000000000000
+            Size.Width = 448.000000000000000000
+            Size.Height = 42.000000000000000000
+            Size.PlatformDefault = False
+            StyleLookup = 'listboxitemnodetail'
+            TabOrder = 3
+            Text = 'Price'
+            object txtPrice: TNumberBox
+              Touch.InteractiveGestures = [LongTap, DoubleTap]
+              Align = Right
+              TabOrder = 0
+              Cursor = crIBeam
+              Max = 65535.000000000000000000
+              Position.X = 279.000000000000000000
+              Position.Y = 5.000000000000000000
+              HorzIncrement = 0.000000000000000000
+              VertIncrement = 0.000000000000000000
               Margins.Left = 5.000000000000000000
               Margins.Top = 5.000000000000000000
               Margins.Right = 5.000000000000000000

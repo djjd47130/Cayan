@@ -467,7 +467,8 @@ begin
     raise Exception.Create('Transaction.InvoiceNum property is empty.');
   end;
   if FLineItems.InProgress then begin
-    raise Exception.Create('Line Item Order already in progress.');
+    //raise Exception.Create('Line Item Order already in progress.'); //TODO: Should this be necessary?
+    Self.Transaction.Genius.Cancel; //TODO: ???
   end;               
   Clear(True);     
   R:= FLineItems.StartOrder(FTransaction.InvoiceNum);

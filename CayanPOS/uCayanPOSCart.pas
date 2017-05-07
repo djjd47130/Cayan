@@ -14,7 +14,7 @@ uses
   Cayan.Genius,
   Cayan.Genius.Intf,
   Cayan.Genius.LineItems, FMX.TabControl, System.Actions, FMX.ActnList,
-  FMX.Edit, FMX.ListBox;
+  FMX.Edit, FMX.ListBox, FMX.EditBox, FMX.NumberBox;
 
 type
   TfrmCart = class;
@@ -57,20 +57,24 @@ type
     lstLookup: TListView;
     lstSetup: TListBox;
     ListBoxGroupHeader13: TListBoxGroupHeader;
-    ListBoxItem53: TListBoxItem;
-    txtCedAddress: TEdit;
-    ListBoxItem1: TListBoxItem;
-    Edit1: TEdit;
-    ListBoxItem2: TListBoxItem;
-    Edit2: TEdit;
+    liID: TListBoxItem;
+    txtID: TEdit;
+    liSKU: TListBoxItem;
+    txtSKU: TEdit;
+    liUPC: TListBoxItem;
+    txtUPC: TEdit;
+    ListBoxGroupHeader1: TListBoxGroupHeader;
+    liQuantity: TListBoxItem;
+    liPrice: TListBoxItem;
+    txtPrice: TNumberBox;
+    txtQty: TNumberBox;
     procedure btnCartDeleteClick(Sender: TObject);
     procedure lstLookupSearchChange(Sender: TObject);
-    procedure lstItemsItemClick(const Sender: TObject;
-      const AItem: TListViewItem);
     procedure Button1Click(Sender: TObject);
     procedure lstLookupItemClick(const Sender: TObject;
       const AItem: TListViewItem);
     procedure btnCartEditClick(Sender: TObject);
+    procedure SpeedButton4Click(Sender: TObject);
   private
     FSetup: ICayanPOSSetup;
     FItems: ICayanPOSItems;
@@ -93,14 +97,22 @@ implementation
 {$R *.fmx}
 
 uses
-  uCayanPOSMain;
+  uCayanPOSMain,
+  uDialog;
 
 { TfrmCart }
 
 constructor TfrmCart.Create(AContainer: TControl);
 begin
-  if not Assigned(AContainer) then
-    raise Exception.Create('Failed to create cart screen: Container must be assigned.');
+  if not Assigned(AContainer) then begin
+    MessageDlg(Self, 'Failed to create cart screen: Container must be assigned.',
+      TMsgDlgType.mtError,
+      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK,
+      procedure(const AResult: TModalResult)
+      begin
+
+      end);
+  end;
   inherited Create(nil);
   ContentLayout.Parent:= AContainer;
   CartTabs.TabPosition:= TTabPosition.None;
@@ -116,15 +128,8 @@ begin
     FItems._Release;
     FItems:= nil;
   end;
+  FSetup:= nil;
   inherited;
-end;
-
-procedure TfrmCart.lstItemsItemClick(const Sender: TObject;
-  const AItem: TListViewItem);
-begin
-  //TODO: Populate item details...
-
-  Self.actDetailTab.ExecuteTarget(Self);
 end;
 
 function TfrmCart.ItemByID(const ID: Integer): ICayanPOSItem;
@@ -169,30 +174,52 @@ begin
   FSetup := Value;
 end;
 
+procedure TfrmCart.SpeedButton4Click(Sender: TObject);
+begin
+  //TODO: Update item...
+
+
+  actItemsTab.ExecuteTarget(Self);
+end;
+
 procedure TfrmCart.btnCartDeleteClick(Sender: TObject);
 var
   I: TCayanGeniusLineItem;
-  X: Integer;
 begin
-  //TODO: Prompt user
   if lstItems.ItemIndex >= 0 then begin
-    I:= TCayanGeniusLineItem(lstItems.Items[lstItems.ItemIndex].Tag);
-    for X := 0 to LID.Count - 1 do begin
-      if LID.Items[X] = I then begin
-        LID.Delete(X);
-        Break;
-      end;
-    end;
-    lstItems.Items.Delete(lstItems.ItemIndex);
+    MessageDlg(Self, 'Are you sure you wish to delete this item?',
+      TMsgDlgType.mtConfirmation,
+      FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo,
+      procedure(const AResult: TModalResult)
+      var
+        X: Integer;
+      begin
+        if AResult = mrYes then begin
+          I:= TCayanGeniusLineItem(lstItems.Items[lstItems.ItemIndex].Tag);
+          for X := 0 to LID.Count - 1 do begin
+            if LID.Items[X] = I then begin
+              LID.Delete(X);
+              Break;
+            end;
+          end;
+          lstItems.Items.Delete(lstItems.ItemIndex);
+        end;
+      end);
   end else begin
-    //No item is selected...
-
+    MessageDlg(Self, 'No item is selected.',
+      TMsgDlgType.mtError,
+      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK,
+      procedure(const AResult: TModalResult)
+      begin
+      end);
   end;
   UpdateTotals;
 end;
 
 procedure TfrmCart.btnCartEditClick(Sender: TObject);
 begin
+  //TODO: Show details
+
 
   actDetailTab.ExecuteTarget(Self);
 end;
