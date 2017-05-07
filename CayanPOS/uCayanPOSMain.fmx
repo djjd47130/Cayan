@@ -26,7 +26,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
     Size.PlatformDefault = False
     StyleLookup = 'tabcontrolstyle'
     TabHeight = 49.000000000000000000
-    TabIndex = 5
+    TabIndex = 3
     TabOrder = 0
     TabPosition = PlatformDefault
     OnChange = MainTabsChange
@@ -1405,7 +1405,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             FF83BCCC38749F94314E22DFD1D101D138B0D3CF78E6DA880FA0E744F17F282B
             153F2501F1610000000049454E44AE426082}
         end>
-      IsSelected = False
+      IsSelected = True
       Size.Width = 83.000000000000000000
       Size.Height = 49.000000000000000000
       Size.PlatformDefault = False
@@ -1791,7 +1791,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
           Size.Width = 543.000000000000000000
           Size.Height = 42.000000000000000000
           Size.PlatformDefault = False
-          StyleLookup = 'listboxitemnodetail'
+          StyleLookup = 'listboxitemrightdetail'
           TabOrder = 6
           Text = 'Select Card'
           object cboVaultCards: TComboBox
@@ -3154,7 +3154,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 63.000000000000000000
       Size.Height = 49.000000000000000000
       Size.PlatformDefault = False

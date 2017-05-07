@@ -968,9 +968,16 @@ begin
   cboVaultCards.Items.Clear;
   if Assigned(FCustomer) then begin
     FCards:= DM.POS.GetVaultCards(FCustomer.ID);
-    for X := 0 to FCards.Count-1 do begin
-      C:= FCards[X];
-      cboVaultCards.Items.AddObject(C.Caption, Pointer(C.ID));
+    if FCards.Count > 0 then begin
+      for X := 0 to FCards.Count-1 do begin
+        C:= FCards[X];
+        cboVaultCards.Items.AddObject(C.Caption, Pointer(C.ID));
+      end;
+      cboVaultCards.Visible:= True;
+      liVaultCards.ItemData.Detail:= '';
+    end else begin
+      cboVaultCards.Visible:= False;
+      liVaultCards.ItemData.Detail:= 'None Saved';
     end;
   end else begin
     FCards:= nil;

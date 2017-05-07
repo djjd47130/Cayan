@@ -111,6 +111,7 @@ begin
     9: R:= mrYesToAll;
     10: R:= mrHelp;
     11: R:= mrClose;
+    else R:= mrOK;
   end;
   FCloseDialogProc(R);
   FDone:= True;
