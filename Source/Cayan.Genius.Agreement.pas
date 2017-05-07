@@ -58,7 +58,7 @@ implementation
 
 procedure TCayanGeniusAgreement.CancelRequest;
 begin
-  FGenius.Genius.CancelTransaction;
+  FGenius.Genius.Cancel;
 end;
 
 constructor TCayanGeniusAgreement.Create(AOwner: TComponent);

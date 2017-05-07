@@ -155,8 +155,8 @@ type
     function StageTransaction(const ARequest: IGeniusStageRequest): IGeniusStageResponse;
     function InitiateTransaction(const TransportKey: String): Boolean;
     function CaptureSignature(const RequestId, Title: String): IGeniusSignatureResponse;
-    function CancelTransaction: IGeniusCancelTransactionResponse;
-    function StatusCheck(const Timeout: Integer = 0): IGeniusStatusResponse;
+    function Cancel: IGeniusCancelTransactionResponse;
+    function StatusCheck: IGeniusStatusResponse;
     function InitiateKeyedEntry: TGeniusKeyedSaleStatus;
     function DetailsByTransportKey(const TransportKey: String): IGeniusPaymentDetails;
     function IsInTransaction: Boolean;
@@ -881,6 +881,8 @@ type
     procedure SetResponseMessage(const Value: String);
     procedure SetSerialNumber(const Value: String);
     procedure SetStatus(const Value: TGeniusCedStatus);
+    function GetRemoveEMVCard: Boolean;
+    procedure SetRemoveEMVCard(const Value: Boolean);
 
     property Status: TGeniusCedStatus read GetStatus write SetStatus;
     property CurrentScreen: TGeniusCedScreen read GetCurrentScreen write SetCurrentScreen;
@@ -889,6 +891,7 @@ type
     property ApplicationVersion: String read GetApplicationVersion write SetApplicationVersion;
     property OSVersion: String read GetOSVersion write SetOSVersion;
     property PaymentDataCaptured: Boolean read GetPaymentDataCaptured write SetPaymentDataCaptured;
+    property RemoveEMVCard: Boolean read GetRemoveEMVCard write SetRemoveEMVCard;
   end;
 
   IGeniusAgreementResponse = interface
@@ -1272,7 +1275,7 @@ begin
     csTransactionResult:      Result:= 'Transaction Result';
     csCancelConfirm:          Result:= 'Cancel Confirmation';
     csRunAsCreditConfirm:     Result:= 'Run as Credit Confirmation';
-    csSkuDisplay:             Result:= 'SKU Display';
+    csSkuDisplay:             Result:= 'Line Items';
     csCashbackSelection:      Result:= 'Cashback Selection';
     csCashbackCustom:         Result:= 'Custom Cashback Selection';
     csTipSelection:           Result:= 'Tip Selection';

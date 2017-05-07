@@ -183,8 +183,8 @@ type
     function DeviceUrl(const Params: String;
       const Ver: TGeniusDeviceVersion = gdVer1): String;
     function TransportUrl(const Ver, Req: String): String;
-    function SendDeviceRequest(const Url: String; const Timeout: Integer = 0): String;
-    function SendDeviceRequestXML(const Url: String; const Timeout: Integer = 0): IXMLDocument;
+    function SendDeviceRequest(const Url: String): String;
+    function SendDeviceRequestXML(const Url: String): IXMLDocument;
     function SendTransportRequest(const SvcUrl: String; const Ver: String; const ActionUrl: String;
       const Action: String; const AXML: String; const CredMerch: Boolean = True; const Cap: Boolean = False): IXMLDocument;
     procedure StatusResponse(Sender: IGenius;
@@ -226,8 +226,8 @@ type
     function StageTransaction(const ARequest: IGeniusStageRequest): IGeniusStageResponse;
     function InitiateTransaction(const TransportKey: String): Boolean;
     function CaptureSignature(const RequestId, Title: String): IGeniusSignatureResponse;
-    function CancelTransaction: IGeniusCancelTransactionResponse;
-    function StatusCheck(const Timeout: Integer = 0): IGeniusStatusResponse;
+    function Cancel: IGeniusCancelTransactionResponse;
+    function StatusCheck: IGeniusStatusResponse;
     function InitiateKeyedEntry: TGeniusKeyedSaleStatus;
     function DetailsByTransportKey(const TransportKey: String): IGeniusPaymentDetails;
     function IsInTransaction: Boolean;
@@ -1069,6 +1069,7 @@ type
     FApplicationVersion: String;
     FOSVersion: String;
     FPaymentDataCaptured: Boolean;
+    FRemoveEMVCard: Boolean;
   public
     constructor Create;
     destructor Destroy; override;
@@ -1087,6 +1088,8 @@ type
     procedure SetResponseMessage(const Value: String);
     procedure SetSerialNumber(const Value: String);
     procedure SetStatus(const Value: TGeniusCedStatus);
+    function GetRemoveEMVCard: Boolean;
+    procedure SetRemoveEMVCard(const Value: Boolean);
 
     property Status: TGeniusCedStatus read GetStatus write SetStatus;
     property CurrentScreen: TGeniusCedScreen read GetCurrentScreen write SetCurrentScreen;
@@ -1095,6 +1098,7 @@ type
     property ApplicationVersion: String read GetApplicationVersion write SetApplicationVersion;
     property OSVersion: String read GetOSVersion write SetOSVersion;
     property PaymentDataCaptured: Boolean read GetPaymentDataCaptured write SetPaymentDataCaptured;
+    property RemoveEMVCard: Boolean read GetRemoveEMVCard write SetRemoveEMVCard;
   end;
 
   TGeniusAgreementResponse = class(TInterfacedObject, IGeniusAgreementResponse)
@@ -1882,7 +1886,7 @@ begin
     Pars['AcceptLabel']:= AcceptLabel;
     Pars['DeclineLabel']:= DeclineLabel;
     Pars['Format']:= 'XML';
-    XML:= SendDeviceRequestXML(DeviceUrl(Pars.ParamStr), 0);
+    XML:= SendDeviceRequestXML(DeviceUrl(Pars.ParamStr));
     Result:= Res;
     Result._AddRef;
     try
@@ -1916,7 +1920,7 @@ begin
   end;
 end;
 
-function TGenius.SendDeviceRequest(const Url: String; const Timeout: Integer = 0): String;
+function TGenius.SendDeviceRequest(const Url: String): String;
 begin
   Result:= '';
   if not Assigned(FWebDevice) then Exit;
@@ -1929,11 +1933,11 @@ begin
   end;
 end;
 
-function TGenius.SendDeviceRequestXML(const Url: String; const Timeout: Integer = 0): IXMLDocument;
+function TGenius.SendDeviceRequestXML(const Url: String): IXMLDocument;
 var
   Res: String;
 begin
-  Res:= SendDeviceRequest(Url, Timeout);
+  Res:= SendDeviceRequest(Url);
   Result:= TXMLDocument.Create(nil);
   Result.LoadFromXML(Res);
 end;
@@ -2207,7 +2211,7 @@ begin
   end;
 end;
 
-function TGenius.CancelTransaction: IGeniusCancelTransactionResponse;
+function TGenius.Cancel: IGeniusCancelTransactionResponse;
 var
   Pars: TParamList;
   XML: IXMLDocument;
@@ -2296,7 +2300,7 @@ begin
   end;
 end;
 
-function TGenius.StatusCheck(const Timeout: Integer = 0): IGeniusStatusResponse;
+function TGenius.StatusCheck: IGeniusStatusResponse;
 var
   Pars: TParamList;
   XML: IXMLDocument;
@@ -2323,7 +2327,7 @@ begin
     Pars['Action']:= 'Status';
     Pars['Format']:= 'XML';
 
-    XML:= SendDeviceRequestXML(DeviceUrl(Pars.ParamStr), Timeout);
+    XML:= SendDeviceRequestXML(DeviceUrl(Pars.ParamStr, TGeniusDeviceVersion.gdVer2)); //TODO
     Node:= GetNodePath(XML, '/StatusResult');
     if Assigned(Node) then begin
       //TODO
@@ -2334,11 +2338,13 @@ begin
       Result.ApplicationVersion:= GetNodeValue(Node, 'ApplicationVersion');
       Result.OSVersion:= GetNodeValue(Node, 'OSVersion');
       Result.PaymentDataCaptured:= SameText(GetNodeValue(Node, 'PaymentDataCaptured'), 'true');
+      Result.RemoveEMVCard:= SameText(GetNodeValue(Node, 'RemoveEMVCard'), 'true');
     end else begin
       //Failed to get result
       Result.Status:= TGeniusCedStatus.csOffline;
       Result.ResponseMessage:= 'Failed to get status from CED';
       Result.PaymentDataCaptured:= False;
+      Result.RemoveEMVCard:= False;
     end;
   finally
     FreeAndNil(Pars);
@@ -3459,7 +3465,7 @@ end;
 destructor TGeniusLineItems.Destroy;
 begin
   if FInProgress then
-    FOwner.CancelTransaction;
+    FOwner.Cancel;
   ClearItems;
   FreeAndNil(FItems);
   inherited;
@@ -4920,6 +4926,11 @@ begin
   Result:= FPaymentDataCaptured;
 end;
 
+function TGeniusStatusResponse.GetRemoveEMVCard: Boolean;
+begin
+  Result:= FRemoveEMVCard;
+end;
+
 function TGeniusStatusResponse.GetResponseMessage: String;
 begin
   Result:= FResponseMessage;
@@ -4953,6 +4964,11 @@ end;
 procedure TGeniusStatusResponse.SetPaymentDataCaptured(const Value: Boolean);
 begin
   FPaymentDataCaptured:= Value;
+end;
+
+procedure TGeniusStatusResponse.SetRemoveEMVCard(const Value: Boolean);
+begin
+  FRemoveEMVCard:= Value;
 end;
 
 procedure TGeniusStatusResponse.SetResponseMessage(const Value: String);

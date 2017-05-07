@@ -164,7 +164,7 @@ function TCayanGenius.Cancel: IGeniusCancelTransactionResponse;
 begin
   if Assigned(Self.FOnCancel) then
     Self.FOnCancel(Self);
-  Result:= FGenius.CancelTransaction;
+  Result:= FGenius.Cancel;
 end;
 
 function TCayanGenius.MerchantWare: TMerchantWare;

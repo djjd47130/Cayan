@@ -55,7 +55,8 @@ contains
   Cayan.Genius.Emulator.LibCommon in '..\Source\Cayan.Genius.Emulator.LibCommon.pas',
   Cayan.Genius.LineItems in '..\Source\Cayan.Genius.LineItems.pas',
   Cayan.POS in '..\Source\Cayan.POS.pas',
-  Cayan.Genius.Transactions in '..\Source\Cayan.Genius.Transactions.pas';
+  Cayan.Genius.Transactions in '..\Source\Cayan.Genius.Transactions.pas',
+  Cayan.Genius.GiftCards in '..\Source\Cayan.Genius.GiftCards.pas';
 
 end.
 
