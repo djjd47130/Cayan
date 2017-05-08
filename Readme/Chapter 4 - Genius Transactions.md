@@ -34,6 +34,7 @@ The following events are available on this component:
 1. `OnTransactionStaged` (Optional) - Occurs when a new transaction has been staged. This is the first step to collecting payments from a Genius CED payment terminal. This property is not required, but you may wish to use it to capture information.
 2. `OnTransactionStart` (Optional) - Occurs when the command is sent to the Genius CED payment terminal to capture payment information. If you are performing transactions through the CED, then you can use this event to detect when you should start waiting for the device. 
 3. `OnTransactionResult` (Required) - Occurs when the Genius CED payment terminal is completed with capturing payment information. This does not necessarily mean that a payment has been successful. You must read the transaction response in thsi event to determine the result of the transaction.
+4. `OnException` (Required) - Occurs when an exception of any kind was raised when starting the transaction. This should be handled to abort the waiting procedure of your application. This only occurs after the moment you call `StartTransaction`. If `OnException` is called, then `OnTransactionResult` will never be called. It's always going to be one or the other. 
 
 ### Waiting For Response
 
@@ -41,6 +42,4 @@ Between the events `OnTransactionStart` and `OnTransactionResult`, your applicat
 
 1. `Cancel` - Send a command to the device to cancel the current transaction.
 2. `Initiate Keyed Entry` - Send a command to the device to collect payment information via manual keyed card number.
-
-
 
