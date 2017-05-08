@@ -12,9 +12,20 @@ NOTE: Be sure to assign the `Genius` property with an appropriate corresponding 
 
 To start a new transaction, fill out the properties available on this component. Pay attention to the `TransactionType` property, as this identifies whether it is a sale, refund, etc. By default, for basic transactions, leave this at its default value `gtSale`. 
 
+- `TransactionType` - Identifies the specific type of transaction to be performed.
+- `Amount` - The total dollar amount of the transaction. This includes tax.
+- `TaxAmount` - The total tax amount of the transaction. 
+- `InvoiceNum` - The merchant defined order number / invoice number transaction is associated with.
+- `TransactionID` - The merchant defined identifier of the transaction.
+- `PONumber` - The Purchase Order Number the transaction is associated with.
+- `CustomerCode` - The unique identifier of the customer.
+- `Cardholder` - The name on the card which will be used.
+
 ### Performing Transactions
 
 Once you have prepared the transaction, you are ready to send the command to the device to capture card information and perform the actual transaction. This is done using the procedure `TCayanGeniusTransaction.StartTransaction`. Please note that if there is any chance at this point that the customer may choose a different form of payment (such as cash or check), then you should not use this. Instead, if you are using Line Item Display, then you need to use `TCayanGeniusLineItems.EndOrder` to let the device know a different payment method has been used. 
+
+From the moment you call `StartTransaction`, you should wait indefinitely. Please refer to the section below about [Waiting For Response](./Chapter%204%20-%20Genius%20Transactions.md#waiting-for-response). 
 
 ### Events
 
