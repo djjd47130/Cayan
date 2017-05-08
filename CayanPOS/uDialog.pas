@@ -38,6 +38,7 @@ type
     FDone: Boolean;
     procedure ShowButtons(const AButtons: TMsgDlgButtons);
     procedure ShowIcon(const ADialogType: TMsgDlgType);
+    procedure SetDefaultButton(const ABtn: TMsgDlgBtn);
   public
 
   end;
@@ -45,17 +46,51 @@ type
 var
   DialogForm: TDialogForm;
 
-procedure MessageDlg(AParent: TFmxObject; const AMessage: string; const ADialogType: TMsgDlgType;
-  const AButtons: TMsgDlgButtons; const ADefaultButton: TMsgDlgBtn;
-  const ACloseDialogProc: TInputCloseDialogProc);
+procedure SetDialogDefaultParent(AValue: TFmxObject);
+
+function MsgPrompt(const AMessage: string;
+  const ADialogType: TMsgDlgType; const AButtons: TMsgDlgButtons;
+  const ADefaultButton: TMsgDlgBtn): TModalResult;
+
+procedure MessageDlg(const AMessage: string;
+  const ADialogType: TMsgDlgType; const AButtons: TMsgDlgButtons;
+  const ADefaultButton: TMsgDlgBtn; const ACloseDialogProc: TInputCloseDialogProc);
 
 implementation
 
 {$R *.fmx}
 
-procedure MessageDlg(AParent: TFmxObject; const AMessage: string; const ADialogType: TMsgDlgType;
-  const AButtons: TMsgDlgButtons; const ADefaultButton: TMsgDlgBtn;
-  const ACloseDialogProc: TInputCloseDialogProc);
+uses
+  uDM;
+
+var
+  _DefaultParent: TFmxObject;
+
+procedure SetDialogDefaultParent(AValue: TFmxObject);
+begin
+  _DefaultParent:= AValue;
+end;
+
+function MsgPrompt(const AMessage: string;
+  const ADialogType: TMsgDlgType; const AButtons: TMsgDlgButtons;
+  const ADefaultButton: TMsgDlgBtn): TModalResult;
+var
+  R: TModalResult;
+begin
+  MessageDlg(AMessage,
+    ADialogType,
+    AButtons,
+    ADefaultButton,
+    procedure(const AResult: TModalResult)
+    begin
+      R:= AResult;
+    end);
+  Result:= R;
+end;
+
+procedure MessageDlg(const AMessage: string;
+  const ADialogType: TMsgDlgType; const AButtons: TMsgDlgButtons;
+  const ADefaultButton: TMsgDlgBtn; const ACloseDialogProc: TInputCloseDialogProc);
 var
   F: TDialogForm;
 begin
@@ -65,9 +100,10 @@ begin
     F.DialogLabel.Text:= AMessage;
     F.ShowButtons(AButtons);
     F.ShowIcon(ADialogType);
-    Application.ProcessMessages;
-    F.DialogLayout.Parent:= AParent;
-    F.DialogLayout.SetFocus;
+    F.DialogLayout.Parent:= _DefaultParent;
+    //Application.ProcessMessages;
+    //F.DialogLayout.SetFocus;
+    F.SetDefaultButton(ADefaultButton);
     while not F.FDone do begin
       Application.ProcessMessages;
       Sleep(50);
@@ -124,8 +160,33 @@ begin
     TMsgDlgType.mtError:        imgError.Visible:= True;
     TMsgDlgType.mtInformation:  imgInfo.Visible:= True;
     TMsgDlgType.mtConfirmation: imgConfirm.Visible:= True;
-    TMsgDlgType.mtCustom:       ;
+    TMsgDlgType.mtCustom:       ; //TODO
   end;
+end;
+
+procedure TDialogForm.SetDefaultButton(const ABtn: TMsgDlgBtn);
+var
+  B: TButton;
+begin
+  B:= nil;
+  case ABtn of
+    TMsgDlgBtn.mbYes: B:= btnYes;
+    TMsgDlgBtn.mbNo: B:= btnNo;
+    TMsgDlgBtn.mbOK: B:= btnOK;
+    TMsgDlgBtn.mbCancel: B:= btnCancel;
+    TMsgDlgBtn.mbAbort: B:= btnAbort;
+    TMsgDlgBtn.mbRetry: B:= btnRetry;
+    TMsgDlgBtn.mbIgnore: B:= btnIgnore;
+    TMsgDlgBtn.mbAll: B:= btnAll;
+    TMsgDlgBtn.mbNoToAll: B:= btnNoToAll;
+    TMsgDlgBtn.mbYesToAll: B:= btnYesToAll;
+    TMsgDlgBtn.mbHelp: B:= btnHelp;
+    TMsgDlgBtn.mbClose: B:= btnClose;
+  end;
+  if Assigned(B) then
+    if B.Visible then
+      if B.CanFocus then
+        B.SetFocus;
 end;
 
 procedure TDialogForm.ShowButtons(const AButtons: TMsgDlgButtons);

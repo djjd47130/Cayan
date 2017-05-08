@@ -76,7 +76,6 @@ object frmCart: TfrmCart
           object btnBack: TSpeedButton
             Align = Left
             Cursor = crHandPoint
-            Hint = 'New Invoice'
             Margins.Left = 5.000000000000000000
             Position.X = 5.000000000000000000
             Size.Width = 46.000000000000000000
@@ -85,7 +84,7 @@ object frmCart: TfrmCart
             ParentShowHint = False
             ShowHint = True
             StyleLookup = 'priortoolbutton'
-            Text = 'Back'
+            Text = 'Go to Items'
           end
         end
         object lstItems: TListView
@@ -99,6 +98,8 @@ object frmCart: TfrmCart
           Size.PlatformDefault = False
           TabOrder = 3
           StyleLookup = 'listviewstyle'
+          OnClick = lstItemsClick
+          OnItemClick = lstItemsItemClick
         end
         object ButtonsLayout: TGridPanelLayout
           Align = Bottom
@@ -379,7 +380,7 @@ object frmCart: TfrmCart
             Size.Height = 21.000000000000000000
             Size.PlatformDefault = False
             TextSettings.Font.StyleExt = {00070000000000000004000000}
-            TextSettings.FontColor = claDarkgreen
+            TextSettings.FontColor = claLightgreen
             TextSettings.HorzAlign = Center
             Text = '$0.00'
           end
@@ -439,10 +440,15 @@ object frmCart: TfrmCart
           Size.Height = 429.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 3
+          ItemAppearanceObjects.ItemObjects.Accessory.AccessoryType = Detail
+          ItemAppearanceObjects.ItemObjects.Accessory.Visible = False
+          ItemAppearanceObjects.ItemObjects.Detail.TextColor = claLightgreen
           StyleLookup = 'listviewstyle'
           OnItemClick = lstLookupItemClick
           OnSearchChange = lstLookupSearchChange
           SearchVisible = True
+          PullToRefresh = True
+          PullRefreshWait = True
         end
       end
       object tabDetail: TTabItem

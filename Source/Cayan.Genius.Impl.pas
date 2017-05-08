@@ -1601,7 +1601,6 @@ begin
     XML:= SendDeviceRequestXML(FOwner.DeviceUrl(Pars.ParamStr));
     Node:= GetNodePath(XML, '/StatusResult');
     if Assigned(Node) then begin
-      //TODO
       FResponse.Status:= GeniusStrToCedStatus(GetNodeValue(Node, 'Status'));
       FResponse.CurrentScreen:= GeniusStrToCedScreen(GetNodeValue(Node, 'CurrentScreen'));
       FResponse.ResponseMessage:= GetNodeValue(Node, 'ResponseMessage');
@@ -1609,11 +1608,12 @@ begin
       FResponse.ApplicationVersion:= GetNodeValue(Node, 'ApplicationVersion');
       FResponse.OSVersion:= GetNodeValue(Node, 'OSVersion');
       FResponse.PaymentDataCaptured:= SameText(GetNodeValue(Node, 'PaymentDataCaptured'), 'true');
+      FResponse.RemoveEMVCard:= SameText(GetNodeValue(Node, 'RemoveEMVCard'), 'true');
     end else begin
-      //Failed to get result
       FResponse.Status:= TGeniusCedStatus.csOffline;
       FResponse.ResponseMessage:= 'Failed to get status from CED';
       FResponse.PaymentDataCaptured:= False;
+      FResponse.RemoveEMVCard:= False;
     end;
   finally
     FreeAndNil(Pars);
@@ -2310,27 +2310,22 @@ begin
   Action=Status There are two versions of the Status request available.
   Version 1 sends a request to the CED to check which screen the device is on.
   Version 2 is analogous with verison 1 but also includes any AdditionalParameters fields.
-
   http://[CED-IP-Address]:8080/v2/pos?Action=Status&Format=XML
   https://[CED-IP-Address]:8443/v2/pos?Action=Status&Format=XML
 *)
   Result:= TGeniusStatusResponse.Create;
-
   if TestMode then begin
     Result.Status:= TGeniusCedStatus.csOnline;
     Result.CurrentScreen:= TGeniusCedScreen.csIdle;
     Exit;
   end;
-
   Pars:= TParamList.Create;
   try
     Pars['Action']:= 'Status';
     Pars['Format']:= 'XML';
-
     XML:= SendDeviceRequestXML(DeviceUrl(Pars.ParamStr, TGeniusDeviceVersion.gdVer2)); //TODO
     Node:= GetNodePath(XML, '/StatusResult');
     if Assigned(Node) then begin
-      //TODO
       Result.Status:= GeniusStrToCedStatus(GetNodeValue(Node, 'Status'));
       Result.CurrentScreen:= GeniusStrToCedScreen(GetNodeValue(Node, 'CurrentScreen'));
       Result.ResponseMessage:= GetNodeValue(Node, 'ResponseMessage');
@@ -2340,7 +2335,6 @@ begin
       Result.PaymentDataCaptured:= SameText(GetNodeValue(Node, 'PaymentDataCaptured'), 'true');
       Result.RemoveEMVCard:= SameText(GetNodeValue(Node, 'RemoveEMVCard'), 'true');
     end else begin
-      //Failed to get result
       Result.Status:= TGeniusCedStatus.csOffline;
       Result.ResponseMessage:= 'Failed to get status from CED';
       Result.PaymentDataCaptured:= False;
@@ -2368,7 +2362,6 @@ begin
       Pars['RequestID']:= RequestId;
       Pars['Title']:= Title;
       Pars['Format']:= 'XML';
-
       XML:= SendDeviceRequestXML(DeviceUrl(Pars.ParamStr));
       Node:= GetNodePath(XML, '/GetSignatureResult');
       if Assigned(Node) then begin
@@ -2404,27 +2397,20 @@ begin
   to send in the original TransportKey and request additional payment information
   at a later time. The additional payment information is for reference purposes
   only and the Point of Sale developers are not required to retrieve this information.
-
   SOAPAction: http://schemas.merchantwarehouse.com/genius/10/Reporting/DetailsByTransportKey
   Endpoint: https://genius.merchantware.net/v1/Reporting.asmx
 *)
-
   Res:= TGeniusPaymentDetails.Create(Self);
   Result:= Res;
-
   S:= XmlVal('TransportKey', TransportKey);
-
   XML:= SendTransportRequest(URL_RETR_TRANS, '10', URL_RETR_TRANS_ACT, 'DetailsByTransportKey', S, False, True);
-
   Node:= GetSoapNodePath(XML, '/DetailsByTransportKeyResponse/DetailsByTransportKeyResult');
   Result.Status:= GeniusStrToTransStatus(GetNodeValue(Node, 'Status'));
   Result.ErrorMessage:= GetNodeValue(Node, 'ErrorMessage');
   Result.TotalAmountApproved:= StrToCurrDef(GetNodeValue(Node, 'TotalAmountApproved'), 0);
   Result.RequestedAmount:= StrToCurrDef(GetNodeValue(Node, 'RequestedAmount'), 0);
   Result.ResponseType:= GeniusStrToResponseType(GetNodeValue(Node, 'ResponseType'));
-
   //TODO: Check for errors first
-
   Node:= GetSoapNodePath(XML, '/DetailsByTransportKeyResponse/DetailsByTransportKeyResult/PaymentDetails');
   if Assigned(Node) then begin
     for X := 0 to Node.ChildNodes.Count-1 do begin
@@ -2444,7 +2430,6 @@ begin
         PD.ExpirationDate:= GetNodeValue(Node2, 'ExpirationDate');
         PD.EntryMode:= GeniusStrToEntryMode(GetNodeValue(Node2, 'EntryMode'));
         PD.TransactionDate:= StrToDateTimeDef(GetNodeValue(Node2, 'TransactionDate'), 0);
-
         for Y := 0 to Node2.childNodes.Count-1 do begin
           Node3:= Node2.childNodes.Nodes[Y];
           if Node3.nodeName = 'AmountDetail' then begin
@@ -2473,7 +2458,6 @@ begin
 
           end;
         end;
-
       end else begin
         //Child node is NOT PaymentDetail - unrecognized
 

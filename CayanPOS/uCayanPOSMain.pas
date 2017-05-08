@@ -294,46 +294,57 @@ type
     procedure swSaveToVaultSwitch(Sender: TObject);
     procedure Button10Click(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure TranException(const ATrans: TCayanGeniusTransaction;
+      AException: Exception);
   private
-    FTranStarted: Boolean;
-    FCustomers: ICayanPOSCustomers;
-    FCustomer: ICayanPOSCustomer;
-    FCards: ICayanPOSCards;
-    FSetup: ICayanPOSSetup;
-    FCart: TfrmCart;
-    procedure HidePayInfo;
-    procedure ShowCardInfo;
-    procedure ShowCheckInfo;
+    FTranStarted: Boolean; //TODO: Make sure this is implemented everywhere
+    FCustomers: ICayanPOSCustomers; //Cached customer list
+    FCustomer: ICayanPOSCustomer; //Current customer
+    FCards: ICayanPOSCards; //Current customer's saved cards
+    FSetup: ICayanPOSSetup; //System setup
+    FCart: TfrmCart; //Cart form
+
+    //System
     function ConfigFilename: String;
+    procedure LoadFromConfig;
+    procedure SaveToConfig;
     procedure SetCedBusy(const Value: Boolean);
-    procedure DisplayResultGenius(const R: IGeniusTransactionResponse);
-    procedure DisplayResultMWCredit(const R: IMWCreditResponse4);
-    procedure DisplayResultCash(const Amount: Currency);
-    procedure DisplayResultCheck(const Amount: Currency; const CheckNum: String);
-    procedure ClearCart;
+    procedure CreateSubForms;
+    procedure AppException(Sender: TObject; E: Exception);
+
+    //Customer
+    function CustomerIsEntered: Boolean;
     procedure LoadCustomers;
     procedure ClearCustomers;
     function CustomerByID(const ID: Integer): ICayanPOSCustomer;
     procedure ClearCustomer;
+
+    //Cart
+    procedure ClearCart;
+    procedure UpdateCartTotals;
+
+    //Payments
+    procedure HidePayInfo;
+    procedure ClearPaymentInfo;
+    procedure ShowCardInfo;
+    procedure ShowCheckInfo;
     procedure ShowVaultInfo;
-    procedure ProcessPaymentKeyed;
     function KeyedExpiry: TExpirationDate;
+    procedure SaveToVault(const Token: String);
+    function VaultSelectedToken: String;
+    procedure ProcessPaymentKeyed;
     procedure ProcessPaymentVault;
     procedure ProcessPaymentGenius;
-    function VaultSelectedToken: String;
-    procedure SaveToVault(const Token: String);
     procedure ProcessPaymentSwiped;
     procedure FinishCreditSale(Res: IMWCreditResponse4);
-    procedure ClearPaymentInfo;
-    procedure CreateSubForms;
+    procedure DisplayResultGenius(const R: IGeniusTransactionResponse);
+    procedure DisplayResultMWCredit(const R: IMWCreditResponse4);
+    procedure DisplayResultCash(const Amount: Currency);
+    procedure DisplayResultCheck(const Amount: Currency; const CheckNum: String);
     procedure AddResultHeader(const Str: String);
     procedure AddResultStr(const Name, Val: String);
-    procedure AppException(Sender: TObject; E: Exception);
-    function CustomerIsEntered: Boolean;
+
   public
-    procedure UpdateCartTotals;
-    procedure LoadFromConfig;
-    procedure SaveToConfig;
     property Setup: ICayanPOSSetup read FSetup;
   end;
 
@@ -356,6 +367,9 @@ begin
   ReportMemoryLeaksOnShutdown:= True;
   {$ENDIF}
 
+  SetDialogDefaultParent(Self);
+
+  //Uses in-form dialog instead of system dialog
   Application.OnException:= AppException;
 
   CreateSubForms;
@@ -397,28 +411,23 @@ procedure TfrmCayanPOSMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Genius.Device.Monitoring:= False;
   Genius.Cancel;
-  Genius.Cancel;
+  //Genius.Cancel;
   Application.OnException:= nil;
   Self.SaveToConfig;
 end;
 
 procedure TfrmCayanPOSMain.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
-var
-  R: Boolean;
 begin
-  R:= False;
-  CanClose:= False;
-  MessageDlg(Self, 'Are you sure you wish to exit?',
-    TMsgDlgType.mtConfirmation,
-    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo,
-    procedure(const AResult: TModalResult)
-    begin
-      if AResult = mrYes then begin
-        R:= True;
-      end;
-    end);
-  CanClose:= R;
+  if MsgPrompt('Are you sure you wish to exit?',
+    TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],
+    TMsgDlgBtn.mbNo) = mrYes then
+  begin
+    CanClose:= True;
+    Hide;
+  end else begin
+    CanClose:= False;
+  end;
 end;
 
 procedure TfrmCayanPOSMain.CreateSubForms;
@@ -432,13 +441,8 @@ end;
 
 procedure TfrmCayanPOSMain.AppException(Sender: TObject; E: Exception);
 begin
-  MessageDlg(Self, 'Unhandled Exception (' + E.ClassName + ') - ' + E.Message,
-    TMsgDlgType.mtError,
-    [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK,
-    procedure(const AResult: TModalResult)
-    begin
-
-    end);
+  MsgPrompt('Unhandled Exception (' + E.ClassName + ') - ' + E.Message,
+    TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK);
 end;
 
 procedure TfrmCayanPOSMain.LoadFromConfig;
@@ -662,13 +666,8 @@ procedure TfrmCayanPOSMain.btnCustNextClick(Sender: TObject);
 begin
   if (not CustomerIsEntered) and (FSetup.RequireCustomer) then
   begin
-    MessageDlg(Self, 'Please enter customer name.',
-      TMsgDlgType.mtError,
-      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK,
-      procedure(const AResult: TModalResult)
-      begin
-
-      end);
+    MsgPrompt('Please enter customer name.',
+      TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK);
   end else begin
     //TODO: Check if phone required...
 
@@ -710,8 +709,16 @@ begin
   if MainTabs.ActiveTab = Self.tabCart then begin
     btnCartBackClick(nil);
   end else begin
-    //Cancelled at unexpected place...
+    //TODO: Cancelled at unexpected place...
   end;
+end;
+
+procedure TfrmCayanPOSMain.TranException(const ATrans: TCayanGeniusTransaction;
+  AException: Exception);
+begin
+  SetCedBusy(False);
+  MsgPrompt(AException.Message, TMsgDlgType.mtError,
+    [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK);
 end;
 
 procedure TfrmCayanPOSMain.TranTransactionResult(
@@ -746,12 +753,8 @@ begin
     end;
   end;
   if S <> '' then begin
-    MessageDlg(Self, S, TMsgDlgType.mtError,
-      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK,
-      procedure(const AResult: TModalResult)
-      begin
-
-      end);
+    MsgPrompt(S, TMsgDlgType.mtError,
+      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK);
   end;
 end;
 
@@ -799,9 +802,8 @@ begin
     end;
   except
     on E: Exception do begin
-      MessageDlg(Self, 'Exception saving to vault: ' + E.Message, TMsgDlgType.mtError,
-        [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK,
-        procedure(const AResult: TModalResult) begin  end);
+      MsgPrompt('Exception saving to vault: ' + E.Message, TMsgDlgType.mtError,
+        [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK);
     end;
   end;
 end;
@@ -816,14 +818,9 @@ begin
     SaveToVault(Res.Token);
     actResultTab.ExecuteTarget(Self);
   end else begin
-    MessageDlg(Self, 'Declined: ' + MWApprovalStatusSetToStr(Res.ApprovalStatus) +
-      ' - ' + Res.ErrorMessage,
-      TMsgDlgType.mtError,
-      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK,
-      procedure(const AResult: TModalResult)
-      begin
-
-      end);
+    MsgPrompt('Declined: ' + MWApprovalStatusSetToStr(Res.ApprovalStatus) +
+      ' - ' + Res.ErrorMessage, TMsgDlgType.mtError,
+      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK);
   end;
 end;
 
@@ -1198,13 +1195,8 @@ begin
       FCart.LID.StartOrder;
     except
       on E: Exception do begin
-        MessageDlg(Self, 'Failed to start new invoice: ' + E.Message,
-          TMsgDlgType.mtError,
-          [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK,
-          procedure(const AResult: TModalResult)
-          begin
-
-          end);
+        MsgPrompt('Failed to start new invoice: ' + E.Message, TMsgDlgType.mtError,
+          [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK);
       end;
     end;
   finally
@@ -1243,6 +1235,8 @@ begin
       end;
       csOnline: begin
         lblTerminalStatus.Text:= 'Device: ' + GeniusCedScreenToStr(Status.CurrentScreen);
+        if Status.PaymentDataCaptured then
+          lblTerminalStatus.Text := lblTerminalStatus.Text + sLineBreak + '[PAYMENT CAPTURED]';
         if Status.CurrentScreen in [csIdle] then begin
           C:= $FF50B7D8; //Blue
         end;
@@ -1266,43 +1260,37 @@ var
   S: String;
 begin
   if FCart.LID.Count = 0 then begin
+    MsgPrompt('There are no items in the cart.', TMsgDlgType.mtError,
+      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK);
+  end else begin
+    ClearPaymentInfo;
+    DM.Cayan.Dba:= FSetup.Dba;
+    Genius.ForceDuplicate:= FSetup.ForceDuplicates;
+    Tran.Amount:= FCart.LID.OrderTotal;
+    Tran.TaxAmount:= FCart.LID.OrderTax;
+    txtPayAmount.Text:= FormatFloat('0.00', Tran.Amount);
+    case Tran.TransactionType of
+      gtSale: S:= 'Collect';
+      gtRefund: S:= 'Refund';
+      gtLevel2Sale: S:= 'Collect';
+      gtPreAuth: S:= 'Pre Auth';
+      gtPostAuth: S:= 'Post Auth';
+      gtForceSale: S:= 'Force';
+      gtAddValue: S:= 'Add Gift';
+      gtBalanceInquiry: S:= '';
+      gtUnknown: S:= '';
+    end;
+    lblPaymentTitle.Text:= S + ' ' + FormatFloat('$#,###,##0.00', Tran.Amount);
+    cboPayMethodClick(btnPayGenius);
+    actPaymentTab.ExecuteTarget(Self);
 
-    MessageDlg(Self, 'There are no items in the cart.',
-      TMsgDlgType.mtError,
-      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK,
-      procedure(const AResult: TModalResult)
-      begin
-
-      end);
+    //TODO: Figure out how to not need this ugly work-around!!!!!!!
+    cboPayMethodClick(btnPayVault);
+    cboPayMethodClick(btnPaySwipe);
+    cboPayMethodClick(btnPayKeyed);
+    cboPayMethodClick(btnPayCheck);
+    cboPayMethodClick(btnPayGenius);
   end;
-  ClearPaymentInfo;
-  DM.Cayan.Dba:= FSetup.Dba;
-  Genius.ForceDuplicate:= FSetup.ForceDuplicates;
-  Tran.Amount:= FCart.LID.OrderTotal;
-  Tran.TaxAmount:= FCart.LID.OrderTax;
-  txtPayAmount.Text:= FormatFloat('0.00', Tran.Amount);
-  case Tran.TransactionType of
-    gtSale: S:= 'Collect';
-    gtRefund: S:= 'Refund';
-    gtLevel2Sale: S:= 'Collect';
-    gtPreAuth: S:= 'Pre Auth';
-    gtPostAuth: S:= 'Post Auth';
-    gtForceSale: S:= 'Force';
-    gtAddValue: S:= 'Add Gift';
-    gtBalanceInquiry: S:= '';
-    gtUnknown: S:= '';
-  end;
-  lblPaymentTitle.Text:= S + ' ' + FormatFloat('$#,###,##0.00', Tran.Amount);
-  cboPayMethodClick(btnPayGenius);
-  actPaymentTab.ExecuteTarget(Self);
-
-  //TODO: Figure out how to not need this ugly work-around!!!!!!!
-  cboPayMethodClick(btnPayVault);
-  cboPayMethodClick(btnPaySwipe);
-  cboPayMethodClick(btnPayKeyed);
-  cboPayMethodClick(btnPayCheck);
-  cboPayMethodClick(btnPayGenius);
-
 end;
 
 procedure TfrmCayanPOSMain.ClearPaymentInfo;
@@ -1328,22 +1316,23 @@ procedure TfrmCayanPOSMain.btnCartBackClick(Sender: TObject);
 var
   R: IGeniusCancelTransactionResponse;
 begin
-  MessageDlg(Self, 'Are you sure you wish to cancel invoice?',
+  case MsgPrompt('Are you sure you wish to cancel invoice?',
     TMsgDlgType.mtConfirmation,
-    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo,
-    procedure(const AResult: TModalResult)
-    begin
-      if AResult = mrYes then begin
-        Cursor:= crHandPoint;
-        try
-          actCustomerTab.ExecuteTarget(Self);
-          ClearCart;
-          R:= Genius.Cancel;
-        finally
-          Cursor:= crDefault;
-        end;
+    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo) of
+    mrYes: begin
+      Cursor:= crHandPoint;
+      try
+        actCustomerTab.ExecuteTarget(Self);
+        ClearCart;
+        R:= Genius.Cancel;
+      finally
+        Cursor:= crDefault;
       end;
-    end);
+    end;
+    else begin
+
+    end;
+  end;
 end;
 
 procedure TfrmCayanPOSMain.btnResultBackClick(Sender: TObject);
@@ -1355,15 +1344,15 @@ end;
 
 procedure TfrmCayanPOSMain.Button10Click(Sender: TObject);
 begin
-  MessageDlg(Self, 'Are you sure you wish to clear the customer?',
-    TMsgDlgType.mtConfirmation,
-    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo,
-    procedure(const AResult: TModalResult)
-    begin
-      if AResult = mrYes then begin
-        ClearCustomer;
-      end;
-    end);
+  case MsgPrompt('Are you sure you wish to clear the customer?',
+    TMsgDlgType.mtConfirmation, FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo) of
+    mrYes: begin
+      ClearCustomer;
+    end;
+    else begin
+
+    end;
+  end;
 end;
 
 procedure TfrmCayanPOSMain.Button5Click(Sender: TObject);
@@ -1460,36 +1449,30 @@ begin
     Genius.Device.Monitoring:= True;
     Self.actCustomerTab.ExecuteTarget(Self);
   end else begin
-    MessageDlg(Self, 'Login failed!',
-      TMsgDlgType.mtError,
-      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbNo,
-      procedure(const AResult: TModalResult)
-      begin
-        if AResult = mrYes then begin
-          ClearCustomer;
-        end;
-      end);
+    MsgPrompt('Login Failed!', TMsgDlgType.mtError,
+      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK);
   end;
+  ClearCustomer;
 end;
 
 procedure TfrmCayanPOSMain.btnCustBackClick(Sender: TObject);
 begin
-  MessageDlg(Self, 'Are you sure you wish to log out?',
-    TMsgDlgType.mtConfirmation,
-    FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo,
-    procedure(const AResult: TModalResult)
-    begin
-      if AResult = mrYes then begin
-        Genius.Device.Monitoring:= False;
-        Self.lblTerminalStatus.Text:= '';
-        txtLoginUser.Text:= '';
-        txtLoginPassword.Text:= '';
-        actLoginTab.ExecuteTarget(Self);
-        txtLoginUser.SetFocus;
-        Self.ClearCustomer;
-        Self.ClearCustomers;
-      end;
-    end);
+  case MsgPrompt('Are you sure you wish to log out?',
+    TMsgDlgType.mtConfirmation, FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo) of
+    mrYes: begin
+      Genius.Device.Monitoring:= False;
+      Self.lblTerminalStatus.Text:= '';
+      txtLoginUser.Text:= '';
+      txtLoginPassword.Text:= '';
+      actLoginTab.ExecuteTarget(Self);
+      txtLoginUser.SetFocus;
+      Self.ClearCustomer;
+      Self.ClearCustomers;
+    end;
+    else begin
+
+    end;
+  end;
 end;
 
 procedure TfrmCayanPOSMain.btnCedKeyedClick(Sender: TObject);
@@ -1500,13 +1483,8 @@ begin
   R:= Tran.Genius.Genius.InitiateKeyedEntry;
   if R <> gkSuccess then begin
     btnCedKeyed.Visible:= True;
-    MessageDlg(Self, 'Failed to send command to CED to collect keyed card.',
-      TMsgDlgType.mtError,
-      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK,
-      procedure(const AResult: TModalResult)
-      begin
-
-      end);
+    MsgPrompt('Failed to send command to CED to collect keyed card.',
+      TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK);
   end;
 end;
 

@@ -17,6 +17,9 @@ type
     const AStaging: IGeniusStageResponse;
     const AResult: IGeniusTransactionResponse) of object;
 
+  TExceptionEvent = procedure(const ATrans: TCayanGeniusTransaction;
+    AException: Exception) of object;
+
   TCayanGeniusTransaction = class(TComponent)
   private
     FGenius: TCayanGenius;
@@ -33,6 +36,7 @@ type
     FOnTransactionStart: TCayanGeniusTransactionEvent;
     FOnTransactionResult: TCayanGeniusTransactionResultEvent;
     FOnTransactionStaged: TCayanGeniusTransactionEvent;
+    FOnException: TExceptionEvent;
     procedure SetGenius(const Value: TCayanGenius);
     procedure SetAmount(const Value: Currency);
     procedure SetCardholder(const Value: String);
@@ -63,6 +67,7 @@ type
     property OnTransactionStart: TCayanGeniusTransactionEvent read FOnTransactionStart write FOnTransactionStart;
     property OnTransactionStaged: TCayanGeniusTransactionEvent read FOnTransactionStaged write FOnTransactionStaged;
     property OnTransactionResult: TCayanGeniusTransactionResultEvent read FOnTransactionResult write FOnTransactionResult;
+    property OnException: TExceptionEvent read FOnException write FOnException;
   end;
 
 implementation
@@ -203,12 +208,18 @@ begin
         if Assigned(FOnTransactionStart) then
           FOnTransactionStart(Self);
       end else begin
-        raise Exception.Create('Failed to initiate transaction!');
+        if Assigned(FOnException) then
+          FOnException(Self, Exception.Create('Failed to initiate transaction.'))
+        else
+          raise Exception.Create('Failed to initiate transaction.');
       end;
     end;
   except
     on E: Exception do begin
-      raise Exception.Create('Failed to stage transaction: ' + E.Message);
+      if Assigned(FOnException) then
+        FOnException(Self, E)
+      else
+        raise Exception.Create('Failed to start transaction: ' + E.Message);
     end;
   end;
 end;

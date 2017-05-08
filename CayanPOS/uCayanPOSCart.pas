@@ -75,6 +75,9 @@ type
       const AItem: TListViewItem);
     procedure btnCartEditClick(Sender: TObject);
     procedure SpeedButton4Click(Sender: TObject);
+    procedure lstItemsItemClick(const Sender: TObject;
+      const AItem: TListViewItem);
+    procedure lstItemsClick(Sender: TObject);
   private
     FSetup: ICayanPOSSetup;
     FItems: ICayanPOSItems;
@@ -105,13 +108,8 @@ uses
 constructor TfrmCart.Create(AContainer: TControl);
 begin
   if not Assigned(AContainer) then begin
-    MessageDlg(Self, 'Failed to create cart screen: Container must be assigned.',
-      TMsgDlgType.mtError,
-      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK,
-      procedure(const AResult: TModalResult)
-      begin
-
-      end);
+    MsgPrompt('Failed to create cart screen: Container must be assigned.',
+      TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK);
   end;
   inherited Create(nil);
   ContentLayout.Parent:= AContainer;
@@ -145,6 +143,17 @@ begin
   end;
 end;
 
+procedure TfrmCart.lstItemsClick(Sender: TObject);
+begin
+  UpdateTotals;
+end;
+
+procedure TfrmCart.lstItemsItemClick(const Sender: TObject;
+  const AItem: TListViewItem);
+begin
+  UpdateTotals;
+end;
+
 procedure TfrmCart.lstLookupItemClick(const Sender: TObject;
   const AItem: TListViewItem);
 var
@@ -156,7 +165,7 @@ begin
   LineItem:= LID.Add(glSku, 'Invent', I.Price, (I.Price * FSetup.TaxRate), 1, I.ShortDescr); //TODO
   LI:= lstItems.Items.Add;
   LI.Text:= IntToStr(LineItem.Quantity) + ' ' + LineItem.Description;
-  LI.Detail:= FormatFloat('$#,###,##0.00', (LineItem.Amount * LineItem.Quantity));
+  LI.Detail:= FormatFloat('$#,###,##0.00', LineItem.Amount);
   LI.Tag:= NativeInt(LineItem);
   lstItems.ScrollTo(lstItems.Items.Count-1);
   UpdateTotals;
@@ -166,6 +175,8 @@ end;
 procedure TfrmCart.lstLookupSearchChange(Sender: TObject);
 begin
   //TODO: Search for items...
+
+
 
 end;
 
@@ -184,34 +195,25 @@ end;
 
 procedure TfrmCart.btnCartDeleteClick(Sender: TObject);
 var
+  X: Integer;
   I: TCayanGeniusLineItem;
 begin
   if lstItems.ItemIndex >= 0 then begin
-    MessageDlg(Self, 'Are you sure you wish to delete this item?',
-      TMsgDlgType.mtConfirmation,
-      FMX.Dialogs.mbYesNo, TMsgDlgBtn.mbNo,
-      procedure(const AResult: TModalResult)
-      var
-        X: Integer;
-      begin
-        if AResult = mrYes then begin
-          I:= TCayanGeniusLineItem(lstItems.Items[lstItems.ItemIndex].Tag);
-          for X := 0 to LID.Count - 1 do begin
-            if LID.Items[X] = I then begin
-              LID.Delete(X);
-              Break;
-            end;
-          end;
-          lstItems.Items.Delete(lstItems.ItemIndex);
+    if MsgPrompt('Are you sure you wish to delete this item?',
+      TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo], TMsgDlgBtn.mbNo) = mrYes then
+    begin
+      I:= TCayanGeniusLineItem(lstItems.Items[lstItems.ItemIndex].Tag);
+      for X := 0 to LID.Count - 1 do begin
+        if LID.Items[X] = I then begin
+          LID.Delete(X);
+          Break;
         end;
-      end);
+      end;
+      lstItems.Items.Delete(lstItems.ItemIndex);
+    end;
   end else begin
-    MessageDlg(Self, 'No item is selected.',
-      TMsgDlgType.mtError,
-      [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK,
-      procedure(const AResult: TModalResult)
-      begin
-      end);
+    MsgPrompt('No item is selected.',
+      TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK);
   end;
   UpdateTotals;
 end;
@@ -271,6 +273,7 @@ begin
   lblCartSubtotal.Text:= FormatFloat('$#,###,##0.00', LID.Subtotal);
   lblCartTax.Text:= FormatFloat('$#,###,##0.00', LID.OrderTax);
   lblCartTotal.Text:= FormatFloat('$#,###,##0.00', LID.OrderTotal);
+  btnCartDelete.Enabled:= (lstItems.ItemIndex >= 0);
 end;
 
 end.
