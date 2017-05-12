@@ -146,6 +146,46 @@
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="CayanComponentsDX10.dcp"/>
         <DCCReference Include="..\Source\Cayan.InstallComps.pas"/>
+        <RcItem Include="Images\TCayan.bmp">
+            <ResourceType>BITMAP</ResourceType>
+            <ResourceId>TCAYAN</ResourceId>
+        </RcItem>
+        <RcItem Include="Images\TCayanGenius.bmp">
+            <ResourceType>BITMAP</ResourceType>
+            <ResourceId>TCAYANGENIUS</ResourceId>
+        </RcItem>
+        <RcItem Include="Images\TCayanGeniusTransaction.bmp">
+            <ResourceType>BITMAP</ResourceType>
+            <ResourceId>TCAYANGENIUSTRANSACTION</ResourceId>
+        </RcItem>
+        <RcItem Include="Images\TCayanGeniusLineItems.bmp">
+            <ResourceType>BITMAP</ResourceType>
+            <ResourceId>TCAYANGENIUSLINEITEMS</ResourceId>
+        </RcItem>
+        <RcItem Include="Images\TCayanGeniusAgreement.bmp">
+            <ResourceType>BITMAP</ResourceType>
+            <ResourceId>TCAYANGENIUSAGREEMENT</ResourceId>
+        </RcItem>
+        <RcItem Include="Images\TCayanMerchantWare.bmp">
+            <ResourceType>BITMAP</ResourceType>
+            <ResourceId>TCAYANMERCHANTWARE</ResourceId>
+        </RcItem>
+        <RcItem Include="Images\TCayanGeniusEmulator.bmp">
+            <ResourceType>BITMAP</ResourceType>
+            <ResourceId>TCAYANGENIUSEMULATOR</ResourceId>
+        </RcItem>
+        <RcItem Include="Images\TCayanVault.bmp">
+            <ResourceType>BITMAP</ResourceType>
+            <ResourceId>TCAYANVAULT</ResourceId>
+        </RcItem>
+        <RcItem Include="Images\TCayanPOS.bmp">
+            <ResourceType>BITMAP</ResourceType>
+            <ResourceId>TCAYANPOS</ResourceId>
+        </RcItem>
+        <RcItem Include="Images\TCayanPOSServer.bmp">
+            <ResourceType>BITMAP</ResourceType>
+            <ResourceId>TCAYANPOSSERVER</ResourceId>
+        </RcItem>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -191,6 +231,12 @@
                 </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgsqlite3.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl\dclCayanComponentsDX10.bpl" Configuration="Release" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>dclCayanComponentsDX10.bpl</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

@@ -5,8 +5,7 @@ interface
 uses
   System.Classes, System.SysUtils, System.Variants,
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP,
-  IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL,
-  IdExceptionCore
+  IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL
   {$IFDEF IOS}
   , IdSSLOpenSSLHeaders_Static
   {$ENDIF}
@@ -20,6 +19,7 @@ uses
 
 const
   EP_PROD_CREDIT_TRANS =   'https://ps1.merchantware.net/Merchantware/ws/RetailTransaction/v4/Credit.asmx';
+  EP_PROD_VAULT_TRANS =   'https://ps1.merchantware.net/Merchantware/ws/RetailTransaction/v4/Credit.asmx';
   EP_PROD_EBT_TRANS =      'https://ps1.merchantware.net/Merchantware/ws/RetailTransaction/v4/Ebt.asmx';
   EP_PROD_GIFT_TRANS =     'https://ps1.merchantware.net/Merchantware/ws/ExtensionServices/v4/Giftcard.asmx';
   EP_PROD_LEVELUP_TRANS =  'https://ps1.merchantware.net/Merchantware/ws/RetailTransaction/v4/LevelUp.asmx';
@@ -27,6 +27,7 @@ const
   EP_PROD_REPORTING =      'https://ps1.merchantware.net/Merchantware/ws/TransactionHistory/v4/Reporting.asmx';
 
   EP_TEST_CREDIT_TRANS =   'https://staging.merchantware.net/Merchantware/ws/RetailTransaction/v4/Credit.asmx';
+  EP_TEST_VAULT_TRANS =   'https://staging.merchantware.net/Merchantware/ws/RetailTransaction/v4/Credit.asmx';
   EP_TEST_EBT_TRANS =      'https://staging.merchantware.net/Merchantware/ws/RetailTransaction/v4/Ebt.asmx';
   EP_TEST_GIFT_TRANS =     'https://staging.merchantware.net/Merchantware/ws/ExtensionServices/v4/Giftcard.asmx';
   EP_TEST_CHECK_TRANS =    'https://staging.merchantware.net/Merchantware/ws/ExtensionServices/v4/Check.asmx';
@@ -36,6 +37,7 @@ type
   TMerchantWare = class;
   TMWTransactionBase = class;
   TMWCreditTransactions = class;
+  TMWVaultTransactions = class;
   TMWEbtTransactions = class;
   TMWGiftCardTransactions = class;
   TMWLevelUpTransactions = class;
@@ -69,7 +71,6 @@ type
   TMWTransactionSummary4List = class;
   TMWTransactionSummary4 = class;
 
-
   TMerchantWare = class(TInterfacedObject, IMerchantWare)
   private
     FName: String;
@@ -77,11 +78,12 @@ type
     FSiteId: String;
     FTestMode: Boolean;
 
+    FCredit: IMWCreditTransactions;
+    FVault: IMWVaultTransactions;
     FGiftCard: IMWGiftCardTransactions;
     FEbt: IMWEbtTransactions;
     FReport: IMWReportTransactions;
     FLevelUp: IMWLevelUpTransactions;
-    FCredit: IMWCreditTransactions;
     FCheck: IMWCheckTransactions;
 
     function GetCredentials: String;
@@ -139,15 +141,16 @@ type
 
   public
     function GetTestMode: Boolean;
-    procedure SetTestMode(const Value: Boolean);
     function GetKey: String;
     function GetName: String;
     function GetSiteId: String;
+    procedure SetTestMode(const Value: Boolean);
     procedure SetKey(const Value: String);
     procedure SetName(const Value: String);
     procedure SetSiteId(const Value: String);
 
     function GetCheck: IMWCheckTransactions;
+    function GetVault: IMWVaultTransactions;
     function GetCredit: IMWCreditTransactions;
     function GetEbt: IMWEbtTransactions;
     function GetGiftCard: IMWGiftCardTransactions;
@@ -155,13 +158,14 @@ type
     function GetReport: IMWReportTransactions;
 
     property Credit: IMWCreditTransactions read GetCredit;
+    property Vault: IMWVaultTransactions read GetVault;
     property Ebt: IMWEbtTransactions read GetEbt;
     property GiftCard: IMWGiftCardTransactions read GetGiftCard;
     property LevelUp: IMWLevelUpTransactions read GetLevelUp;
     property Check: IMWCheckTransactions read GetCheck;
     property Report: IMWReportTransactions read GetReport;
-    property TestMode: Boolean read GetTestMode write SetTestMode;
 
+    property TestMode: Boolean read GetTestMode write SetTestMode;
     property Name: String read GetName write SetName;
     property SiteId: String read GetSiteId write SetSiteId;
     property Key: String read GetKey write SetKey;
@@ -269,6 +273,15 @@ type
       const MerchantTransactionId: String): IMWCreditResponse4;
     function VoidPreAuthorization(const Token: String;
       const RegisterNumber, MerchantTransactionId: String): IMWCreditResponse4;
+  end;
+
+  TMWVaultTransactions = class(TMWTransactionBase, IMWVaultTransactions)
+  public
+    constructor Create(AOwner: TMerchantWare); override;
+    destructor Destroy; override;
+    function GetEndpoint: String; override;
+    function GetService: String; override;
+  public
     function VaultBoardCredit(const TrackData: String;
       const BillStreet: String; const BillZip: String;
       const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;
@@ -1575,6 +1588,8 @@ constructor TMerchantWare.Create;
 begin
   FCredit:= TMWCreditTransactions.Create(Self);
   FCredit._AddRef;
+  FVault:= TMWVaultTransactions.Create(Self);
+  FVault._AddRef;
   FEbt:= TMWEbtTransactions.Create(Self);
   FEbt._AddRef;
   FGiftCard:= TMWGiftCardTransactions.Create(Self);
@@ -1594,6 +1609,7 @@ begin
   FLevelUp._Release;
   FGiftCard._Release;
   FEbt._Release;
+  FVault._Release;
   FCredit._Release;
   inherited;
 end;
@@ -1601,6 +1617,11 @@ end;
 function TMerchantWare.GetTestMode: Boolean;
 begin
   Result:= FTestMode;
+end;
+
+function TMerchantWare.GetVault: IMWVaultTransactions;
+begin
+  Result:= FVault;
 end;
 
 function TMerchantWare.GetName: String;
@@ -2904,7 +2925,36 @@ begin
   Result:= FOwner.DoRequestCreditResponse4(XML, GetService, GetEndpoint, 'VoidPreAuthorization');
 end;
 
-function TMWCreditTransactions.VaultBoardCredit(const TrackData, BillStreet,
+{ TMWVaultTransactions }
+
+constructor TMWVaultTransactions.Create(AOwner: TMerchantWare);
+begin
+  inherited;
+
+end;
+
+destructor TMWVaultTransactions.Destroy;
+begin
+
+  inherited;
+end;
+
+function TMWVaultTransactions.GetEndpoint: String;
+begin
+  if FOwner.TestMode then
+    Result:= EP_TEST_VAULT_TRANS
+  else
+    Result:= EP_PROD_VAULT_TRANS;
+end;
+
+function TMWVaultTransactions.GetService: String;
+begin
+  Result:= 'http://schemas.merchantwarehouse.com/merchantware/40/Credit/';
+end;
+
+//
+
+function TMWVaultTransactions.VaultBoardCredit(const TrackData, BillStreet,
   BillZip: String; const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;
 var
   XML: String;
@@ -2920,7 +2970,7 @@ begin
   Result:= FOwner.DoRequestVaultBoardingResponse(XML, GetService, GetEndpoint, 'VaultBoardCredit');
 end;
 
-function TMWCreditTransactions.VaultBoardCreditByReference(const ReferenceNumber: String;
+function TMWVaultTransactions.VaultBoardCreditByReference(const ReferenceNumber: String;
   const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;
 var
   XML: String;
@@ -2934,7 +2984,7 @@ begin
   Result:= FOwner.DoRequestVaultBoardingResponse(XML, GetService, GetEndpoint, 'VaultBoardCreditByReference');
 end;
 
-function TMWCreditTransactions.VaultBoardCreditKeyed(
+function TMWVaultTransactions.VaultBoardCreditKeyed(
   const CardNumber: TCardNumber; const Expiration: TExpirationDate;
   const CardHolder, BillStreet, BillZip: String;
   const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;
@@ -2954,7 +3004,7 @@ begin
   Result:= FOwner.DoRequestVaultBoardingResponse(XML, GetService, GetEndpoint, 'VaultBoardCreditKeyed');
 end;
 
-function TMWCreditTransactions.VaultDeleteToken(
+function TMWVaultTransactions.VaultDeleteToken(
   const VaultToken: String): IMWVaultBoardingResponse;
 var
   XML: String;
@@ -2966,7 +3016,7 @@ begin
   Result:= FOwner.DoRequestVaultBoardingResponse(XML,GetService, GetEndpoint, 'VaultDeleteToken');
 end;
 
-function TMWCreditTransactions.VaultFindPaymentInfo(
+function TMWVaultTransactions.VaultFindPaymentInfo(
   const VaultToken: String): IMWVaultPaymentInfoResponse;
 var
   XML: String;

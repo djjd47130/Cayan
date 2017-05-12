@@ -183,6 +183,8 @@
         <DCCReference Include="..\Source\Cayan.POS.pas"/>
         <DCCReference Include="..\Source\Cayan.Genius.Transactions.pas"/>
         <DCCReference Include="..\Source\Cayan.Genius.GiftCards.pas"/>
+        <DCCReference Include="..\Source\Cayan.Vault.pas"/>
+        <DCCReference Include="..\Source\Cayan.MerchantWare.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

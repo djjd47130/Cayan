@@ -253,6 +253,7 @@ type
     Label4: TLabel;
     SpeedButton2: TSpeedButton;
     NumberBox1: TNumberBox;
+    lblTerminalDetail: TLabel;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
@@ -280,7 +281,6 @@ type
       const AResult: IGeniusTransactionResponse);
     procedure TranCancel(Sender: TObject);
     procedure btnResultBackClick(Sender: TObject);
-    procedure lstItemsDeleteItem(Sender: TObject; AIndex: Integer);
     procedure FormDestroy(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
@@ -537,7 +537,7 @@ begin
   AddResultHeader('General Information');
   AddResultStr('Transaction Type', 'Sale');
   AddResultStr('Payment Type', 'Cash');
-  AddResultStr('Amount Approved', FormatFloat('$#,###,##0', Amount));
+  AddResultStr('Amount Approved', FormatFloat('$#,###,##0.00', Amount));
 
   actResultTab.ExecuteTarget(Self);
 end;
@@ -550,7 +550,7 @@ begin
   AddResultHeader('General Information');
   AddResultStr('Transaction Type', 'Sale');
   AddResultStr('Payment Type', 'Check');
-  AddResultStr('Amount Approved', FormatFloat('$#,###,##0', Amount));
+  AddResultStr('Amount Approved', FormatFloat('$#,###,##0.00', Amount));
   AddResultStr('Check #', Self.txtPayCheckNum.Text);
 
   actResultTab.ExecuteTarget(Self);
@@ -570,7 +570,7 @@ begin
   AddResultStr('Status', GeniusTransStatusToStr(R.Status));
   if R.ErrorMessage <> '' then
     AddResultStr('Error Message', R.ErrorMessage);
-  AddResultStr('Amount Approved', FormatFloat('$#,###,##0', R.AmountApproved));
+  AddResultStr('Amount Approved', FormatFloat('$#,###,##0.00', R.AmountApproved));
   if R.AuthorizationCode <> '' then
     AddResultStr('Authorization Code', R.AuthorizationCode);
   if R.CardHolder <> '' then
@@ -589,16 +589,16 @@ begin
     AddResultStr('Signature Data', R.SignatureData); //TODO
 
   AddResultHeader('Amount Details');
-  AddResultStr('User Tip', FormatFloat('$#,###,##0', R.UserTip));
-  AddResultStr('Cashback', FormatFloat('$#,###,##0', R.Cashback));
-  AddResultStr('Donation', FormatFloat('$#,###,##0', R.Donation));
-  AddResultStr('Surcharge', FormatFloat('$#,###,##0', R.Surcharge));
+  AddResultStr('User Tip', FormatFloat('$#,###,##0.00', R.UserTip));
+  AddResultStr('Cashback', FormatFloat('$#,###,##0.00', R.Cashback));
+  AddResultStr('Donation', FormatFloat('$#,###,##0.00', R.Donation));
+  AddResultStr('Surcharge', FormatFloat('$#,###,##0.00', R.Surcharge));
 
   AddResultHeader('Discounts');
-  AddResultStr('Total Discount', FormatFloat('$#,###,##0', R.Discount));
+  AddResultStr('Total Discount', FormatFloat('$#,###,##0.00', R.Discount));
   for X := 0 to R.DiscountsAppliedCount-1 do begin
     D:= R.DiscountsApplied[X];
-    AddResultStr(D.DiscountType, FormatFloat('$#,###,##0', D.Amount));
+    AddResultStr(D.DiscountType, FormatFloat('$#,###,##0.00', D.Amount));
   end;
 
   if R.EntryMode = TGeniusEntryMode.geManual then begin
@@ -707,7 +707,7 @@ begin
     Self.SetCedBusy(False);
   end else
   if MainTabs.ActiveTab = Self.tabCart then begin
-    btnCartBackClick(nil);
+    //btnCartBackClick(nil);
   end else begin
     //TODO: Cancelled at unexpected place...
   end;
@@ -784,19 +784,23 @@ procedure TfrmCayanPOSMain.SaveToVault(const Token: String);
 var
   V: IMWVaultBoardingResponse;
   VI: IMWVaultPaymentInfoResponse;
+  EM: String;
 begin
   try
     if swSaveToVault.IsChecked and liSaveToVault.Visible then begin
-      V:= Genius.MerchantWare.Credit.VaultBoardCreditByReference(Token);
+      V:= Genius.MerchantWare.Vault.VaultBoardCreditByReference(Token);
       if V.ErrorMessage <> '' then begin
-        raise Exception.Create('Error saving card info: ' + V.ErrorMessage);
+        raise Exception.Create('Error saving card info, Cayan responded with: ' + V.ErrorMessage);
       end else begin
-        VI:= Genius.MerchantWare.Credit.VaultFindPaymentInfo(V.VaultToken);
+        VI:= Genius.MerchantWare.Vault.VaultFindPaymentInfo(V.VaultToken);
         if VI.ErrorMessage <> '' then begin
-          raise Exception.Create('Error obtaining payment info: ' + VI.ErrorMessage);
+          raise Exception.Create('Error obtaining payment info, Cayan responded with: ' + VI.ErrorMessage);
         end else begin
-          //TODO: Submit to POS web server...
-
+          EM:= DM.POS.PostVaultCard(FCustomer.ID, V.VaultToken, VI.Cardholder,
+            VI.CardNumber, VI.CardType, Self.txtSaveVaultName.Text);
+          if EM <> '' then begin
+            raise Exception.Create('Error saving to database: ' + EM);
+          end;
         end;
       end;
     end;
@@ -933,7 +937,6 @@ begin
   liCardCVCode.Visible:= False;
   liSaveToVault.Visible:= False;
   liVaultCards.Visible:= False;
-  liSaveToVault.Visible:= False;
   liCardAddress.Visible:= False;
   liCardZipCode.Visible:= False;
   liSwipe.Visible:= False;
@@ -1014,7 +1017,7 @@ begin
   case B.Tag of
     0: begin
       //Genius CED
-      liSaveToVault.Visible:= True;
+      //liSaveToVault.Visible:= True;
       btnCedStart.Text:= 'Start Transaction';
     end;
     1: begin
@@ -1122,12 +1125,6 @@ begin
   end;
 end;
 
-procedure TfrmCayanPOSMain.lstItemsDeleteItem(Sender: TObject; AIndex: Integer);
-begin
-  //TODO: Remove line item...
-
-end;
-
 procedure TfrmCayanPOSMain.lstLookupCustomerItemClick(const Sender: TObject;
   const AItem: TListViewItem);
 var
@@ -1214,7 +1211,7 @@ begin
   end else
   if MainTabs.ActiveTab = tabPayment then begin
     Self.HidePayInfo;
-    //TODO: Clear payment info
+    Self.ClearPaymentInfo;
   end else
   if MainTabs.ActiveTab = tabResult then begin
   
@@ -1226,23 +1223,28 @@ procedure TfrmCayanPOSMain.GeniusDeviceStatus(Sender: IGenius;
 var
   C: TAlphaColor;
 begin
-  //CED status changed
   C:= $FFDB5B5B; //Red
   if Genius.Device.Monitoring then begin
     case Status.Status of
       csOffline: begin
         lblTerminalStatus.Text:= 'Device Offline';
+        lblTerminalDetail.Text:= '';
       end;
       csOnline: begin
         lblTerminalStatus.Text:= 'Device: ' + GeniusCedScreenToStr(Status.CurrentScreen);
-        if Status.PaymentDataCaptured then
-          lblTerminalStatus.Text := lblTerminalStatus.Text + sLineBreak + '[PAYMENT CAPTURED]';
         if Status.CurrentScreen in [csIdle] then begin
           C:= $FF50B7D8; //Blue
         end;
+        if Status.PaymentDataCaptured then
+          lblTerminalDetail.Text:= '[PAYMENT CAPTURED]'
+        else
+          lblTerminalDetail.Text:= '';
+        if Status.RemoveEMVCard then
+          lblTerminalDetail.Text:= lblTerminalDetail.Text + ' [REMOVE EMV]';
       end;
       csDownloadNeeded: begin
         lblTerminalStatus.Text:= 'Device Download Needed';
+        lblTerminalDetail.Text:= '';
       end;
     end;
   end;
@@ -1428,10 +1430,8 @@ end;
 
 procedure TfrmCayanPOSMain.btnCedCancelClick(Sender: TObject);
 begin
-  //TODO: Cancel transaction...
   FTranStarted:= False;
   Genius.Cancel;
-
 end;
 
 procedure TfrmCayanPOSMain.btnLoginClick(Sender: TObject);
@@ -1462,6 +1462,7 @@ begin
     mrYes: begin
       Genius.Device.Monitoring:= False;
       Self.lblTerminalStatus.Text:= '';
+      lblTerminalDetail.Text:= '';
       txtLoginUser.Text:= '';
       txtLoginPassword.Text:= '';
       actLoginTab.ExecuteTarget(Self);

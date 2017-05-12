@@ -56,7 +56,9 @@ contains
   Cayan.Genius.LineItems in '..\Source\Cayan.Genius.LineItems.pas',
   Cayan.POS in '..\Source\Cayan.POS.pas',
   Cayan.Genius.Transactions in '..\Source\Cayan.Genius.Transactions.pas',
-  Cayan.Genius.GiftCards in '..\Source\Cayan.Genius.GiftCards.pas';
+  Cayan.Genius.GiftCards in '..\Source\Cayan.Genius.GiftCards.pas',
+  Cayan.Vault in '..\Source\Cayan.Vault.pas',
+  Cayan.MerchantWare in '..\Source\Cayan.MerchantWare.pas';
 
 end.
 

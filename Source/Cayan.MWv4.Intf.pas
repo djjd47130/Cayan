@@ -11,6 +11,7 @@ type
   //MerchantWare 4 Endpoints
   IMWTransactionBase = interface;
   IMWCreditTransactions = interface;
+  IMWVaultTransactions = interface;
   IMWEbtTransactions = interface;
   IMWGiftCardTransactions = interface;
   IMWLevelUpTransactions = interface;
@@ -86,15 +87,16 @@ type
   IMerchantWare = interface
     ['{50DAD05C-067C-4477-A838-F07E14D1FAAF}']
     function GetTestMode: Boolean;
-    procedure SetTestMode(const Value: Boolean);
     function GetKey: String;
     function GetName: String;
     function GetSiteId: String;
+    procedure SetTestMode(const Value: Boolean);
     procedure SetKey(const Value: String);
     procedure SetName(const Value: String);
     procedure SetSiteId(const Value: String);
 
     function GetCheck: IMWCheckTransactions;
+    function GetVault: IMWVaultTransactions;
     function GetCredit: IMWCreditTransactions;
     function GetEbt: IMWEbtTransactions;
     function GetGiftCard: IMWGiftCardTransactions;
@@ -102,13 +104,14 @@ type
     function GetReport: IMWReportTransactions;
 
     property Credit: IMWCreditTransactions read GetCredit;
+    property Vault: IMWVaultTransactions read GetVault;
     property Ebt: IMWEbtTransactions read GetEbt;
     property GiftCard: IMWGiftCardTransactions read GetGiftCard;
     property LevelUp: IMWLevelUpTransactions read GetLevelUp;
     property Check: IMWCheckTransactions read GetCheck;
     property Report: IMWReportTransactions read GetReport;
-    property TestMode: Boolean read GetTestMode write SetTestMode;
 
+    property TestMode: Boolean read GetTestMode write SetTestMode;
     property Name: String read GetName write SetName;
     property SiteId: String read GetSiteId write SetSiteId;
     property Key: String read GetKey write SetKey;
@@ -204,6 +207,10 @@ type
       const MerchantTransactionId: String): IMWCreditResponse4;
     function VoidPreAuthorization(const Token: String;
       const RegisterNumber, MerchantTransactionId: String): IMWCreditResponse4; deprecated;
+  end;
+
+  IMWVaultTransactions = interface(IMWTransactionBase)
+    ['{1E863720-D2E2-4244-A975-5FA7A0B2835C}']
     function VaultBoardCredit(const TrackData: String;
       const BillStreet: String; const BillZip: String;
       const MerchantDefinedToken: String = ''): IMWVaultBoardingResponse;

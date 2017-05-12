@@ -96,15 +96,15 @@ var
 begin
   F:= TDialogForm.Create(nil);
   try
+    //TODO: Move these assignments into the form itself, perhaps its constructor.
     F.FCloseDialogProc:= ACloseDialogProc;
     F.DialogLabel.Text:= AMessage;
     F.ShowButtons(AButtons);
     F.ShowIcon(ADialogType);
     F.DialogLayout.Parent:= _DefaultParent;
-    //Application.ProcessMessages;
-    //F.DialogLayout.SetFocus;
     F.SetDefaultButton(ADefaultButton);
-    while not F.FDone do begin
+    //TODO: Use another method!!!!!!!
+    while not F.FDone do begin              // <---- HORRIBLE, HORRIBLE DESIGN.
       Application.ProcessMessages;
       Sleep(50);
     end;
@@ -190,13 +190,6 @@ begin
 end;
 
 procedure TDialogForm.ShowButtons(const AButtons: TMsgDlgButtons);
-  procedure ShowBtn(ABtn: TButton);
-  begin
-    ABtn.Visible:= True;
-    ABtn.Align:= TAlignLayout.Left;
-    ABtn.Align:= TAlignLayout.Right; //Forces it to left side of prior buttons
-    ABtn.Width:= 120;
-  end;
 begin
   if TMsgDlgBtn.mbYes in AButtons then begin
     btnYes.Visible:= True;

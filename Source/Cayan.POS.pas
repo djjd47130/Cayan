@@ -5,6 +5,8 @@ interface
 uses
   System.Classes, System.SysUtils,
   IdHTTP,
+  Cayan.Common,
+  Cayan.MWv4.Intf,
   Cayan.XSuperObject;
 
 type
@@ -124,25 +126,22 @@ type
     procedure SetCaption(const Value: String);
     procedure SetCardholder(const Value: String);
     procedure SetCardNum(const Value: String);
-    procedure SetExpiryMonth(const Value: Integer);
-    procedure SetExpiryYear(const Value: Integer);
     procedure SetID(const Value: Integer);
     procedure SetToken(const Value: String);
     function GetCaption: String;
     function GetCardholder: String;
     function GetCardNum: String;
-    function GetExpiryMonth: Integer;
-    function GetExpiryYear: Integer;
     function GetID: Integer;
     function GetToken: String;
+    function GetCardType: TMWCardType;
+    procedure SetCardType(const Value: TMWCardType);
 
     property ID: Integer read GetID write SetID;
     property Caption: String read GetCaption write SetCaption;
     property Token: String read GetToken write SetToken;
     property Cardholder: String read GetCardholder write SetCardholder;
     property CardNum: String read GetCardNum write SetCardNum;
-    property ExpiryMonth: Integer read GetExpiryMonth write SetExpiryMonth;
-    property ExpiryYear: Integer read GetExpiryYear write SetExpiryYear;
+    property CardType: TMWCardType read GetCardType write SetCardType;
   end;
 
   ICayanPOSCards = interface
@@ -367,27 +366,24 @@ type
 
   TCayanPOSCard = class(TInterfacedObject, ICayanPOSCard)
   private
-    FExpiryYear: Integer;
-    FExpiryMonth: Integer;
     FID: Integer;
     FCaption: String;
     FCardholder: String;
     FToken: String;
     FCardNum: String;
+    FCardType: TMWCardType;
     procedure SetCaption(const Value: String);
     procedure SetCardholder(const Value: String);
     procedure SetCardNum(const Value: String);
-    procedure SetExpiryMonth(const Value: Integer);
-    procedure SetExpiryYear(const Value: Integer);
     procedure SetID(const Value: Integer);
     procedure SetToken(const Value: String);
     function GetCaption: String;
     function GetCardholder: String;
     function GetCardNum: String;
-    function GetExpiryMonth: Integer;
-    function GetExpiryYear: Integer;
     function GetID: Integer;
     function GetToken: String;
+    function GetCardType: TMWCardType;
+    procedure SetCardType(const Value: TMWCardType);
   public
     constructor Create;
     destructor Destroy; override;
@@ -397,8 +393,7 @@ type
     property Token: String read GetToken write SetToken;
     property Cardholder: String read GetCardholder write SetCardholder;
     property CardNum: String read GetCardNum write SetCardNum;
-    property ExpiryMonth: Integer read GetExpiryMonth write SetExpiryMonth;
-    property ExpiryYear: Integer read GetExpiryYear write SetExpiryYear;
+    property CardType: TMWCardType read GetCardType write SetCardType;
   end;
 
   TCayanPOSCards = class(TInterfacedObject, ICayanPOSCards)
@@ -520,6 +515,9 @@ type
     function GetSetup: ICayanPOSSetup;
     function GetCustomers(const Q: String): ICayanPOSCustomers;
     function GetVaultCards(const CustomerID: Integer): ICayanPOSCards;
+    function PostVaultCard(const CustomerID: Integer; const Token: String;
+      const Cardholder: String; const CardNumber: String;
+      const CardType: TMWCardType; const Caption: String): String;
     function GetInventory(const Q: String): ICayanPOSItems;
   published
     property Host: String read FHost write SetHost;
@@ -908,14 +906,9 @@ begin
   Result:= FCardNum;
 end;
 
-function TCayanPOSCard.GetExpiryMonth: Integer;
+function TCayanPOSCard.GetCardType: TMWCardType;
 begin
-  Result:= FExpiryMonth;
-end;
-
-function TCayanPOSCard.GetExpiryYear: Integer;
-begin
-  Result:= FExpiryYear;
+  Result:= FCardType;
 end;
 
 function TCayanPOSCard.GetID: Integer;
@@ -943,14 +936,9 @@ begin
   FCardNum := Value;
 end;
 
-procedure TCayanPOSCard.SetExpiryMonth(const Value: Integer);
+procedure TCayanPOSCard.SetCardType(const Value: TMWCardType);
 begin
-  FExpiryMonth := Value;
-end;
-
-procedure TCayanPOSCard.SetExpiryYear(const Value: Integer);
-begin
-  FExpiryYear := Value;
+  FCardType:= Value;
 end;
 
 procedure TCayanPOSCard.SetID(const Value: Integer);
@@ -1260,6 +1248,31 @@ begin
   end;
 end;
 
+function TCayanPOS.PostVaultCard(const CustomerID: Integer; const Token,
+  Cardholder, CardNumber: String; const CardType: TMWCardType;
+  const Caption: String): String;
+var
+  Req, Res: ISuperObject;
+  P: TStringList;
+begin
+  Result:= '';
+  Req:= SO;
+  Req.I['CustomerID']:= CustomerID;
+  Req.S['Token']:= Token;
+  Req.S['Cardholder']:= Cardholder;
+  Req.S['CardNumber']:= CardNumber;
+  Req.S['Caption']:= Caption;
+  Req.I['CardType']:= Integer(CardType);
+
+  P:= TStringList.Create;
+  try
+    Res:= PostJSON('Vault', P, Req);
+    Result:= Res.S['Error'];
+  finally
+    FreeAndNil(P);
+  end;
+end;
+
 procedure TCayanPOS.SetHost(const Value: String);
 begin
   FHost := Value;
@@ -1315,8 +1328,7 @@ begin
         C.Token:= O.S['Token'];
         C.Cardholder:= O.S['Cardholder'];
         C.CardNum:= O.S['CardNumber'];
-        C.ExpiryMonth:= O.I['ExpiryMonth'];
-        C.ExpiryYear:= O.I['ExpiryYear'];
+        C.CardType:= TMWCardType(O.I['CardType']);
       end;
     finally
       Result:= Res;

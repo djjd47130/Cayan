@@ -11,7 +11,9 @@ uses
   Cayan.Genius.LineItems,
   Cayan.POS.Server,
   Cayan.POS,
-  Cayan.Genius.Emulator;
+  Cayan.Genius.Emulator,
+  Cayan.MerchantWare,
+  Cayan.Vault;
 
 procedure Register;
 
@@ -20,7 +22,9 @@ implementation
 procedure Register;
 begin
   RegisterComponents('Cayan', [TCayan, TCayanGenius, TCayanGeniusTransaction,
-    TCayanGeniusAgreement, TCayanGeniusLineItems, TCayanPOSServer, TCayanPOS,
+    TCayanGeniusAgreement, TCayanGeniusLineItems,
+    TCayanMerchantWare, TCayanVault,
+    TCayanPOSServer, TCayanPOS,
     TCayanGeniusEmulator]);
 end;
 

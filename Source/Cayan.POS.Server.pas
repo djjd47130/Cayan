@@ -981,8 +981,7 @@ var
     AddStr('Token', FQry.FieldByName('Token').AsString);
     AddStr('Cardholder', FQry.FieldByName('Cardholder').AsString);
     AddStr('CardNumber', FQry.FieldByName('CardNumber').AsString);
-    AddInt('ExpiryMonth', FQry.FieldByName('ExpiryMonth').AsInteger);
-    AddInt('ExpiryYear', FQry.FieldByName('ExpiryYear').AsInteger);
+    AddInt('CardType', FQry.FieldByName('CardTypeID').AsInteger);
     //TODO: Card Brand
   end;
 begin
@@ -1029,11 +1028,84 @@ end;
 
 procedure TCayanPOSServerContext.HandlePostVault(const AReq: TIdHTTPRequestInfo;
   ARes: TIdHTTPResponseInfo);
+var
+  O: ISuperObject;
+  EM: String;
 begin
+  EM:= '';
   Self.FResponse.RootElement:= 'VaultAddResult';
-  FQry.SQL.Text:= 'select * from Vault where 1 <> 1';
+  FQry.Close;
+  FQry.SQL.Clear;
+  FQry.Parameters.Clear;
 
+  if Assigned(AReq.PostStream) then begin
+    AReq.PostStream.Position:= 0;
+    O:= TSuperObject.ParseStream(AReq.PostStream);
+    if Assigned(O) then begin
 
+      //First, check that the CustomerID actually exists...
+      FQry.SQL.Text:= 'select * from Customers where ID = :custid';
+      FQry.Parameters.ParamValues['custid']:= O.I['CustomerID'];
+      FQry.Open;
+      try
+        if FQry.IsEmpty then begin
+          EM:= 'Customer ID does not exist!';
+        end;
+      finally
+        FQry.Close;
+      end;
+
+      //Next, look to see if this customer already has the same Caption on file...
+      if EM = '' then begin
+        FQry.SQL.Clear;
+        FQry.Parameters.Clear;
+        FQry.SQL.Text:= 'select * from Vault where StatusID = 1 and CustomerID = :custid and Caption = :cap';
+        FQry.Parameters.ParamValues['custid']:= O.I['CustomerID'];
+        FQry.Parameters.ParamValues['cap']:= O.S['Caption'];
+        FQry.Open;
+        try
+          if FQry.IsEmpty then begin
+            try
+              FQry.Append;
+              try
+                FQry['CustomerID']:= O.I['CustomerID'];
+                FQry['StatusID']:= 1;
+                FQry['UserCreatedID']:= 0; //TODO
+                FQry['DateCreated']:= Now;
+                FQry['Token']:= O.S['Token'];
+                FQry['Cardholder']:= O.S['Cardholder'];
+                FQry['CardNumber']:= O.S['CardNumber'];
+                if O.S['Caption'] <> '' then begin
+                  FQry['Caption']:= O.S['Caption'];
+                end else begin
+                  FQry['Caption']:= MWCardTypeCaption(TMWCardType(O.I['CardType'])) + ' - ' + O.S['CardNumber'];
+                end;
+                FQry['CardTypeID']:= O.I['CardType'];
+              finally
+                FQry.Post;
+              end;
+              FResponse.AddInt('Success', 1);
+            except
+              on E: Exception do begin
+                EM:= 'Failed to save to database: ' + E.Message;
+              end;
+            end;
+          end else begin
+            EM:= 'Card name already exists for this customer. Please use another name.';
+          end;
+        finally
+          FQry.Close;
+        end;
+      end;
+    end else begin
+      EM:= 'Post stream does not contain valid JSON data.';
+    end;
+  end else begin
+    EM:= 'Post stream is not assigned.';
+  end;
+  if EM <> '' then begin
+    FResponse.AddStr('Error', EM);
+  end;
 end;
 
 end.
