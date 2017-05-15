@@ -10,9 +10,14 @@ uses
   Cayan.MWv4.Intf;
 
 type
+  TCayanVault = class;
+
+  TCayanMWVaultInfoEvent = procedure(Sender: TObject; const Info: IMWVaultPaymentInfoResponse) of object;
+
   TCayanVault = class(TComponent)
   private
     FMerchantWare: TCayanMerchantWare;
+    FOnCardInfo: TCayanMWVaultInfoEvent;
     procedure SetMerchantWare(const Value: TCayanMerchantWare);
   public
     constructor Create(AOwner: TComponent); override;
@@ -20,6 +25,8 @@ type
     function GetVault(const Token: String): IMWVaultPaymentInfoResponse;
   published
     property MerchantWare: TCayanMerchantWare read FMerchantWare write SetMerchantWare;
+
+    property OnCardInfo: TCayanMWVaultInfoEvent read FOnCardInfo write FOnCardInfo;
   end;
 
 implementation

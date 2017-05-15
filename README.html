@@ -1,0 +1,131 @@
+<html>
+<head>
+  <style>
+  code {
+    background-color: LightGray;
+    font-size: inherit;
+  }
+  body {
+    font-family: Segoe UI;
+  }
+  blockquote {
+    background-color: OldLace;
+  }
+  pre code {
+    background-color: #eee;
+    border: 1px solid #999;
+    display: block;
+    padding: 20px;
+  }
+  .snip {
+    background-color: LightGray;
+    margin-top: 2px;
+  }
+  h1 {
+    border-bottom: 2px solid LightGray;
+  }
+  h2 {
+    border-bottom: 1px solid LightGray;
+  }
+  
+  </style>
+</head>
+<body>
+<p><h1>Cayan Delphi Components</h1></p>
+
+<p>Delphi Component Library for Payment Processing using <a href="http://www.cayan.com">Cayan's Payment Gateway Solutions</a></p>
+
+<p><h2>Disclaimer</h2></p>
+
+<p>This library was written by Jerry Dodge, and not by any direct member of Cayan. No guarantees are made towards this code, and is available on an as-is / what-is basis. Neither I or Cayan are responsible for any problems which may arise as a result of using this code. You are responsible to ensure this code base suites your application's needs, and abides by the PCI compliance laws set with implementing Genius solutions. </p>
+
+<p><h2>Disclaimer</h2></p>
+
+<p>While this library is free and open-source, you are still responsible to acquire certification with Cayan to be allowed to work with their solutions. This library only wraps Cayan's APIs, and you must treat the integration the same as if you wrote this library. Certification works on a per-application basis, so even one certification is not enough to use this library indefinitely. The end goal is to become <a href="http://www.onlinetech.com/resources/references/what-is-pci-compliance">PCI Compliant</a> with the Genius solutions. </p>
+
+<p>Please visit the <a href="https://cayan.com/developers">Cayan Developer's Page</a> for more information.</p>
+
+<p><h2>Super Object</h2></p>
+
+<p>This library uses its own copy of X-SuperObject. Since there were modifications in those units to be able to work as needed, it was necessary to include them in this repo. However, it must be noted that the units <span class="snip">Cayan.XSuperObject</span> and <span class="snip">Cayan.XSuperJSON</span> were not actually written with the rest of this library.</p>
+
+<p><h2>Delphi Support</h2></p>
+
+<p>This library was written for Delphi 10 Seattle, and recently tested in Delphi 10.1 Berlin. While it should work in most modern Delphi versions, it has not been tested, and there is no guarantee that it will be compatible. It is cross-platform compatible, but not thoroughly tested on any platform other than Windows (32bit and 64bit). It does not depend on VCL or Firemonkey. Past versions of this library have been successfully deployed to MacOS, iOS, and Android, but have gone through extensive modifications since then. All current testing is only on Windows.</p>
+
+<p>The test applications use a combination of VCL and Firemonkey. The Emulator and the POS applications are both based on the Firemonkey framework, while the stand-alone test application is on the VCL framework. </p>
+
+<p><h2>Delphi Packages</h2></p>
+
+<p>There are two packages included: A Run-Time package, and a Design-Time package. Each must be installed into the Delphi IDE the same as any standard package.</p>
+
+<ol><li>Open the Run-Time Package <span class="snip">CayanComponentsDX10.dpk</span> and <span class="snip">Build</span> the project.</li>
+<li>Open the Design-Time Package <span class="snip">dclCayanComponentsDX10.dpk</span> and <span class="snip">Build</span> the project.</li>
+<li>While still in the Design-Time Package, <span class="snip">Install</span> the project.</li>
+<li>You shall be notified that the components were successfully installed.</li>
+<li>Open <span class="snip">Tools</span> > <span class="snip">Options</span>, then navigate to <span class="snip">Environment Options</span> > <span class="snip">Delphi Options</span> > <span class="snip">Library</span>, choose the appropriate <span class="snip">Selected Platform</span>, then click on the <span class="snip">[...]</span> button to the right of <span class="snip">Library Path</span>. </li>
+<li>Enter the directory of the <span class="snip">.\Source</span> dir and press <span class="snip">Add</span>. </li>
+<li>Enter the directory of the <span class="snip">.\Libraries\X-SuperObject</span> dir and press <span class="snip">Add</span>.</li>
+<li>Press <span class="snip">OK</span>, and <span class="snip">OK</span>.</li>
+</ol>
+<p><h2>Component Pallette</h2></p>
+
+<p>The following components are installed into the Delphi IDE Tool Pallette under the <span class="snip">Cayan</span> tab:</p>
+
+<p><h3><span class="snip">TCayan</span></h3></p>
+
+<p>Represents a single connection to Cayan's systems, and is not related to any particular service or solution. It only carries the API credentials, company, user, and station information. It is further used by other components to be able to share the same connection using this <span class="snip">TCayan</span> component.</p>
+
+<p><h3><span class="snip">TCayanGenius</span></h3></p>
+
+<p>Represents a single connection to one of Cayan's Genius CED payment terminals. Provides the ability to perform various general tasks, but most importantly, attaching other components which control various tasks.</p>
+
+<p><h3><span class="snip">TCayanGeniusTransaction</span></h3></p>
+
+<p>Represents a single transaction being made using one of Cayan's Genius CED payment terminals. Provides details for a single payment transaction.</p>
+
+<p><h3><span class="snip">TCayanGeniusLineItems</span></h3></p>
+
+<p>Allows you to utilize Line Item Display on the device. Attaches to a <span class="snip">TCayanGeniusTransaction</span> component. </p>
+
+<p><h3><span class="snip">TCayanGeniusAgreement</span></h3></p>
+
+<p>Allows you to send a command to the Genius device requesting the consumer to either Accept or Decline an agreement, while displaying a scrollable text area where an agreement is displayed. Attaches to a <span class="snip">TCayanGeniusTransaction</span> component. </p>
+
+<p><h3><span class="snip">TCayanGeniusEmulator</span></h3></p>
+
+<p>Allows you to serve a virtual emulator, mimicing a real Genius CED device. This component is primarily used in the Genius CED Emulator application. This project has been put on hold until the real CED payment terminal can be completely implemented. </p>
+
+<p><h3><span class="snip">TCayanPOSServer</span></h3></p>
+
+<p>Represents a web server which provides access from a <span class="snip">TCayanPOS</span> component to its underlying back-end database. </p>
+
+<p><h3><span class="snip">TCayanPOS</span></h3></p>
+
+<p>Represents a single instance of a Point-of-Sale application. Used for connection from the POS application to its corresponding server. </p>
+
+<p><h2>POS Application</h2></p>
+
+<p>There is a test application provided with this repo, which demonstrates actual usage of the Genius solution by a Point-of-Sale application. It is developed for the purpose of demonstrating actual usage of the Genius solutions. </p>
+
+<p><div style="right: 0;"><img style="max-height:100%; max-width:100%;" src="./Readme/POS_SS.png?raw=true" alt="POS" /></div></p>
+
+<p><h2>Genius CED Emulator</h2></p>
+
+<p>Included is an emulator application which mimics a Genius device. This emulator can be used in place of a real device, and allows you to test your own integration with Genius without actually needing a device of your own. While the device is as close as possible to the real thing, it is not capable of actually processing real payments. </p>
+
+<p><b>NOTE</b> This emulator is far from complete, and should not be trusted at this time. </p>
+
+<p><div style="right: 0;"><img style="max-height:100%; max-width:100%;" src="./Readme/EmulatorMX915.png?raw=true" alt="Emulator" /></div></p>
+
+<p><h2>Instructions</h2></p>
+
+<p>Complete instructions are included in this repo under the <span class="snip">Readme</span> folder.</p>
+
+<ol><li><a href="./Readme/Chapter%201%20-%20Getting%20Started.md">Getting Started</a></li>
+<li><a href="./Readme/Chapter%202%20-%20MerchantWare%20Transactions.md">MerchantWare Transactions</a></li>
+<li><a href="./Readme/Chapter%203%20-%20Genius.md">Genius</a></li>
+<li><a href="./Readme/Chapter%204%20-%20Genius%20Transactions.md">Genius Transactions</a></li>
+</ol>
+</body>
+</html>

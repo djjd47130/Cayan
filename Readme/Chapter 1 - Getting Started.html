@@ -1,0 +1,108 @@
+<html>
+<head>
+  <style>
+  code {
+    background-color: LightGray;
+    font-size: inherit;
+  }
+  body {
+    font-family: Segoe UI;
+  }
+  blockquote {
+    background-color: OldLace;
+  }
+  pre code {
+    background-color: #eee;
+    border: 1px solid #999;
+    display: block;
+    padding: 20px;
+  }
+  .snip {
+    background-color: LightGray;
+    margin-top: 2px;
+  }
+  h1 {
+    border-bottom: 2px solid LightGray;
+  }
+  h2 {
+    border-bottom: 1px solid LightGray;
+  }
+  
+  </style>
+</head>
+<body>
+<p><h1>Chapter 1 - Getting Started</h1></p>
+
+<p>Before you begin, you will need to become a developer partner with Cayan. They will create an account for you and provide you your own credentials and certification packet to get started. Once you have acquired this, you can continue using this library.</p>
+
+<p>There are numerous different components available, but everything starts with a <span class="snip">TCayan</span> comopnent. This comopnent carries the credentials to access Cayan's systems, along with other various information, such as the username, company name, and software name. When creating another specific component, such as a <span class="snip">TCayanGenius</span>, you will attach this <span class="snip">TCayan</span> component to it through its <span class="snip">Cayan</span> property to validate using those given credentials.</p>
+
+<p>You will use different components depending on your different support. For example, if you wish to utilize Line Item Display, you will use a <span class="snip">TCayanGeniusLineItems</span> component. Otherwise, you won't even need to add the component. Such integration requires a separate certification from Cayan, so if you have never been certified for Line Item Display, then you won't even need to worry about it being in your way. </p>
+
+<p><h2><span class="snip">TCayan</span> Component</h2></p>
+
+<p>The first step of using this library in your application is to drop a <span class="snip">TCayan</span> component from the installed components on the <span class="snip">Cayan</span> tab in Delphi. This component is the starting point for the rest of the integration.</p>
+
+<p>You will need to populate some of the properties of this component.</p>
+
+<ol><li><span class="snip">MerchantName</span> (Required) - One of the 3 pieces of credentials provided by Cayan.</li>
+<li><span class="snip">MerchantSiteId</span> (Required) - One of the 3 pieces of credentials provided by Cayan.</li>
+<li><span class="snip">MerchantKey</span> (Required) - One of the 3 pieces of credentials provided by Cayan.</li>
+<li><span class="snip">Dba</span> (Required for Genius) - The name of the company as it will be displayed to the customer.</li>
+<li><span class="snip">SoftwareName</span> (Required for Genius) - The name of the software using the Genius solutions.</li>
+<li><span class="snip">SoftwareVersion</span> (Required for Genius) - The version of the software using the Genius solutions.</li>
+<li><span class="snip">ClerkID</span> (Required) - The username or identification who is using the software.</li>
+<li><span class="snip">StationID</span> (Required) - The identifier for the station within the store / location / site.</li>
+<li><span class="snip">TestMode</span> (Optional) - Triggers the library to run in test mode with fake credentials and transactions.</li>
+</ol>
+<p><h2><span class="snip">TCayanGenius</span> Component</h2></p>
+
+<p>If you wish to use Cayan's Genius solution, then drop a <span class="snip">TCayanGenius</span> component from the installed components on the <span class="snip">Cayan</span> tab in Delphi. This component is used for all communication with a specific Genius CED payment terminal. Multiple terminals will require multiple instances of this component.</p>
+
+<p>You will need to populate some of the properties of this component.</p>
+
+<ol><li><span class="snip">Cayan</span> (Required) - A previously created <span class="snip">TCayan</span> component for authentication.</li>
+<li><span class="snip">Device.DeviceAddress</span> (Required) - The Hostname or IP Address of the Genius CED.</li>
+<li><span class="snip">Device.DevicePort</span> (Required) - The Port Number of the Genius CED (8080 by default).</li>
+<li><span class="snip">Device.DeviceProtocol</span> (Required) - The HTTP protocol which the device requires.</li>
+<li><span class="snip">Device.DeviceTimeout</span> (Required) - The number of seconds before requests are timed out. <span class="snip">DEPRECATED</span></li>
+<li><span class="snip">Device.DeviceVersion</span> (Required) - The highest support level of the device.</li>
+<li><span class="snip">Device.Monitoring</span> (Optional) - Whether or not to continuously check the status of the device.</li>
+<li><span class="snip">ForceDuplicate</span> (Optional) - Whether or not to force duplicate transactions, if detected.</li>
+<li><span class="snip">InvoiceNum</span> (Required) - The invoice number associated with transaction.</li>
+<li><span class="snip">PONumber</span> (Required for Level2) - The purchase order number associated with transaction.</li>
+<li><span class="snip">Amount</span> (Required) - The total dollar amount which transaction is to be for (including tax).</li>
+<li><span class="snip">TaxAmount</span> (Required for Level2) - The dollar amount of tax which transaction is to be for.</li>
+<li><span class="snip">Cardholder</span> (Optional) - Predefined card holder's name.</li>
+<li><span class="snip">CustomerCode</span> (Required for Level2) - The unique identifier of customer's account.</li>
+<li><span class="snip">TransactionID</span> (Required) - The unique identifier of the transaction being done.</li>
+<li><span class="snip">TransactionType</span> (Required) - The type of transaction which is being done.</li>
+</ol>
+<p>Additionally, there are some events on this component:</p>
+
+<ol><li><span class="snip">OnCancel</span> (Required) - Triggered when the POS has sent a cancel command to the device.</li>
+<li><span class="snip">OnDeviceStatus</span> (Optional) - Triggered when the <span class="snip">Device.Monitoring</span> property is enabled.</li>
+<li><span class="snip">OnTransactionStaged</span> (Optional) - Triggered when a new transaction has been staged.</li>
+<li><span class="snip">OnTransactionStart</span> (Optional) - Triggered when a transaction has begun on the device.</li>
+<li><span class="snip">OnTransactionResult</span> (Required) - Triggered when the device has finished a transaction.</li>
+</ol>
+<p><h2><span class="snip">TCayanGeniusAgreement</span> Component</h2></p>
+
+<p>If you wish to be able to prompt a customer to accept or decline an agreement on the device, then you will need to drop a <span class="snip">TCayanGeniusAgreement</span> component in your application. This component allows you to send the request and get a response.</p>
+
+<p>You will need to populate some of the properties of this component.</p>
+
+<ol><li><span class="snip">Genius</span> (Required) - A previously created <span class="snip">TCayanGenius</span> component for authentication.</li>
+<li><span class="snip">Title</span> (Optional) - The title at the top of the device over the agreement.</li>
+<li><span class="snip">AgreementText</span> (Required) - The actual text which is displayed to the customer.</li>
+<li><span class="snip">AcceptLabel</span> (Optional) - The label of the <span class="snip">Accept</span> button on the device.</li>
+<li><span class="snip">DeclineLabel</span> (Optional) - The label of the <span class="snip">Decline</span> button on the device.</li>
+</ol>
+<p>Additionally, there are some events on this component:</p>
+
+<ol><li><span class="snip">OnAgreement</span> (Required) - Triggered when the customer presses <span class="snip">Accept</span>, <span class="snip">Decline</span>, or when the device times out.</li>
+</ol>
+
+<p><a href="./Readme/Chapter%202%20-%20MerchantWare%20Transactions.md">Chapter 2 - MerchantWare Transactions</a></p>
+</body>
+</html>

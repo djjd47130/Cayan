@@ -26,7 +26,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
     Size.PlatformDefault = False
     StyleLookup = 'tabcontrolstyle'
     TabHeight = 49.000000000000000000
-    TabIndex = 3
+    TabIndex = 4
     TabOrder = 0
     TabPosition = PlatformDefault
     OnChange = MainTabsChange
@@ -364,7 +364,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             item
             end>
           IsSelected = True
-          Size.Width = 278.000000000000000000
+          Size.Width = 279.000000000000000000
           Size.Height = 49.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = ''
@@ -1040,7 +1040,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             item
             end>
           IsSelected = False
-          Size.Width = 278.000000000000000000
+          Size.Width = 279.000000000000000000
           Size.Height = 49.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = ''
@@ -1405,7 +1405,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             FF83BCCC38749F94314E22DFD1D101D138B0D3CF78E6DA880FA0E744F17F282B
             153F2501F1610000000049454E44AE426082}
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 83.000000000000000000
       Size.Height = 49.000000000000000000
       Size.PlatformDefault = False
@@ -1834,8 +1834,8 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             Size.Height = 86.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 1
-            Viewport.Width = 200.000000000000000000
-            Viewport.Height = 86.000000000000000000
+            Viewport.Width = 192.000000000000000000
+            Viewport.Height = 78.000000000000000000
           end
         end
       end
@@ -2868,7 +2868,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             5C471A5AF0E1D3800F9F067CF834E05B58E8FEFF7D7AEEDF4F20892D00000000
             49454E44AE426082}
         end>
-      IsSelected = False
+      IsSelected = True
       Size.Width = 64.000000000000000000
       Size.Height = 49.000000000000000000
       Size.PlatformDefault = False
@@ -3417,7 +3417,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             item
             end>
           IsSelected = True
-          Size.Width = 185.000000000000000000
+          Size.Width = 186.000000000000000000
           Size.Height = 49.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = ''
@@ -3644,7 +3644,7 @@ object frmCayanPOSMain: TfrmCayanPOSMain
             item
             end>
           IsSelected = False
-          Size.Width = 185.000000000000000000
+          Size.Width = 186.000000000000000000
           Size.Height = 49.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = ''
@@ -3826,6 +3826,16 @@ object frmCayanPOSMain: TfrmCayanPOSMain
     OnTransactionResult = TranTransactionResult
     OnException = TranException
     Left = 120
+    Top = 431
+  end
+  object MW: TCayanMerchantWare
+    Cayan = DM.Cayan
+    Left = 160
+    Top = 431
+  end
+  object Vault: TCayanVault
+    MerchantWare = MW
+    Left = 200
     Top = 431
   end
 end

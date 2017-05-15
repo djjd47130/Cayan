@@ -27,7 +27,7 @@ uses
   Cayan.Genius.LineItems, Cayan.POS, Cayan.Genius.Transactions, FMX.ScrollBox,
   FMX.Memo,
   uCayanPOSCart,
-  uDialog;
+  uDialog, Cayan.MerchantWare, Cayan.Vault;
 
 type
   TfrmCayanPOSMain = class(TForm)
@@ -254,6 +254,8 @@ type
     SpeedButton2: TSpeedButton;
     NumberBox1: TNumberBox;
     lblTerminalDetail: TLabel;
+    MW: TCayanMerchantWare;
+    Vault: TCayanVault;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);

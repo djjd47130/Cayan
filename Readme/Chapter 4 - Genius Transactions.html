@@ -1,0 +1,80 @@
+<html>
+<head>
+  <style>
+  code {
+    background-color: LightGray;
+    font-size: inherit;
+  }
+  body {
+    font-family: Segoe UI;
+  }
+  blockquote {
+    background-color: OldLace;
+  }
+  pre code {
+    background-color: #eee;
+    border: 1px solid #999;
+    display: block;
+    padding: 20px;
+  }
+  .snip {
+    background-color: LightGray;
+    margin-top: 2px;
+  }
+  h1 {
+    border-bottom: 2px solid LightGray;
+  }
+  h2 {
+    border-bottom: 1px solid LightGray;
+  }
+  
+  </style>
+</head>
+<body>
+<p><h1>Chapter 4 - Genius Transactions</h1></p>
+
+<p>The core base of credit card transactions on the Genius platform are done through the <span class="snip">TCayanGeniusTransaction</span> component.</p>
+
+<p><h2><span class="snip">TCayanGeniusTransaction</span> Component</h2></p>
+
+<p>A single possible transaction is encapsulated within an instance of a <span class="snip">TCayanGeniusTransaction</span> component. It provides direct access to performing card transactions via Genius solutions. It also allows you to add on a <span class="snip">TCayanGeniusLineItems</span> component to implement Line Item Display. It is event driven, so your application should have some means of waiting for a response indefinitely. </p>
+
+<p>NOTE: Be sure to assign the <span class="snip">Genius</span> property with an appropriate corresponding <span class="snip">TCayanGenius</span> component to point it to a specific CED payment terminal. </p>
+
+<p><h3>Preparing Transactions</h3></p>
+
+<p>To start a new transaction, fill out the properties available on this component. Pay attention to the <span class="snip">TransactionType</span> property, as this identifies whether it is a sale, refund, etc. By default, for basic transactions, leave this at its default value <span class="snip">gtSale</span>. </p>
+
+<ul><li><span class="snip">TransactionType</span> - Identifies the specific type of transaction to be performed.</li>
+<li><span class="snip">Amount</span> - The total dollar amount of the transaction. This includes tax.</li>
+<li><span class="snip">TaxAmount</span> - The total tax amount of the transaction. </li>
+<li><span class="snip">InvoiceNum</span> - The merchant defined order number / invoice number transaction is associated with.</li>
+<li><span class="snip">TransactionID</span> - The merchant defined identifier of the transaction.</li>
+<li><span class="snip">PONumber</span> - The Purchase Order Number the transaction is associated with.</li>
+<li><span class="snip">CustomerCode</span> - The unique identifier of the customer.</li>
+<li><span class="snip">Cardholder</span> - The name on the card which will be used.</li>
+</ul>
+<p><h3>Performing Transactions</h3></p>
+
+<p>Once you have prepared the transaction, you are ready to send the command to the device to capture card information and perform the actual transaction. This is done using the procedure <span class="snip">TCayanGeniusTransaction.StartTransaction</span>. Please note that if there is any chance at this point that the customer may choose a different form of payment (such as cash or check), then you should not use this. Instead, if you are using Line Item Display, then you need to use <span class="snip">TCayanGeniusLineItems.EndOrder</span> to let the device know a different payment method has been used. </p>
+
+<p>From the moment you call <span class="snip">StartTransaction</span>, you should wait indefinitely. Please refer to the section below about <a href="./Chapter%204%20-%20Genius%20Transactions.md#waiting-for-response">Waiting For Response</a>. </p>
+
+<p><h3>Events</h3></p>
+
+<p>The following events are available on this component:</p>
+
+<ol><li><span class="snip">OnTransactionStaged</span> (Optional) - Occurs when a new transaction has been staged. This is the first step to collecting payments from a Genius CED payment terminal. This property is not required, but you may wish to use it to capture information.</li>
+<li><span class="snip">OnTransactionStart</span> (Optional) - Occurs when the command is sent to the Genius CED payment terminal to capture payment information. If you are performing transactions through the CED, then you can use this event to detect when you should start waiting for the device. </li>
+<li><span class="snip">OnTransactionResult</span> (Required) - Occurs when the Genius CED payment terminal is completed with capturing payment information. This does not necessarily mean that a payment has been successful. You must read the transaction response in thsi event to determine the result of the transaction.</li>
+<li><span class="snip">OnException</span> (Required) - Occurs when an exception of any kind was raised when starting the transaction. This should be handled to abort the waiting procedure of your application. This only occurs after the moment you call <span class="snip">StartTransaction</span>. If <span class="snip">OnException</span> is called, then <span class="snip">OnTransactionResult</span> will never be called. It's always going to be one or the other. </li>
+</ol>
+<p><h3>Waiting For Response</h3></p>
+
+<p>Between the events <span class="snip">OnTransactionStart</span> and <span class="snip">OnTransactionResult</span>, your application must wait indefinitely. This could mean for hours, technically. You shall not allow the user to do anything other than the following actions:</p>
+
+<ol><li><span class="snip">Cancel</span> - Send a command to the device to cancel the current transaction.</li>
+<li><span class="snip">Initiate Keyed Entry</span> - Send a command to the device to collect payment information via manual keyed card number.</li>
+</ol>
+</body>
+</html>

@@ -10,6 +10,16 @@ uses
   Cayan.MWv4.Impl;
 
 type
+
+  TCayanMerchantWareThread = class(TThread)
+  private
+  protected
+    procedure Execute; override;
+  public
+    constructor Create; reintroduce;
+    destructor Destroy; override;
+  end;
+
   TCayanMerchantWare = class(TCayanBaseComponent)
   private
     FMW: IMerchantWare;
@@ -36,6 +46,25 @@ type
   end;
 
 implementation
+
+{ TCayanMerchantWareThread }
+
+constructor TCayanMerchantWareThread.Create;
+begin
+
+end;
+
+destructor TCayanMerchantWareThread.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TCayanMerchantWareThread.Execute;
+begin
+  inherited;
+
+end;
 
 { TCayanMerchantWare }
 
