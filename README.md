@@ -1,6 +1,6 @@
 # Cayan Delphi Components
 
-Delphi Component Library for Payment Processing using [Cayan's Payment Gateway Solutions](http://www.cayan.com)
+Delphi Component Library for Payment Processing using [Cayan's Payment Gateway Solutions](http://www.cayan.com), enabling retail software to collect various forms of payment, including chip cards (EMV), phone taps (Proximity), and more. 
 
 ## Disclaimer
 
